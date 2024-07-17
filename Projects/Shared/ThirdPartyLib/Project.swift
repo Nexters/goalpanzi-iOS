@@ -14,7 +14,8 @@ let project = Project.makeModule(
             factory: .init(
                 dependencies: [
                     .shared(interface: .ThirdPartyLib),
-                    .external(name: "ComposableArchitecture")
+                    .external(name: "ComposableArchitecture"),
+                    .external(name: "Kingfisher"),
                 ]
             )
         )
