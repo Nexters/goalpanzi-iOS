@@ -1,4 +1,5 @@
 generate:
+	make clean
 	tuist install
 	tuist generate
 
