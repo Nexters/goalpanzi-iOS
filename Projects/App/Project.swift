@@ -8,6 +8,7 @@ let targets: [Target] = [
         factory: .init(
             infoPlist: .extendingDefault(
                 with: [
+                    "BASE_URL": "https://test.com",
                     "CFBundleShortVersionString": "1.0",
                     "CFBundleVersion": "1",
                     "CFBundleName": "MissionMate",
@@ -17,6 +18,9 @@ let targets: [Target] = [
                         "UIApplicationSupportsMultipleScenes": false,
                         "UISceneConfigurations": []
                     ],
+                    "NSAppTransportSecurity": [
+                        "NSAllowsArbitraryLoads": true
+                    ]
                 ]),
             dependencies: [
                 .feature
