@@ -10,8 +10,8 @@ struct MissionMateApp: App {
     WindowGroup {
         ContentView().onAppear(perform: {
             Task {
-                let provider = try await NetworkProvider.shared.sendRequest(Test.test(RequestDTO()))
-                print(provider)
+                let response = try await NetworkProvider.shared.sendRequest(Test.test())
+                print(response)
             }
         })
     }
@@ -26,17 +26,13 @@ struct ContentView: View {
   }
 }
 
-struct RequestDTO: Encodable {
-    
-}
 
 struct ResponseDTO: Decodable {
     let ip: String
 }
 
 struct Test {
-    static func test(_ requestDTO: RequestDTO) -> Endpoint<ResponseDTO> {
-        return Endpoint<ResponseDTO>(path: "http://ip.jsontest.com", httpMethod: HTTPMethod.get, bodyParameters: requestDTO)
+    static func test(_ requestDTO: Encodable = EmptyRequest()) -> Endpoint<ResponseDTO> {
+        return Endpoint<ResponseDTO>(path: "http://ip.jsontest.com", httpMethod: HTTPMethod.get, queryParameters: requestDTO)
     }
 }
-
