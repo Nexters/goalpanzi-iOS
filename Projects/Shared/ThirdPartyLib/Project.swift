@@ -16,6 +16,7 @@ let project = Project.makeModule(
                     .shared(interface: .ThirdPartyLib),
                     .external(name: "ComposableArchitecture"),
                     .external(name: "Kingfisher"),
+                    .external(name: "Alamofire"),
                 ]
             )
         )
