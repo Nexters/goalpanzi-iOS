@@ -8,7 +8,7 @@ let targets: [Target] = [
         factory: .init(
             infoPlist: .extendingDefault(
                 with: [
-                    "BASE_URL": "https://test.com",
+                    "BASE_URL": "",
                     "CFBundleShortVersionString": "1.0",
                     "CFBundleVersion": "1",
                     "CFBundleName": "MissionMate",
