@@ -7,20 +7,29 @@
 
 import Foundation
 
+import Core
 import ComposableArchitecture
 
 // TODO: 백엔드랑 소통해서 더 필요한 값 확인하기
 
 public struct AppleLoginInfomation {
-    var identityToken: String
+    public var identityToken: String
+
+    public init(identityToken: String) {
+        self.identityToken = identityToken
+    }
 }
 
 extension AppleLoginInfomation {
-    static let mock = AppleLoginInfomation(identityToken: "1234")
+    public static let mock = AppleLoginInfomation(identityToken: "1234")
 }
 
 // MARK: - AuthClient Client
 
 public struct AuthClient {
     public var appleLogin: @Sendable () async throws -> AppleLoginInfomation
+
+    public init(appleLogin: @escaping @Sendable () async throws -> AppleLoginInfomation) {
+        self.appleLogin = appleLogin
+    }
 }

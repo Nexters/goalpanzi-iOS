@@ -6,7 +6,9 @@
 //
 
 import Foundation
+
 import AuthenticationServices
+import DomainAuthInterface
 
 enum AppleLoginError: LocalizedError {
     case invalidCredential

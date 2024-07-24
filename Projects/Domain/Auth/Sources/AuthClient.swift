@@ -8,6 +8,7 @@
 import Foundation
 
 import ComposableArchitecture
+import DomainAuthInterface
 
 extension AuthClient: DependencyKey {
     public static let liveValue: Self = {
@@ -15,7 +16,7 @@ extension AuthClient: DependencyKey {
 
         return Self(
             appleLogin: {
-                try await appleLoginController.login()
+                return try await appleLoginController.login()
             }
         )
     }()
@@ -28,7 +29,7 @@ extension AuthClient: DependencyKey {
 }
 
 extension DependencyValues {
-    var socialLogin: AuthClient {
+    public var auclient: AuthClient {
         get { self[AuthClient.self] }
         set { self[AuthClient.self] = newValue }
     }
