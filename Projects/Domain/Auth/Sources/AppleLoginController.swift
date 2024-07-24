@@ -26,6 +26,7 @@ final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
             let appleIDProvider = ASAuthorizationAppleIDProvider()
             let request = appleIDProvider.createRequest()
             request.requestedScopes = [.fullName, .email]
+//            request.nonce = "goalpanzi_\(calculate())"
 
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
             authorizationController.delegate = self

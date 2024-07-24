@@ -1,5 +1,5 @@
 //
-//  AuthClient.swift
+//  SocialLoginClient.swift
 //  DomainAuthInterface
 //
 //  Created by Miro on 7/20/24.
@@ -10,7 +10,7 @@ import Foundation
 import ComposableArchitecture
 import DomainAuthInterface
 
-extension AuthClient: DependencyKey {
+extension SocialLoginClient: DependencyKey {
     public static let liveValue: Self = {
         let appleLoginController = AppleLoginController()
 
@@ -29,8 +29,8 @@ extension AuthClient: DependencyKey {
 }
 
 extension DependencyValues {
-    public var auclient: AuthClient {
-        get { self[AuthClient.self] }
-        set { self[AuthClient.self] = newValue }
+    public var socialLoginClient: SocialLoginClient {
+        get { self[SocialLoginClient.self] }
+        set { self[SocialLoginClient.self] = newValue }
     }
 }
