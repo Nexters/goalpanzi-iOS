@@ -7,7 +7,11 @@ let project = Project.makeModule(
     targets: [    
         .feature(
             interface: .Home,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .domain,
+                ]
+            )
         ),
         .feature(
             implements: .Home,
@@ -38,8 +42,17 @@ let project = Project.makeModule(
         .feature(
             example: .Home,
             factory: .init(
+                infoPlist: .extendingDefault(
+                    with: [
+                        "BASE_URL": "",
+                        "UILaunchStoryboardName": "LaunchScreen.storyboard",
+                        "UIApplicationSceneManifest": [
+                            "UIApplicationSupportsMultipleScenes": false,
+                            "UISceneConfigurations": []
+                        ]
+                    ]),
                 dependencies: [
-                    .feature(interface: .Home)
+                    .feature(interface: .Home),
                 ]
             )
         )
