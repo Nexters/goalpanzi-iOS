@@ -14,6 +14,11 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .domain(implements: .Auth),
+                .domain(implements: .User),
+                .domain(implements: .Player),
+                .domain(implements: .Board),
+                .domain(implements: .Competition),
+                .domain(implements: .Mission),
                 .core
             ]
         )
