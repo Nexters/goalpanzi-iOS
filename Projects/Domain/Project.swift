@@ -14,6 +14,7 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .domain(implements: .Auth),
+                .shared,
                 .core
             ]
         )

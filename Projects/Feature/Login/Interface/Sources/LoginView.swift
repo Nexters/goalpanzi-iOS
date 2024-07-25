@@ -8,6 +8,8 @@
 import SwiftUI
 
 import ComposableArchitecture
+import Shared
+import SharedDesignSystem
 
 public struct LoginView: View {
     public let store: StoreOf<LoginFeature>
@@ -18,17 +20,26 @@ public struct LoginView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
+            Spacer()
+
+            Rectangle()
+                .fill(Color.blue)
+                .frame(width: 342, height: 342)
+
+            Spacer()
+
             VStack(spacing: 8) {
                 SocialLoginButton() {
                     store.send(.appleLoginButtonTapped)
                 }
-                Text(
-                    store.state.appleLoginInformation?.identityToken ?? ""
-                )
+                Text("소셜 계정으로 간편 기입하기")
+                    .font(.system(size: 12, weight: .regular)) // DesignSystem 결정되면 바꿀 예정
+                    .foregroundStyle(.gray)
             }
             .padding(.horizontal, 24)
-            .padding(.bottom, 120)
+            .padding(.bottom, 203)
         }
+        .background(Color.green)
     }
 }
 
@@ -37,21 +48,27 @@ struct SocialLoginButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
-                Image(uiImage: .checkmark)
+            HStack {
+                Image(uiImage: SharedDesignSystemAsset.appleIcon.image)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 22, height: 22)
+                    .frame(width: 26, height: 26)
+                    .padding(.leading, 27)
+
+                Spacer()
 
                 Text("Apple로 로그인")
-                    .font(.title)
-                    .foregroundStyle(.red)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(.black)
+
+                Spacer()
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, 24)
             .padding(.horizontal, 12)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: 60)
             .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: 30))
         }
     }
 }
+

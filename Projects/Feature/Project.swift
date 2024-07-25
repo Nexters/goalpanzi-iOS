@@ -7,7 +7,7 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .feature(implements: .Login),
-                .domain
+                .domain,
             ]
         )
     )
