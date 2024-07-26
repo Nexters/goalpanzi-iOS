@@ -9,6 +9,7 @@ import Foundation
 
 import AuthenticationServices
 import DomainAuthInterface
+import Shared
 
 enum AppleLoginError: LocalizedError {
     case invalidCredential
@@ -25,8 +26,10 @@ final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
         try await withCheckedThrowingContinuation { continuation in
             let appleIDProvider = ASAuthorizationAppleIDProvider()
             let request = appleIDProvider.createRequest()
+            let formattedDate = Date().formattedString(dateFormat: .compactYearMonthDateTime)
+            
             request.requestedScopes = [.fullName, .email]
-//            request.nonce = "goalpanzi_\(calculate())"
+            request.nonce = "goalpanzi_\(formattedDate)"
 
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
             authorizationController.delegate = self
@@ -47,9 +50,6 @@ final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
             continuation = nil
             return
         }
-
-        let email = credential.email
-        let fullName = credential.fullName
 
         guard let tokenData = credential.identityToken,
               let token = String(data: tokenData, encoding: .utf8) else {
@@ -76,5 +76,12 @@ final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
     ) {
         continuation?.resume(throwing: error)
         continuation = nil
+    }
+    
+    func getCurrentTimeString() -> String {
+        let date = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMddHHmmss"
+        return formatter.string(from: date)
     }
 }
