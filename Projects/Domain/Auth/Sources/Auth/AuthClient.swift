@@ -16,8 +16,7 @@ extension AuthClient: DependencyKey {
 
         return Self(
             signIn: {
-                let signUpRequestDTO = SignInRequestDTO(identityToken: $0.identityToken)
-                let endPoint = AuthEndpoint.signInWithApple(signUpRequestDTO)
+                let endPoint = AuthEndpoint.signInWithApple($0)
                 let response = try await NetworkProvider.shared.sendRequest(endPoint)
                 return response
             }
