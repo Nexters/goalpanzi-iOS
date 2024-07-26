@@ -7,7 +7,6 @@
 
 import Foundation
 
-import DomainAuthInterface
 import CoreNetworkInterface
 
 public struct AuthEndpoint {
