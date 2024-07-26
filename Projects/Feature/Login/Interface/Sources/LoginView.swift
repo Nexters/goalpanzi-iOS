@@ -48,27 +48,26 @@ struct SocialLoginButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack {
-                Image(uiImage: SharedDesignSystemAsset.appleIcon.image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 26, height: 26)
-                    .padding(.leading, 27)
-
-                Spacer()
-
+            ZStack {
+                HStack {
+                    Image(uiImage: SharedDesignSystemAsset.appleIcon.image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
+                        .padding(.leading, 27)
+                    
+                    Spacer()
+                }
+                
                 Text("Apple로 로그인")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(.black)
-
-                Spacer()
+                    .foregroundColor(.black)
             }
-            .padding(.vertical, 24)
-            .padding(.horizontal, 12)
-            .frame(maxWidth: .infinity, maxHeight: 60)
-            .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 30))
         }
+        .padding(.vertical, 24)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, maxHeight: 60)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 30))
     }
 }
-
