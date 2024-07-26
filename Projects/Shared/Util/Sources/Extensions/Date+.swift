@@ -9,8 +9,6 @@ import Foundation
 
 public enum DateFormat: String {
     case compactYearMonthDateTime = "yyyyMMddHHss"
-    case yearMonthDate = "yyyy.MM.dd"
-    case monthDate = "MM.dd"
 }
 
 extension DateFormat {
@@ -24,7 +22,6 @@ extension DateFormat {
         return formatter
     }
     
-    // DateFormatter 재사용을 위한 Cache
     private static var cachedFormatters: [DateFormat: DateFormatter] = [:]
 
     private static func makeFormatter(withDateFormat dateFormat: DateFormat) -> DateFormatter {
@@ -37,7 +34,6 @@ extension DateFormat {
 
 extension Date {
     public func formattedString(dateFormat: DateFormat) -> String {
-        // 캐싱된 DateFormatter 를 재사용
         return dateFormat.formatter.string(from: self)
     }
 }
