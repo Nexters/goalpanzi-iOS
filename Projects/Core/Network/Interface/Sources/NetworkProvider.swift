@@ -8,6 +8,11 @@
 import Foundation
 import Alamofire
 
+struct ErrorResponse: Error, Decodable {
+    let code: Int
+    let message: String
+}
+
 public struct NetworkProvider: NetworkProviderType {
     
     public static let shared: NetworkProviderType = NetworkProvider()
@@ -15,6 +20,20 @@ public struct NetworkProvider: NetworkProviderType {
     public func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N) async throws -> T where N.Response == T {
         let urlRequest: URLRequest = try endpoint.makeURLRequest()
         let dataTask = AF.request(urlRequest).validate().serializingDecodable(T.self)
+        
+        #if DEBUG
+        let response = try await dataTask.response
+        if let httpResponse = response.response, !(200..<300).contains(httpResponse.statusCode) {
+            if let errorData = response.data {
+                do {
+                    let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: errorData)
+                    print("Error Code: \(errorResponse.code), Message: \(errorResponse.message)")
+                } catch {
+                    print("Failed to decode error response: \(error)")
+                }
+            }
+        }
+        #endif
         return try await dataTask.value
     }
     
