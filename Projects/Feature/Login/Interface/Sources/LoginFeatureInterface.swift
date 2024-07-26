@@ -30,7 +30,7 @@ public struct LoginFeature: Reducer {
         case _setSocialLoginInfo(AppleLoginInfomation)
     }
 
-    @Dependency(\.socialLoginClient) var socialLoginClient
+    @Dependency(\.socialLoginAuth) var socialLoginAuth
 
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
@@ -38,7 +38,7 @@ public struct LoginFeature: Reducer {
             case .appleLoginButtonTapped:
                 return .run { send in
                     do {
-                        let information = try await socialLoginClient.appleLogin()
+                        let information = try await socialLoginAuth.appleLogin()
                         await self.handle(information, send: send)
                     } catch {
                         print("애플 로그인 에러")
