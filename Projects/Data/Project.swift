@@ -14,8 +14,6 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .data(implements: .Remote),
-                .domain,
-                .core,
             ]
         )
     )

@@ -9,7 +9,8 @@ let project = Project.makeModule(
             interface: .Login,
             factory: .init(
                 dependencies: [
-                    .domain
+                    .domain,
+                    .data,
                 ]
             )
         ),
@@ -59,6 +60,7 @@ let project = Project.makeModule(
                             "NSAllowsArbitraryLoads": true
                         ]
                     ]),
+                entitlements: "FeatureLoginExample.entitlements",
                 dependencies: [
                     .feature(interface: .Login)
                 ]

@@ -8,7 +8,7 @@ let targets: [Target] = [
         factory: .init(
             infoPlist: .extendingDefault(
                 with: [
-                    "BASE_URL": "",
+                    "BASE_URL": "http://223.130.130.31:8080/",
                     "CFBundleShortVersionString": "1.0",
                     "CFBundleVersion": "1",
                     "CFBundleName": "MissionMate",
@@ -22,6 +22,7 @@ let targets: [Target] = [
                         "NSAllowsArbitraryLoads": true
                     ]
                 ]),
+            entitlements: "MissionMate.entitlements",
             dependencies: [
                 .feature
             ]

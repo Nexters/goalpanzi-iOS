@@ -1,28 +1,48 @@
 //
-//  AppleLoginController.swift
-//  DomainAuthInterface
+//  AppleAuthService.swift
+//  DataRemote
 //
-//  Created by Miro on 7/20/24.
+//  Created by Haeseok Lee on 7/28/24.
 //
 
 import Foundation
-
-import AuthenticationServices
 import DomainAuthInterface
-import Shared
+import CoreNetworkInterface
+import AuthenticationServices
+import ComposableArchitecture
+import SharedUtil
 
-enum AppleLoginError: LocalizedError {
-    case invalidCredential
-    case invalidIdentityToken
-    case invalidAuthorizationCode
-    case transferError(Error)
+public struct AppleAuthService: AppleAuthServiceable {
+    
+    private let appleAuth: AppleAuth = AppleAuth()
+    
+    public func signIn() async throws -> DomainAuthInterface.SignInInfo {
+        let identityToken = try await appleAuth.signIn()
+        let endpoint = Endpoint<SignInResponseDTO>(path: "api/auth/login/apple", httpMethod: .post, bodyParameters: SignInRequestDTO(identityToken: identityToken))
+        let response = try await NetworkProvider.shared.sendRequest(endpoint)
+        return response.toDomain
+    }
 }
 
-final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
+extension AppleAuthService: DependencyKey {
+    
+    public static var liveValue: DomainAuthInterface.AppleAuthServiceable {
+        AppleAuthService()
+    }
+}
 
-    private var continuation: CheckedContinuation<AppleLoginInfomation, Error>?
+extension AppleAuthService {
+    
+    final class AppleAuth: NSObject {
+        private var continuation: CheckedContinuation<IdentityToken, Error>?
+    }
+}
 
-    func login() async throws -> AppleLoginInfomation {
+extension AppleAuthService.AppleAuth: ASAuthorizationControllerDelegate {
+    
+    typealias IdentityToken = String
+    
+    func signIn() async throws -> IdentityToken {
         try await withCheckedThrowingContinuation { continuation in
             let appleIDProvider = ASAuthorizationAppleIDProvider()
             let request = appleIDProvider.createRequest()
@@ -52,21 +72,20 @@ final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
         }
 
         guard let tokenData = credential.identityToken,
-              let token = String(data: tokenData, encoding: .utf8) else {
+              let token = IdentityToken(data: tokenData, encoding: .utf8) else {
             continuation?.resume(throwing: AppleLoginError.invalidIdentityToken)
             continuation = nil
             return
         }
 
         guard let authorizationCode = credential.authorizationCode,
-              let codeString = String(data: authorizationCode, encoding: .utf8) else {
+              let _ = String(data: authorizationCode, encoding: .utf8) else {
             continuation?.resume(throwing: AppleLoginError.invalidAuthorizationCode)
             continuation = nil
             return
         }
 
-        let information = AppleLoginInfomation(identityToken: token)
-        continuation?.resume(returning: information)
+        continuation?.resume(returning: token)
         continuation = nil
     }
 
@@ -83,5 +102,19 @@ final class AppleLoginController: NSObject, ASAuthorizationControllerDelegate {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMddHHmmss"
         return formatter.string(from: date)
+    }
+}
+
+
+enum AppleLoginError: LocalizedError {
+    case invalidCredential
+    case invalidIdentityToken
+    case invalidAuthorizationCode
+    case transferError(Error)
+}
+
+extension SignInResponseDTO {
+    var toDomain: DomainAuthInterface.SignInInfo {
+        .init(accessToken: accessToken, refreshToken: refreshToken, isProfileSet: isProfileSet)
     }
 }

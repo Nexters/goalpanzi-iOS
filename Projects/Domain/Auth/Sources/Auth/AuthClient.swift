@@ -9,27 +9,14 @@ import Foundation
 
 import ComposableArchitecture
 import DomainAuthInterface
-import CoreNetworkInterface
 
 extension AuthClient: DependencyKey {
     public static let liveValue: Self = {
-
         return Self(
-            signIn: {
-                let endPoint = AuthEndpoint.signInWithApple($0)
-                let response = try await NetworkProvider.shared.sendRequest(endPoint)
+            signInWithApple: { appleAuthService in
+                let response = try await appleAuthService.signIn()
                 return response
             }
         )
     }()
 }
-
-extension DependencyValues {
-    public var authClient: AuthClient {
-        get { self[AuthClient.self] }
-        set { self[AuthClient.self] = newValue }
-    }
-}
-
-
-

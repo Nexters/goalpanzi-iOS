@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct SignInRequestDTO: Encodable {
-    public let identityToken: String
+struct SignInRequestDTO: Encodable {
+    let identityToken: String
     
-    public init(identityToken: String) {
+    init(identityToken: String) {
         self.identityToken = identityToken
     }
 }

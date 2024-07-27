@@ -1,13 +1,13 @@
 //
-//  SignInResponseDTO.swift
-//  DomainAuth
+//  SignInInfo.swift
+//  DomainAuthInterface
 //
-//  Created by 김용재 on 7/26/24.
+//  Created by Haeseok Lee on 7/27/24.
 //
 
 import Foundation
 
-public struct SignInResponseDTO: Decodable {
+public struct SignInInfo {
     public let accessToken: String
     public let refreshToken: String
     public let isProfileSet: Bool
