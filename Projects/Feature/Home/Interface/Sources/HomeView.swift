@@ -17,18 +17,16 @@ public struct HomeView: View {
     }
     
     public var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            MainView(viewStore: viewStore)
-            .onAppear {
-                viewStore.send(.onAppear)
-            }
+        MainView(store: store)
+        .onAppear {
+            store.send(.onAppear)
         }
     }
 }
 
 private struct MainView: View {
     
-    let viewStore: ViewStoreOf<HomeFeature>
+    let store: StoreOf<HomeFeature>
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -54,7 +52,7 @@ private struct MainView: View {
                 // 캐릭터 리스트
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack {
-                        ForEach(viewStore.players) { player in
+                        ForEach(store.players) { player in
                             VStack {
                                 Circle()
                                     .fill(Color.gray)
@@ -88,7 +86,7 @@ private struct MainView: View {
                         HStack(spacing: 0) {
                             ForEach(0..<3) { column in
                                 Rectangle()
-                                    .fill(self.getColor(row: row, column: column))
+                                    .fill(getColor(row: row, column: column))
                                     .frame(width: 100, height: 100)
                                     //.overlay(self.getLabel(row: row, column: column))
                             }
