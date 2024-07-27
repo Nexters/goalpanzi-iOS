@@ -17,8 +17,7 @@ extension AppleAuthService: DependencyKey {
     public static let liveValue: Self = {
         return Self(
             signIn: {
-                let delegator = AppleAuthDelegator()
-                let identityToken = try await delegator.signIn()
+                let identityToken = try await AppleAuthProvider().signIn()
                 let endpoint = Endpoint<SignInResponseDTO>(
                     path: "api/auth/login/apple",
                     httpMethod: .post,

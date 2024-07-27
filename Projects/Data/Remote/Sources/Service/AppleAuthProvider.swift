@@ -1,5 +1,5 @@
 //
-//  AppleAuthDelegator.swift
+//  AppleAuthProvider.swift
 //  DataRemote
 //
 //  Created by Haeseok Lee on 7/28/24.
@@ -8,7 +8,7 @@
 import Foundation
 import AuthenticationServices
 
-final class AppleAuthDelegator: NSObject {
+final class AppleAuthProvider: NSObject {
     
     typealias IdentityToken = String
     
@@ -42,7 +42,7 @@ final class AppleAuthDelegator: NSObject {
     }
 }
 
-private extension AppleAuthDelegator {
+private extension AppleAuthProvider {
     
     enum AppleLoginError: LocalizedError {
         case invalidCredential
@@ -53,7 +53,7 @@ private extension AppleAuthDelegator {
 }
 
 // MARK: - ASAuthorizationControllerDelegate
-extension AppleAuthDelegator: ASAuthorizationControllerDelegate {
+extension AppleAuthProvider: ASAuthorizationControllerDelegate {
     
     func authorizationController(
         controller: ASAuthorizationController,
