@@ -42,6 +42,7 @@ let project = Project.makeModule(
         .feature(
             example: .Login,
             factory: .init(
+                bundleId: Project.Environment.bundlePrefix,
                 infoPlist: .extendingDefault(
                     with: [
                         "BASE_URL": "http://223.130.130.31:8080/",
