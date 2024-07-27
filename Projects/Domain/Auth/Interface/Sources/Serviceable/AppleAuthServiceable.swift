@@ -9,5 +9,5 @@ import Foundation
 
 public protocol AppleAuthServiceable {
     
-    func signIn() async throws -> SignInInfo
+    var signIn: @Sendable () async throws -> SignInInfo { get }
 }

@@ -7,14 +7,17 @@ let project = Project.makeModule(
     targets: [    
         .data(
             interface: .Remote,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .domain,
+                ]
+            )
         ),
         .data(
             implements: .Remote,
             factory: .init(
                 dependencies: [
                     .data(interface: .Remote),
-                    .domain,
                 ]
             )
         ),
