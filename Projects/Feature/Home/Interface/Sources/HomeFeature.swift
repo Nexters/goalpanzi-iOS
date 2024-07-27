@@ -33,6 +33,7 @@ public struct HomeFeature {
                     Player(name: "김용재"),
                     Player(name: "이해석"),
                     Player(name: "이해석"),
+                    Player(name: "이해석"),
                 ]
                 return .none
 
