@@ -33,13 +33,6 @@ final class AppleAuthProvider: NSObject {
     
     // MARK: Private
     private var continuation: CheckedContinuation<IdentityToken, Error>?
-    
-    private func getCurrentTimeString() -> String {
-        let date = Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMddHHmmss"
-        return formatter.string(from: date)
-    }
 }
 
 private extension AppleAuthProvider {
