@@ -30,6 +30,4 @@ struct RootFeature {
         }
         .ifLet(\.$destination, action: \.destination)
     }
-    
-    init() {}
 }
