@@ -6,6 +6,7 @@ enum LayerType: String {
     case domain = "Domain"
     case core = "Core"
     case shared = "Shared"
+    case data = "Data"
 }
 
 public enum MicroTargetType: String, CaseIterable {
@@ -191,7 +192,7 @@ func updateFileContent(
 
 // MARK: - Starting point
 
-print("Enter layer name\n(Feature | Domain | Core | Shared)", terminator: " : ")
+print("Enter layer name\n(Feature | Domain | Core | Shared | Data)", terminator: " : ")
 let layerInput = readLine()
 guard let layerInput, !layerInput.isEmpty, let layerUnwrapping = LayerType(rawValue: layerInput) else {
     print("Layer is empty or invalid")

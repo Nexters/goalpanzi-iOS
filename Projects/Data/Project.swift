@@ -1,8 +1,8 @@
 //
 //  Project.swift
-//  ApplicationManifests
+//  AppManifests
 //
-//  Created by Haeseok Lee on 7/16/24.
+//  Created by Haeseok Lee on 7/27/24.
 //
 
 import ProjectDescription
@@ -10,12 +10,10 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let targets: [Target] = [
-    .core(
+    .data(
         factory: .init(
             dependencies: [
-                .core(implements: .Network),
-                .core(implements: .Keychain),
-                .shared
+                .data(implements: .Remote),
             ]
         )
     )
@@ -23,6 +21,6 @@ let targets: [Target] = [
 
 
 let project: Project = .makeModule(
-    name: "Core",
+    name: "Data",
     targets: targets
 )

@@ -1,11 +1,17 @@
 import SwiftUI
 
+import FeatureLoginInterface
+
 @main
 struct AppView: App {
     var body: some Scene {
         WindowGroup {
-           Text("Hello Tuist!")
+            LoginView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: { LoginFeature()._printChanges()}
+                )
+            )
         }
     }
 }
-
