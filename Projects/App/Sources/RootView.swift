@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import ComposableArchitecture
 import FeatureLoginInterface
+import SharedDesignSystem
 
 struct RootView: View {
     
@@ -16,6 +17,7 @@ struct RootView: View {
     
     init(store: StoreOf<RootFeature>) {
         self.store = store
+        SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
     
     var body: some View {
