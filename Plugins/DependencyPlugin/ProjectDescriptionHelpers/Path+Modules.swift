@@ -56,3 +56,16 @@ public extension ProjectDescription.Path {
         return .relativeToRoot("Projects/\(ModulePath.Shared.name)/\(module.rawValue)")
     }
 }
+
+
+// MARK: ProjectDescription.Path + Data
+
+public extension ProjectDescription.Path {
+    static var data: Self {
+        return .relativeToRoot("Projects/\(ModulePath.Data.name)")
+    }
+    
+    static func data(implementation module: ModulePath.Data) -> Self {
+        return .relativeToRoot("Projects/\(ModulePath.Data.name)/\(module.rawValue)")
+    }
+}

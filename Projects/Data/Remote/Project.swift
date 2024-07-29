@@ -3,38 +3,38 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.makeModule(
-    name: ModulePath.Domain.name+ModulePath.Domain.Auth.rawValue,
+    name: ModulePath.Data.name+ModulePath.Data.Remote.rawValue,
     targets: [    
-        .domain(
-            interface: .Auth,
+        .data(
+            interface: .Remote,
             factory: .init(
                 dependencies: [
-                    .core
+                    .domain,
                 ]
             )
         ),
-        .domain(
-            implements: .Auth,
+        .data(
+            implements: .Remote,
             factory: .init(
                 dependencies: [
-                    .domain(interface: .Auth)
+                    .data(interface: .Remote),
                 ]
             )
         ),
     
-        .domain(
-            testing: .Auth,
+        .data(
+            testing: .Remote,
             factory: .init(
                 dependencies: [
-                    .domain(interface: .Auth)
+                    .data(interface: .Remote)
                 ]
             )
         ),
-        .domain(
-            tests: .Auth,
+        .data(
+            tests: .Remote,
             factory: .init(
                 dependencies: [
-                    .domain(testing: .Auth)
+                    .data(testing: .Remote)
                 ]
             )
         ),

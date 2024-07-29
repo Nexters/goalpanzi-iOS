@@ -1,20 +1,26 @@
+//
+//  Project.swift
+//  AppManifests
+//
+//  Created by Haeseok Lee on 7/27/24.
+//
+
 import ProjectDescription
 import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let targets: [Target] = [
-    .feature(
+    .data(
         factory: .init(
             dependencies: [
-                .feature(implements: .Login),
-                .domain,
+                .data(implements: .Remote),
             ]
         )
     )
 ]
 
+
 let project: Project = .makeModule(
-    name: "Feature",
+    name: "Data",
     targets: targets
 )
-
