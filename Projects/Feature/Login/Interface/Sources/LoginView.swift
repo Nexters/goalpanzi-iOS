@@ -39,7 +39,7 @@ public struct LoginView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 203)
         }
-        .background(Color.green)
+        .background(SharedDesignSystemAsset.Colors.colorF2BD42.swiftUIColor)
     }
 }
 
@@ -50,7 +50,7 @@ struct SocialLoginButton: View {
         Button(action: action) {
             ZStack {
                 HStack {
-                    Image(uiImage: SharedDesignSystemAsset.appleIcon.image)
+                    Image(uiImage: SharedDesignSystemAsset.Images.appleIcon.image)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 26, height: 26)
