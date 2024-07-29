@@ -9,6 +9,7 @@ clean:
 	rm -rf **/**/*.xcodeproj
 	rm -rf **/*.xcodeproj
 	rm -rf *.xcworkspace
+	rm -rf ./Tuist/.build
 
 module:
 	swift Scripts/GenerateModule.swift

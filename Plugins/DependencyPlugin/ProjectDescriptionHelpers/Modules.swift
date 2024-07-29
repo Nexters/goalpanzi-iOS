@@ -6,6 +6,7 @@ public enum ModulePath {
     case domain(Domain)
     case core(Core)
     case shared(Shared)
+    case data(Data)
 }
 
 // MARK: AppModule
@@ -31,8 +32,13 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Domain: String, CaseIterable {
+        case Mission
+        case Competition
+        case Board
+        case Player
+        case User
         case Auth
-        
+
         public static let name: String = "Domain"
     }
 }
@@ -41,6 +47,7 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Core: String, CaseIterable {
+        case Keychain
         case Network
         
         public static let name: String = "Core"
@@ -56,5 +63,15 @@ public extension ModulePath {
         case ThirdPartyLib
         
         public static let name: String = "Shared"
+    }
+}
+
+// MARK: DataModule
+
+public extension ModulePath {
+    enum Data: String, CaseIterable {
+        case Remote
+        
+        public static let name: String = "Data"
     }
 }
