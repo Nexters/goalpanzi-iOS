@@ -12,6 +12,8 @@ public struct KeychainProvider {
     public static let shared = KeychainProvider()
     private let service: String = "MissionMate"
 
+    private init() {}
+
     public func create(_ value: String, key: KeychainKey) {
         guard let data = value.data(using: .utf8) else { return }
 
@@ -37,10 +39,11 @@ public struct KeychainProvider {
 
         var result: AnyObject?
         let status = SecItemCopyMatching(query, &result)
-        guard status != errSecItemNotFound else { return nil }
-        guard status == errSecSuccess else { return nil }
 
-        guard let data = result as? Data else { return nil }
+        guard status != errSecItemNotFound,
+              status == errSecSuccess,
+              let data = result as? Data
+        else { return nil }
 
         return String(data: data, encoding: .utf8)
     }
@@ -70,8 +73,10 @@ public struct KeychainProvider {
         ]
 
         let status = SecItemDelete(query)
-        guard status != errSecItemNotFound else { return }
-        guard status == errSecSuccess else { return }
+
+        guard status != errSecItemNotFound,
+              status == errSecSuccess
+        else { return }
     }
 }
 
