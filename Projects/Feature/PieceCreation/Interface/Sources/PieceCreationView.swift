@@ -13,11 +13,11 @@ import SharedDesignSystem
 public struct PieceCreationView: View {
     public let store: StoreOf<PieceCreationFeature>
     @State private var selectedPiece: Piece = .rabbit
-    
+
     public init(store: StoreOf<PieceCreationFeature>) {
         self.store = store
     }
-    
+
     public var body: some View {
         VStack(spacing: 10) {
             Image(uiImage: selectedPiece.roundImage)
@@ -29,17 +29,20 @@ public struct PieceCreationView: View {
                     Spacer().frame(width: 16)
                     ForEach(Piece.allCases, id: \.self) { piece in
                         VStack {
-                            Image(uiImage: piece == selectedPiece ? piece.roundImage : piece.dimmedImage)
+                            Image(uiImage: piece.basicImage)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 100, height: 100)
+                                .opacity(piece == selectedPiece ? 1.0 : 0.3)
                                 .onTapGesture {
                                     selectedPiece = piece
                                 }
                             Text(piece.koreanName)
-                            
+                                .frame(height: 24)
+                                .padding(.horizontal, 25)
+                                .background(SharedDesignSystemAsset.Colors.colorF5F6F9.swiftUIColor)
+                                .cornerRadius(20)
                         }
-                        
                     }
                 }
             }

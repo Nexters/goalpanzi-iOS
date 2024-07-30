@@ -30,34 +30,23 @@ public enum Piece: CaseIterable {
     
     public var roundImage: UIImage {
         switch self {
-        case .rabbit: SharedDesignSystemAsset.basicRoundRabbit.image
-        case .cat: SharedDesignSystemAsset.basicRoundCat.image
-        case .puppy: SharedDesignSystemAsset.basicRoundPuppy.image
-        case .bird: SharedDesignSystemAsset.basicRoundBird.image
-        case .panda: SharedDesignSystemAsset.basicRoundPanda.image
-        case .bear: SharedDesignSystemAsset.basicRoundBear.image
+        case .rabbit: SharedDesignSystemAsset.Images.basicRoundCat.image
+        case .cat: SharedDesignSystemAsset.Images.basicRoundCat.image
+        case .puppy: SharedDesignSystemAsset.Images.basicRoundPuppy.image
+        case .bird: SharedDesignSystemAsset.Images.basicRoundBird.image
+        case .panda: SharedDesignSystemAsset.Images.basicRoundPanda.image
+        case .bear: SharedDesignSystemAsset.Images.basicRoundBear.image
         }
     }
     
     public var basicImage: UIImage {
         switch self {
-        case .rabbit: SharedDesignSystemAsset.basicRabbit.image
-        case .cat: SharedDesignSystemAsset.basicCat.image
-        case .puppy: SharedDesignSystemAsset.basicPuppy.image
-        case .bird: SharedDesignSystemAsset.basicBird.image
-        case .panda: SharedDesignSystemAsset.basicPanda.image
-        case .bear: SharedDesignSystemAsset.basicBear.image
-        }
-    }
-    
-    public var dimmedImage: UIImage {
-        switch self {
-        case .rabbit: SharedDesignSystemAsset.dimmedRabbit.image
-        case .cat: SharedDesignSystemAsset.dimmedCat.image
-        case .puppy: SharedDesignSystemAsset.dimmedPuppy.image
-        case .bird: SharedDesignSystemAsset.dimmedBird.image
-        case .panda: SharedDesignSystemAsset.dimmedPanda.image
-        case .bear: SharedDesignSystemAsset.dimmedBear.image
+        case .rabbit: SharedDesignSystemAsset.Images.basicRabbit.image
+        case .cat: SharedDesignSystemAsset.Images.basicCat.image
+        case .puppy: SharedDesignSystemAsset.Images.basicPuppy.image
+        case .bird: SharedDesignSystemAsset.Images.basicBird.image
+        case .panda: SharedDesignSystemAsset.Images.basicPanda.image
+        case .bear: SharedDesignSystemAsset.Images.basicBear.image
         }
     }
 }
