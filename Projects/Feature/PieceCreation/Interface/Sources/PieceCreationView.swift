@@ -24,17 +24,22 @@ public struct PieceCreationView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 220, height: 220)
-            ScrollView(.horizontal) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     Spacer().frame(width: 16)
                     ForEach(Piece.allCases, id: \.self) { piece in
-                        Image(uiImage: piece == selectedPiece ? piece.roundImage : piece.dimmedImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .onTapGesture {
-                                selectedPiece = piece
-                            }
+                        VStack {
+                            Image(uiImage: piece == selectedPiece ? piece.roundImage : piece.dimmedImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .onTapGesture {
+                                    selectedPiece = piece
+                                }
+                            Text(piece.koreanName)
+                            
+                        }
+                        
                     }
                 }
             }

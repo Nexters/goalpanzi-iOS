@@ -22,9 +22,9 @@ public enum Piece: CaseIterable {
         case .rabbit: "뚝심토끼"
         case .cat: "포기란없다냥"
         case .puppy: "끝까지해볼개"
-        case .bird: "새대가리"
-        case .panda: "판다대가리"
-        case .bear: "곰탱이"
+        case .bird: "하나만팬다"
+        case .panda: "할건끝내곰"
+        case .bear: "할때까지해뱁새"
         }
     }
     
