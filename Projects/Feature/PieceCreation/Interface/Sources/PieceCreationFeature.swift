@@ -18,6 +18,7 @@ public struct PieceCreationFeature: Reducer {
     public struct State: Equatable {
         var selectedPiece: Piece = .rabbit
         var nickName: String = ""
+        var isValidNickName: Bool = true
         public init() {}
     }
     
@@ -37,7 +38,11 @@ public struct PieceCreationFeature: Reducer {
                 state.selectedPiece = piece
                 return .none
             case .binding(\.nickName):
-                print(state.nickName)
+                if state.nickName.count > 7 {
+                    state.isValidNickName = false
+                } else {
+                    state.isValidNickName = true
+                }
                 return .none
             default:
                 return .none

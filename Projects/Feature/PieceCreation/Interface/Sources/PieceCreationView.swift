@@ -15,6 +15,7 @@ public struct PieceCreationView: View {
 
     public init(store: StoreOf<PieceCreationFeature>) {
         self.store = store
+        SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
 
     public var body: some View {
@@ -41,7 +42,8 @@ public struct PieceCreationView: View {
                             Text(piece.koreanName)
                                 .frame(height: 24)
                                 .padding(.horizontal, 25)
-                                .background(SharedDesignSystemAsset.Colors.colorF5F6F9.swiftUIColor)
+                                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                                .background(SharedDesignSystemAsset.Colors.gray5.swiftUIColor)
                                 .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
                                 .cornerRadius(20)
                         }
@@ -50,8 +52,11 @@ public struct PieceCreationView: View {
             }
             MissionMateTextField(
                 text: $store.nickName,
-                placeholder: "1~6자, 한글, 영문 또는 숫자를 입력하세요."
+                isValidInputText: $store.isValidNickName,
+                placeholder: "닉네임 입력",
+                noticeMessage: "1~6자, 한글, 영문 또는 숫자를 입력하세요."
             )
+            .padding(.horizontal, 24)
         }
         .frame(maxHeight: .infinity)
     }
