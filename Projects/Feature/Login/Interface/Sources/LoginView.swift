@@ -39,7 +39,7 @@ public struct LoginView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 203)
         }
-        .background(SharedDesignSystemAsset.Colors.colorF2BD42.swiftUIColor)
+        .background(SharedDesignSystemAsset.Colors.lightBlue.swiftUIColor)
     }
 }
 
