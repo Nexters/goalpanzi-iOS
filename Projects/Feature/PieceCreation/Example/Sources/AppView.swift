@@ -8,8 +8,7 @@ struct AppView: App {
         WindowGroup {
             PieceCreationView(
                 store: .init(
-                    initialState: .init(),
-                    reducer: {PieceCreationFeature()._printChanges()}
+                    initialState: .init(), reducer: {PieceCreationFeature()._printChanges()}
                 )
             )
         }

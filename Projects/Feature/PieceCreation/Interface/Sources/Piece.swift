@@ -30,7 +30,7 @@ public enum Piece: CaseIterable {
     
     public var roundImage: UIImage {
         switch self {
-        case .rabbit: SharedDesignSystemAsset.Images.basicRoundCat.image
+        case .rabbit: SharedDesignSystemAsset.Images.basicRoundRabbit.image
         case .cat: SharedDesignSystemAsset.Images.basicRoundCat.image
         case .puppy: SharedDesignSystemAsset.Images.basicRoundPuppy.image
         case .bird: SharedDesignSystemAsset.Images.basicRoundBird.image
