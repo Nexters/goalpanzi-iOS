@@ -11,7 +11,7 @@ import ComposableArchitecture
 import SharedDesignSystem
 
 public struct PieceCreationView: View {
-    public let store: StoreOf<PieceCreationFeature>
+    @Bindable public var store: StoreOf<PieceCreationFeature>
 
     public init(store: StoreOf<PieceCreationFeature>) {
         self.store = store
@@ -48,6 +48,10 @@ public struct PieceCreationView: View {
                     }
                 }
             }
+            MissionMateTextField(
+                text: $store.nickName,
+                placeholder: "1~6자, 한글, 영문 또는 숫자를 입력하세요."
+            )
         }
         .frame(maxHeight: .infinity)
     }
