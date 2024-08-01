@@ -10,7 +10,7 @@ import SwiftUI
 import SharedDesignSystem
 
 struct MissionMateRoundedButton: View {
-    @Binding var isDisabled: Bool
+    @Binding var isEnabled: Bool
     let title: String
     let action: () -> Void
 
@@ -25,7 +25,8 @@ struct MissionMateRoundedButton: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 30)
-                .fill(isDisabled ? MissionMateColor.disabled : MissionMateColor.orange)
+                .fill(isEnabled ? MissionMateColor.orange : MissionMateColor.disabled)
         )
+        .disabled(!isEnabled)
     }
 }

@@ -18,14 +18,18 @@ public struct PieceCreationFeature: Reducer {
     public struct State: Equatable {
         var selectedPiece: Piece = .rabbit
         var nickName: String = ""
+
         var isValidNickName: Bool = true
         var isAllCompleted: Bool = false
+
         public init() {}
     }
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+
         case pieceImageTapped(Piece)
+        case saveButtonTapped
     }
     
     public var body: some ReducerOf<Self> {
@@ -39,6 +43,7 @@ public struct PieceCreationFeature: Reducer {
                 return .none
             case .binding(\.nickName):
                 state.isValidNickName = self.validate(state.nickName)
+                state.isAllCompleted = state.isValidNickName && !state.nickName.isEmpty
                 return .none
             default:
                 return .none

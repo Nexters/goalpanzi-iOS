@@ -75,7 +75,7 @@ public struct PieceCreationView: View {
 
             Spacer()
 
-            MissionMateRoundedButton(isDisabled: $store.isAllCompleted, title: "저장하기") {
+            MissionMateRoundedButton(isEnabled: $store.isAllCompleted, title: "저장하기") {
                 print("Button Tapped")
             }
             .frame(maxWidth: .infinity)
