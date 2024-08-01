@@ -25,7 +25,6 @@ public struct PieceCreationFeature: Reducer {
     
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-
         case pieceImageTapped(Piece)
     }
     
@@ -51,7 +50,11 @@ public struct PieceCreationFeature: Reducer {
 extension PieceCreationFeature {
 
     private func validate(_ nickName: String) -> Bool {
-        guard nickName.count >= 0, nickName.count <= 6 else { return false }
+        if nickName.isEmpty {
+            return true
+        }
+        guard nickName.count <= 6 else { return false }
+
         let pattern = "^[0-9a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ]+$"
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
         let range = NSRange(location: 0, length: nickName.utf16.count)

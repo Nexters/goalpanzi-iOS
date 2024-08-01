@@ -11,6 +11,7 @@ struct AppView: App {
                     initialState: .init(), reducer: {PieceCreationFeature()._printChanges()}
                 )
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
