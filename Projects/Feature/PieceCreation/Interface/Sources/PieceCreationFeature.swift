@@ -19,6 +19,7 @@ public struct PieceCreationFeature: Reducer {
         var selectedPiece: Piece = .rabbit
         var nickName: String = ""
         var isValidNickName: Bool = true
+        var isAllCompleted: Bool = false
         public init() {}
     }
     
@@ -38,16 +39,22 @@ public struct PieceCreationFeature: Reducer {
                 state.selectedPiece = piece
                 return .none
             case .binding(\.nickName):
-                if state.nickName.count > 7 {
-                    state.isValidNickName = false
-                } else {
-                    state.isValidNickName = true
-                }
+                state.isValidNickName = self.validate(state.nickName)
                 return .none
             default:
                 return .none
             }
         }
     }
+}
 
+extension PieceCreationFeature {
+
+    private func validate(_ nickName: String) -> Bool {
+        guard nickName.count >= 0, nickName.count <= 6 else { return false }
+        let pattern = "^[0-9a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ]+$"
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        let range = NSRange(location: 0, length: nickName.utf16.count)
+        return regex.firstMatch(in: nickName, options: [], range: range) != nil
+    }
 }
