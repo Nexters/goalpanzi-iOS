@@ -13,7 +13,7 @@ public struct Board {
     
     public var blocks: [Position: Block]
     
-    public var numberOfRows: Int
+    public var numberOfColumns: Int
     
     public var pieces: Set<Piece>
     
@@ -23,12 +23,12 @@ public struct Board {
         theme: any BoardTheme,
         blocks: [Position: Block],
         pieces: Set<Piece>,
-        numberOfRows : Int = 3
+        numberOfColumns : Int = 3
     ) {
         self.theme = theme
         self.blocks = blocks
         self.pieces = pieces
-        self.numberOfRows = numberOfRows
+        self.numberOfColumns = numberOfColumns
     }
     
     public func findBlock(by piece: Piece) -> Block? {
@@ -59,9 +59,9 @@ public struct Board {
             pieces.insert(newPiece)
         }
         
-        let cycle = numberOfRows * 2
-        let phase1 = (0...(numberOfRows - 1))
-        let phase2 = (numberOfRows...(cycle - 1))
+        let cycle = numberOfColumns * 2
+        let phase1 = (0...(numberOfColumns - 1))
+        let phase2 = (numberOfColumns...(cycle - 1))
         
         let departureIndex = piece.position.index
         let arrivalIndex = position.index

@@ -8,11 +8,16 @@ import Feature
 
 @main
 struct MissionMateApp: App {
-  var body: some Scene {
-    WindowGroup {
-        RootView(store: .init(initialState: RootFeature.State()) {
-            RootFeature()._printChanges()
-        })
+    
+    init() {
+        SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
-  }
+    
+    var body: some Scene {
+        WindowGroup {
+            RootView(store: .init(initialState: RootFeature.State()) {
+                RootFeature()._printChanges()
+            })
+        }
+    }
 }

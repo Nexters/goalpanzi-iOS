@@ -17,7 +17,7 @@ public extension Event {
         public let image: String
         public let description: String
         
-        init(image: String, description: String) {
+        public init(image: String, description: String) {
             self.image = image
             self.description = description
         }

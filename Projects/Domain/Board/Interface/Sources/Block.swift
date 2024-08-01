@@ -29,20 +29,20 @@ public struct Block {
         self.event = event
     }
     
-    public func kind(numberOfRows: Int, totalBlockCount: Int) -> BlockKind {
+    public func kind(numberOfColumns: Int, totalBlockCount: Int) -> BlockKind {
         
         if isStartBlock || position.index == totalBlockCount - 1 {
             return .square
         }
         
-        let cycle: Int = (numberOfRows * 2)
+        let cycle: Int = (numberOfColumns * 2)
         guard cycle != .zero else { return .square }
         
-        if position.index % cycle == numberOfRows - 1 {
+        if position.index % cycle == numberOfColumns - 1 {
             return .firstQuadrant
         }
         
-        if position.index % cycle == numberOfRows {
+        if position.index % cycle == numberOfColumns {
             return .fourthQuardrant
         }
         

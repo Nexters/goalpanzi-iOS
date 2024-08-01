@@ -1,17 +1,56 @@
 import SwiftUI
 import Foundation
 import ComposableArchitecture
+import DomainMissionInterface
+import DomainBoardInterface
+import DomainPlayerInterface
+import DomainCompetitionInterface
 import SharedThirdPartyLib
 
 @Reducer
 public struct HomeFeature {
     
     @ObservableState
-    public struct State: Equatable {
+    public struct State {
         
-        public var players: [Player]
+        public var mission: Mission
+        
+        public var numberOfColumns: Int
+        
+        public var numberOfRows: Int
+        
         public init() {
-            self.players = .init()
+            let theme: JejuIslandBoardTheme = JejuIslandBoardTheme(backgroundImageName: "jejuisland")
+            let mission: Mission = .init(
+                description: "매일 유산소 1시간",
+                competition: .init(
+                    players: [
+                        .init(id: "1", pieceID: "1", name: "이해석", characterImageName: "rabbit"),
+                        .init(id: "2", pieceID: "2", name: "김용재", characterImageName: "dog")
+                    ],
+                    board: .init(
+                        theme: theme,
+                        blocks: Dictionary(uniqueKeysWithValues: (0..<25).map {
+                            let position = Position(index: $0)
+                            return (
+                                position,
+                                Block(
+                                    position: position,
+                                    theme: theme,
+                                    event: ($0 % 3 == .zero && $0 != .zero) ? [.item(.init(image: "", description: "한라봉 먹기"))] : []
+                                )
+                            )
+                        }),
+                        pieces: [
+                            Piece(id: "1", position: .init(index: .zero)),
+                            Piece(id: "2", position: .init(index: .zero))
+                        ]
+                    )
+                )
+            )
+            self.mission = mission
+            self.numberOfColumns = mission.board.numberOfColumns
+            self.numberOfRows = Int(ceil((Double(mission.board.totalBlockCount) / Double(mission.board.numberOfColumns))))
         }
     }
     
@@ -23,16 +62,6 @@ public struct HomeFeature {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                state.players = [
-                    Player(name: "이리율"),
-                    Player(name: "유지민"),
-                    Player(name: "정석준"),
-                    Player(name: "이창엽"),
-                    Player(name: "김송이"),
-                    Player(name: "김유정"),
-                    Player(name: "김용재"),
-                    Player(name: "이해석"),
-                ]
                 return .none
 
             }

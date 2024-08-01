@@ -15,6 +15,8 @@ public struct Mission: CustomStringConvertible {
     
     public let competition: Competition
     
+    public var board: Board { competition.board }
+    
     public init(description: String, competition: Competition) {
         self.description = description
         self.competition = competition

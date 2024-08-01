@@ -6,7 +6,9 @@
 //
 
 import SwiftUI
+import SharedDesignSystem
 import ComposableArchitecture
+import DomainBoardInterface
 
 public struct HomeView: View {
     
@@ -14,6 +16,8 @@ public struct HomeView: View {
     
     public init(store: StoreOf<HomeFeature>) {
         self.store = store
+        // TEST
+        SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
     
     public var body: some View {
@@ -24,108 +28,204 @@ public struct HomeView: View {
     }
 }
 
-private struct MainView: View {
+struct MainView: View {
     
     let store: StoreOf<HomeFeature>
-
+    
+    let horizontalPadding: CGFloat = 24
+    
+    func calcBlockWidth(reader: GeometryProxy) -> CGFloat {
+        (reader.size.width - horizontalPadding * 2) / 3
+    }
+    
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack {
-                // 상단 설정 및 타이틀
-                HStack {
-                    Circle()
-                        .fill(Color.gray)
-                        .frame(width: 50, height: 50)
-                    Spacer()
-                    Image(systemName: "gearshape.fill")
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                }
-                .padding()
-
-                // 타이틀
-                Text("헬스장 1시간 운동")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.bottom, 10)
-                
-                // 캐릭터 리스트
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack {
-                        ForEach(store.players) { player in
-                            VStack {
-                                Circle()
-                                    .fill(Color.gray)
-                                    .frame(width: 50, height: 50)
-                                Text(player.name)
-                                    .font(.caption)
+        VStack(spacing: 20) {
+            ZStack(alignment: .bottom) {
+                ZStack(alignment: .top) {
+                    GeometryReader { reader in
+                        ScrollView(showsIndicators: false) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                // 네비게이션
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("오늘 1명이 1칸 이동")
+                                        .font(.pretendard(kind: .heading_md, type: .bold))
+                                        .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                                    Text("나의 꾸준함 순위는? 1등")
+                                        .font(.pretendard(kind: .body_lg, type: .bold))
+                                        .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                                }
+                                .padding(.top, 28)
+                                .padding(.bottom, 16)
+                                // 게임 보드
+                                Grid(horizontalSpacing: 0, verticalSpacing: 0) {
+                                    ForEach(0..<store.numberOfRows, id: \.self) { row in
+                                        GridRow {
+                                            let range: [Int] = (row % 2 == 1)
+                                                ? Array((0..<store.numberOfColumns).reversed())
+                                                : Array((0..<store.numberOfColumns))
+                                            ForEach(range, id: \.self) { col in
+                                                let index = col + (row * store.numberOfColumns)
+                                                BlockView(
+                                                    block: store.mission.board.findBlock(by: Position(index: index)), 
+                                                    totalBlockCount: store.mission.board.totalBlockCount,
+                                                    numberOfColumns: store.mission.board.numberOfColumns,
+                                                    width: calcBlockWidth(reader: reader)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(.top, 4)
                             }
-                            .padding(.horizontal, 5)
+                            .padding(.top, 167)
+                            .padding(.horizontal, horizontalPadding)
+                            .padding(.bottom, 142)
                         }
                     }
+                    
+                    
+                    VStack(spacing: 0) {
+                        HStack(alignment: .center) {
+                            Image(systemName: "flag.fill")
+                                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                            Spacer()
+                            Text("매일 유산소 1시간")
+                                .font(.headline)
+                            Spacer()
+                            Image(systemName: "gearshape.fill")
+                                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                        }
+                        .padding(.horizontal, 24)
+                        .frame(height: 45)
+                        
+                        // 캐릭터 리스트 섹션
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 15) {
+                                ForEach(store.mission.competition.players) { player in
+                                    VStack {
+                                        Image(systemName: "person.circle.fill")
+                                            .resizable()
+                                            .frame(width: 50, height: 50)
+                                            .clipShape(Circle())
+                                        Text("\(player.name)")
+                                            .font(.caption)
+                                    }
+                                }
+                            }
+                            .padding(.top, 10)
+                            .padding(.bottom, 14)
+                            .padding(.horizontal, 23)
+                        }
+                        .frame(height: 122)
+                    }
+                    .background(.thinMaterial)
                 }
-                .padding(.bottom, 10)
-                .frame(height: 100)
                 
-                // 등수 및 미션 타이머
+                // 하단 버튼
                 VStack {
-                    Text("10등")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Text("1등을 따라잡기까지 2칸 남았어요!")
-                    Text("오후 미션 인증 마감까지 00:00 남았어요")
-                }
-                .padding()
-                .background(Color(UIColor.systemGray6))
-                .cornerRadius(10)
-                .padding(.bottom, 10)
-                
-                // 게임 보드
-                VStack(spacing: 0) {
-                    ForEach(0..<4) { row in
-                        HStack(spacing: 0) {
-                            ForEach(0..<3) { column in
-                                Rectangle()
-                                    .fill(getColor(row: row, column: column))
-                                    .frame(width: 100, height: 100)
-                                    //.overlay(self.getLabel(row: row, column: column))
-                            }
-                        }
+                    HStack {
+                        Image(systemName: "clock.fill")
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                        Text("미션 요일: 월 화 수 목 금 토")
+                            .font(.subheadline)
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
                     }
+                    .padding(.top, 18)
+                    .padding(.bottom, 4)
+                    
+                    Button(action: {
+                        // 버튼 액션 추가
+                    }) {
+                        Text("오늘 미션 인증하기")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                            .cornerRadius(30)
+                    }
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.bottom, 34)
                 }
-                .padding()
+                .background(.thinMaterial)
+                .cornerRadius(20, corners: [.topLeft, .topRight])
+                .frame(height: 60)
             }
         }
     }
-
-    // 각 칸의 색상 설정
-    func getColor(row: Int, column: Int) -> Color {
-        if row == 0 && column == 0 || row == 0 && column == 2 || row == 3 && column == 2 {
-            return Color.black
-        } else if row == 1 && column == 1 {
-            return Color.red
-        } else {
-            return Color.white
-        }
-    }
-
-    // 각 칸의 텍스트 설정
-//    func getLabel(row: Int, column: Int) -> some View {
-//        if row == 0 && column == 0 {
-//            return Text("START")
-//                .foregroundColor(.white)
-//                .bold()
-//        } else if row == 1 && column == 1 {
-//            return Text("장기말")
-//                .foregroundColor(.white)
-//                .bold()
-//        } else if row == 3 && column == 2 {
-//            return Text("GOAL")
-//                .foregroundColor(.white)
-//                .bold()
-//        } else {
-//            return EmptyView()
-//        }
-//    }
 }
 
+struct CellView: View {
+    let text: String
+    let color: Color
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(color)
+            Text(text)
+                .foregroundColor(.white)
+        }
+    }
+}
+
+struct BlockView: View {
+    
+    let block: Block?
+    
+    let totalBlockCount: Int
+    
+    let numberOfColumns: Int
+    
+    var title: String {
+        guard let block else { return "" }
+        switch block.kind(numberOfColumns: numberOfColumns, totalBlockCount: totalBlockCount) {
+        case .square:
+            return "⏹️"
+        case .firstQuadrant:
+            return "↘️"
+        case .secondQuadrant:
+            return "↙️"
+        case .thirdQuadrant:
+            return "↘️"
+        case .fourthQuardrant:
+            return "↙️"
+        }
+    }
+    
+    let width: CGFloat
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .stroke(Color.gray, lineWidth: 1)
+                .frame(width: width, height: width)
+            Text(title)
+        }
+    }
+}
+
+
+extension View {
+    
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
+
+struct RoundedCorner: Shape {
+    
+    let radius: CGFloat
+    
+    let corners: UIRectCorner
+
+    init(radius: CGFloat = .infinity, corners: UIRectCorner = .allCorners) {
+        self.radius = radius
+        self.corners = corners
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}

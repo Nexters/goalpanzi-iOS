@@ -16,7 +16,7 @@ public protocol BoardTheme {
     func conqueredBlockImageName(kind: BlockKind) -> String
 }
 
-extension BoardTheme {
+public extension BoardTheme {
     
     func normalBlockImageName(kind: BlockKind) -> String {
         switch kind {

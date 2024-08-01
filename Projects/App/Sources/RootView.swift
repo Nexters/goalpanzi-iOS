@@ -17,7 +17,6 @@ struct RootView: View {
     
     init(store: StoreOf<RootFeature>) {
         self.store = store
-        SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
     
     var body: some View {
