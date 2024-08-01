@@ -16,8 +16,19 @@ public struct Player: Identifiable {
     
     public var pieceID: PieceID
     
-    public init(id: PlayerID, pieceID: PieceID) {
+    public let name: String
+    
+    public let characterImageName: String
+    
+    public init(
+        id: PlayerID,
+        pieceID: PieceID,
+        name: String,
+        characterImageName: String
+    ) {
         self.id = id
         self.pieceID = pieceID
+        self.name = name
+        self.characterImageName = characterImageName
     }
 }

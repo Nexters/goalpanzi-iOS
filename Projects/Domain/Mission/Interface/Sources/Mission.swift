@@ -9,11 +9,14 @@ import Foundation
 import DomainBoardInterface
 import DomainCompetitionInterface
 
-public struct Mission {
+public struct Mission: CustomStringConvertible {
+    
+    public let description: String
     
     public let competition: Competition
     
-    public init(competition: Competition) {
+    public init(description: String, competition: Competition) {
+        self.description = description
         self.competition = competition
     }
 }

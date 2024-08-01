@@ -1,24 +1,21 @@
 //
-//  BoardTheme.swift
+//  JejuIslandBoardTheme.swift
 //  DomainBoardInterface
 //
-//  Created by Haeseok Lee on 7/26/24.
+//  Created by Haeseok Lee on 7/31/24.
 //
 
 import Foundation
 
-public protocol BoardTheme {
+public struct JejuIslandBoardTheme: BoardTheme {
     
-    var backgroundImageName: String { get }
+    public let backgroundImageName: String
     
-    func normalBlockImageName(kind: BlockKind) -> String
+    public init(backgroundImageName: String) {
+        self.backgroundImageName = backgroundImageName
+    }
     
-    func conqueredBlockImageName(kind: BlockKind) -> String
-}
-
-extension BoardTheme {
-    
-    func normalBlockImageName(kind: BlockKind) -> String {
+    public func conqueredBlockImageName(kind: BlockKind) -> String {
         switch kind {
         case .square:
             return ""
