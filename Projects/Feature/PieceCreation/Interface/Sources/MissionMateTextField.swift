@@ -19,28 +19,27 @@ struct MissionMateTextField: View {
     var body: some View {
         VStack(alignment: .leading) {
             TextField(placeholder, text: $text)
-                .padding(.leading, 10) // Padding on the left side for spacing
+                .font(.pretendard(kind: .body_lg, type: .medium))
+                .padding(.leading, 10)
                 .frame(height: 60)
-                .foregroundColor(
-                    text.isEmpty ? SharedDesignSystemAsset.Colors.gray3.swiftUIColor : SharedDesignSystemAsset.Colors.gray2.swiftUIColor
-                )
+                .foregroundColor(text.isEmpty ? MissionMateColor.gray3 : MissionMateColor.gray1)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(text.isEmpty ? SharedDesignSystemAsset.Colors.gray4.swiftUIColor : SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                        .fill(text.isEmpty ? MissionMateColor.gray5 : MissionMateColor.white)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(
-                            // completed가 아니면 red, empty이면 clear, empty x면 gray 4
-                            !isValidInputText ? Color.red : (text.isEmpty ? Color.clear : SharedDesignSystemAsset.Colors.gray4.swiftUIColor),
-                            lineWidth: 1
+                            !isValidInputText ? MissionMateColor.red : (text.isEmpty ? Color.clear : MissionMateColor.gray4),
+                            lineWidth: !isValidInputText ? 2 : 1
                         )
                 )
 
             if let noticeMessage {
                 Text(noticeMessage)
+                    .font(.pretendard(size: 14, type: .medium))
                     .foregroundColor(
-                        isValidInputText ? SharedDesignSystemAsset.Colors.gray3.swiftUIColor : SharedDesignSystemAsset.Colors.red.swiftUIColor
+                        isValidInputText ? MissionMateColor.gray3 : MissionMateColor.red
                     )
                     .padding(.top, 8)
             }
