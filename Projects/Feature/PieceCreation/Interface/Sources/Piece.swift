@@ -22,12 +22,12 @@ public enum Piece: CaseIterable {
         case .rabbit: "뚝심토끼"
         case .cat: "포기란없다냥"
         case .puppy: "끝까지해볼개"
-        case .bird: "하나만팬다"
-        case .panda: "할건끝내곰"
-        case .bear: "할때까지해뱁새"
+        case .bird: "할때까지해뱁새"
+        case .panda: "하나만팬다"
+        case .bear: "할건끝내곰"
         }
     }
-    
+
     public var roundImage: UIImage {
         switch self {
         case .rabbit: SharedDesignSystemAsset.Images.basicRoundRabbit.image
