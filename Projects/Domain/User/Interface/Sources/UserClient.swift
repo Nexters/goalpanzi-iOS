@@ -6,15 +6,12 @@
 //
 
 // 일단 import Piece를 Domain에 넣어두기
-import UIKit
+import Foundation
 
-import ComposableArchitecture
 import CoreNetworkInterface
 
 public struct UserClient {
-    
-    typealias NickName = String
-    
+        
     public var createProfile: @Sendable (_ nickName: String, Character) async throws -> EmptyResponse
 
     public init(createProfile: @escaping @Sendable (_ nickName: String, Character) async throws -> EmptyResponse) {

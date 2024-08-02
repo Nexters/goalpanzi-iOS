@@ -8,6 +8,8 @@
 import Foundation
 
 import ComposableArchitecture
+import DomainAuthInterface
+import DomainUser
 import DomainUserInterface
 
 @Reducer
@@ -32,20 +34,33 @@ public struct PieceCreationFeature: Reducer {
         case pieceImageTapped(Character)
         case saveButtonTapped
     }
-    
+
+    @Dependency(UserClient.self) var userClient
+
     public var body: some ReducerOf<Self> {
         BindingReducer()
 
         Reduce<State, Action> { state, action in
             switch action {
 
-            case .pieceImageTapped(let piece):
-                state.selectedPiece = piece
-                return .none
             case .binding(\.nickName):
                 state.isValidNickName = self.validate(state.nickName)
                 state.isAllCompleted = state.isValidNickName && !state.nickName.isEmpty
                 return .none
+            case .pieceImageTapped(let piece):
+                state.selectedPiece = piece
+                return .none
+            case .saveButtonTapped:
+                let nickName = state.nickName
+                let piece = state.selectedPiece
+                return .run { send in
+                    do {
+                        let response = try await userClient.createProfile(nickName, piece)
+                    } catch { // 닉네임
+                        print(error)
+                        print("닉네임이 중복되어있다.")
+                    }
+                }
             default:
                 return .none
             }

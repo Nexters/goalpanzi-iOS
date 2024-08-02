@@ -20,12 +20,12 @@ struct MissionMateRoundedButton: View {
         }) {
             Text(title)
                 .font(.pretendard(kind: .body_lg, type: .bold))
-                .foregroundColor(MissionMateColor.white)
+                .foregroundColor(.mmWhite)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 30)
-                .fill(isEnabled ? MissionMateColor.orange : MissionMateColor.disabled)
+                .fill(isEnabled ? Color.mmOrange : Color.mmDisabled)
         )
         .disabled(!isEnabled)
     }

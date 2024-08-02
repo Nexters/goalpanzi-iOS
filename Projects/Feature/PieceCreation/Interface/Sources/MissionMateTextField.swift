@@ -22,15 +22,15 @@ struct MissionMateTextField: View {
                 .font(.pretendard(kind: .body_lg, type: .medium))
                 .padding(.leading, 10)
                 .frame(height: 60)
-                .foregroundColor(text.isEmpty ? MissionMateColor.gray3 : MissionMateColor.gray1)
+                .foregroundColor(text.isEmpty ? .mmGray3 : .mmGray1)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(text.isEmpty ? MissionMateColor.gray5 : MissionMateColor.white)
+                        .fill(text.isEmpty ? Color.mmGray5 : Color.mmWhite)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(
-                            !isValidInputText ? MissionMateColor.red : (text.isEmpty ? Color.clear : MissionMateColor.gray4),
+                            !isValidInputText ? .mmRed : (text.isEmpty ? Color.clear : .mmGray4),
                             lineWidth: !isValidInputText ? 2 : 1
                         )
                 )
@@ -39,7 +39,7 @@ struct MissionMateTextField: View {
                 Text(noticeMessage)
                     .font(.pretendard(size: 14, type: .medium))
                     .foregroundColor(
-                        isValidInputText ? MissionMateColor.gray3 : MissionMateColor.red
+                        isValidInputText ? .mmGray3 : .mmRed
                     )
                     .padding(.top, 8)
             }

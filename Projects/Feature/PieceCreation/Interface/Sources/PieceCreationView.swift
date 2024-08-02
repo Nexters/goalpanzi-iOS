@@ -25,7 +25,7 @@ public struct PieceCreationView: View {
         VStack {
             Text("프로필 만들기")
                 .font(.pretendard(kind: .heading_sm, type: .bold))
-                .foregroundColor(MissionMateColor.gray1)
+                .foregroundColor(.mmGray1)
                 .padding(.top, 48)
 
             Spacer()
@@ -53,8 +53,8 @@ public struct PieceCreationView: View {
                                 .font(.pretendard(kind: .body_md, type:.bold))
                                 .frame(height: 24)
                                 .padding(.horizontal, 25)
-                                .foregroundColor(MissionMateColor.gray2)
-                                .background(MissionMateColor.gray5)
+                                .foregroundColor(.mmGray2)
+                                .background(Color.mmGray5)
                                 .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
                                 .cornerRadius(20)
                         }
