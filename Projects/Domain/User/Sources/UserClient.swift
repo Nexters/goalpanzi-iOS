@@ -13,6 +13,7 @@ import DomainUserInterface
 import CoreNetworkInterface
 
 extension UserClient: DependencyKey {
+
     public static let liveValue: Self = {
         
         return Self(

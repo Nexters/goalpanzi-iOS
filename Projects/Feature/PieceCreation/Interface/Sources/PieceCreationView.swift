@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 import SharedDesignSystem
+import DomainUserInterface
 
 public struct PieceCreationView: View {
     @Bindable public var store: StoreOf<PieceCreationFeature>
@@ -29,7 +30,7 @@ public struct PieceCreationView: View {
 
             Spacer()
 
-            Image(uiImage: store.selectedPiece.roundImage)
+            Image(uiImage: store.selectedPiece.roundImage.image)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 220, height: 220)
@@ -38,9 +39,9 @@ public struct PieceCreationView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     Spacer().frame(width: 16)
-                    ForEach(Piece.allCases, id: \.self) { piece in
+                    ForEach(Character.allCases, id: \.self) { piece in
                         VStack {
-                            Image(uiImage: piece.basicImage)
+                            Image(uiImage: piece.basicImage.image)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 100, height: 100)

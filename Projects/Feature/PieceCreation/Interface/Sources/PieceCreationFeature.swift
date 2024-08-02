@@ -8,6 +8,7 @@
 import Foundation
 
 import ComposableArchitecture
+import DomainUserInterface
 
 @Reducer
 public struct PieceCreationFeature: Reducer {
@@ -16,7 +17,7 @@ public struct PieceCreationFeature: Reducer {
     
     @ObservableState
     public struct State: Equatable {
-        var selectedPiece: Piece = .rabbit
+        var selectedPiece: Character = .rabbit
         var nickName: String = ""
 
         var isValidNickName: Bool = true
@@ -28,7 +29,7 @@ public struct PieceCreationFeature: Reducer {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
 
-        case pieceImageTapped(Piece)
+        case pieceImageTapped(Character)
         case saveButtonTapped
     }
     
