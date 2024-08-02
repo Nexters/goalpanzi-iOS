@@ -15,17 +15,19 @@ import CoreNetworkInterface
 extension UserClient: DependencyKey {
     public static let liveValue: Self = {
         
-        
         return Self(
             createProfile: { (nickname, piece) in
-                let requestDTO = CreatProfileRequestDTO(nickname: nickname, characterType: piece.rawValue)
-                let endpoint = Endpoint<Void>(
+                let requestDTO = CreatProfileRequestDTO(
+                    nickname: nickname,
+                    characterType: piece.rawValue
+                )
+                let endpoint = Endpoint<EmptyResponse>(
                     path: "api/auth/login/apple",
                     httpMethod: .post,
                     bodyParameters: requestDTO
                 )
-//                try await NetworkProvider.shared.sendRequest(endpoint)
-                
+                let response = try await NetworkProvider.shared.sendRequest(endpoint)
+                return response
             }
         )
     }()

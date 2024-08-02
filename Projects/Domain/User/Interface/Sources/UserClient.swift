@@ -9,6 +9,7 @@
 import UIKit
 
 import ComposableArchitecture
+import CoreNetworkInterface
 import SharedDesignSystem
 
 public enum Piece: String, CaseIterable {
@@ -58,10 +59,9 @@ public struct UserClient {
     
     typealias NickName = String
     
-    public var createProfile: @Sendable (_ nickName: String, Piece) async throws -> Void
-    
-    public init(createProfile: @escaping @Sendable (_ nickName: String, Piece) -> Void) {
+    public var createProfile: @Sendable (_ nickName: String, Piece) async throws -> EmptyResponse
+
+    public init(createProfile: @escaping @Sendable (_ nickName: String, Piece) async throws -> EmptyResponse) {
         self.createProfile = createProfile
     }
-    
 }
