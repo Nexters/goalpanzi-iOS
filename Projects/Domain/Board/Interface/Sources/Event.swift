@@ -15,10 +15,12 @@ public extension Event {
     
     struct ItemInfo: CustomStringConvertible {
         public let image: String
+        public let position: Position
         public let description: String
         
-        public init(image: String, description: String) {
+        public init(image: String, position: Position, description: String) {
             self.image = image
+            self.position = position
             self.description = description
         }
     }

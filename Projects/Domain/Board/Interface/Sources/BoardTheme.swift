@@ -6,30 +6,46 @@
 //
 
 import Foundation
+import SharedDesignSystem
 
 public protocol BoardTheme {
     
-    var backgroundImageName: String { get }
+    var backgroundImageAsset: SharedDesignSystemImages { get }
     
-    func normalBlockImageName(kind: BlockKind) -> String
-    
-    func conqueredBlockImageName(kind: BlockKind) -> String
+    var blockTheme: any BlockTheme { get }
 }
 
-public extension BoardTheme {
+public protocol BlockTheme {
     
-    func normalBlockImageName(kind: BlockKind) -> String {
-        switch kind {
-        case .square:
-            return ""
-        case .firstQuadrant:
-            return ""
-        case .secondQuadrant:
-            return ""
-        case .thirdQuadrant:
-            return ""
-        case .fourthQuardrant:
-            return ""
+    func normalImageAsset(kind: BlockKind, disabled: Bool) -> SharedDesignSystemImages
+    
+    func conqueredImageAsset(kind: BlockKind) -> SharedDesignSystemImages
+}
+
+public extension BlockTheme {
+    
+    func normalImageAsset(kind: BlockKind, disabled: Bool = false) -> SharedDesignSystemImages {
+        switch (kind, disabled) {
+        case (.square, true):
+            return SharedDesignSystemAsset.Images.midDisabled
+        case (.square, false):
+            return SharedDesignSystemAsset.Images.mid
+        case (.firstQuadrant, true):
+            return SharedDesignSystemAsset.Images.rightUpDisabled
+        case (.firstQuadrant, false):
+            return SharedDesignSystemAsset.Images.rightUp
+        case (.secondQuadrant, true):
+            return SharedDesignSystemAsset.Images.leftUpDisabled
+        case (.secondQuadrant, false):
+            return SharedDesignSystemAsset.Images.leftUp
+        case (.thirdQuadrant, true):
+            return SharedDesignSystemAsset.Images.leftDownDisabled
+        case (.thirdQuadrant, false):
+            return SharedDesignSystemAsset.Images.leftDown
+        case (.fourthQuardrant, true):
+            return SharedDesignSystemAsset.Images.leftDownDisabled
+        case (.fourthQuardrant, false):
+            return SharedDesignSystemAsset.Images.rightDown
         }
     }
 }

@@ -6,27 +6,38 @@
 //
 
 import Foundation
+import SharedDesignSystem
 
 public struct JejuIslandBoardTheme: BoardTheme {
     
-    public let backgroundImageName: String
+    public let blockTheme: any BlockTheme
     
-    public init(backgroundImageName: String) {
-        self.backgroundImageName = backgroundImageName
+    public var backgroundImageAsset: SharedDesignSystemImages {
+        SharedDesignSystemAsset.Images.jejuBackground
     }
     
-    public func conqueredBlockImageName(kind: BlockKind) -> String {
+    public init(blockTheme: JejuIslandBlockTheme = .init()) {
+        self.blockTheme = blockTheme
+    }
+    
+
+public struct JejuIslandBlockTheme: BlockTheme {
+    
+    public init() {}
+    
+    public func conqueredImageAsset(kind: BlockKind) -> SharedDesignSystemImages {
         switch kind {
         case .square:
-            return ""
+            return SharedDesignSystemAsset.Images.jejuMid
         case .firstQuadrant:
-            return ""
+            return SharedDesignSystemAsset.Images.jejuRightUp
         case .secondQuadrant:
-            return ""
+            return SharedDesignSystemAsset.Images.jejuLeftUp
         case .thirdQuadrant:
-            return ""
+            return SharedDesignSystemAsset.Images.jejuLeftDown
         case .fourthQuardrant:
-            return ""
+            return SharedDesignSystemAsset.Images.jejuRightDown
         }
     }
+}
 }

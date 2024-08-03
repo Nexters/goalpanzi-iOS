@@ -15,20 +15,52 @@ public struct Board {
     
     public var numberOfColumns: Int
     
+    public var numberOfRows: Int {
+        Int(ceil((Double(totalBlockCount) / Double(numberOfColumns))))
+    }
+    
     public var pieces: Set<Piece>
     
-    public var totalBlockCount: Int { blocks.count }
+    public var events: [Event]
+    
+    public let totalBlockCount: Int
+    
+    public var conqueredIndex: Int
+    
+    public var isDisabled: Bool
     
     public init(
         theme: any BoardTheme,
-        blocks: [Position: Block],
+        events: [Event],
         pieces: Set<Piece>,
-        numberOfColumns : Int = 3
+        totalBlockCount: Int,
+        numberOfColumns : Int = 3,
+        conqueredIndex: Int = .zero,
+        isDisabled: Bool = false
     ) {
         self.theme = theme
-        self.blocks = blocks
+        self.blocks = (0..<totalBlockCount).reduce([:], { partialResult, index in
+            var newResult = partialResult
+            let position = Position(index: index)
+            newResult[position] = Block(
+                position: position,
+                kind: Self.blockKind(
+                    position: position,
+                    totalBlockCount: totalBlockCount,
+                    numberOfColumns: numberOfColumns
+                ),
+                theme: theme.blockTheme,
+                isLastBlock: index == totalBlockCount - 1,
+                isConquered: index <= conqueredIndex
+            )
+            return newResult
+        })
         self.pieces = pieces
+        self.events = events
+        self.totalBlockCount = totalBlockCount
         self.numberOfColumns = numberOfColumns
+        self.conqueredIndex = conqueredIndex
+        self.isDisabled = isDisabled
     }
     
     public func findBlock(by piece: Piece) -> Block? {
@@ -81,5 +113,36 @@ public struct Board {
         }
         
         return nil
+    }
+
+    public static func blockKind(position: Position, totalBlockCount: Int, numberOfColumns: Int) -> BlockKind {
+        
+        let isStartIndex = position == .zero
+        let isLastIndex = position.index == totalBlockCount - 1
+        
+        if isStartIndex || isLastIndex {
+            return .square
+        }
+        
+        let cycle: Int = (numberOfColumns * 2)
+        guard cycle != .zero else { return .square }
+        
+        if position.index % cycle == numberOfColumns - 1 {
+            return .firstQuadrant
+        }
+        
+        if position.index % cycle == numberOfColumns {
+            return .fourthQuardrant
+        }
+        
+        if position.index % cycle == cycle - 1 {
+            return .secondQuadrant
+        }
+        
+        if position.index % cycle == .zero {
+            return .thirdQuadrant
+        }
+        
+        return .square
     }
 }

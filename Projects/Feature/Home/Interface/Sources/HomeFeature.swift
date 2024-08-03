@@ -12,45 +12,31 @@ public struct HomeFeature {
     
     @ObservableState
     public struct State {
-        
         public var mission: Mission
-        
-        public var numberOfColumns: Int
-        
-        public var numberOfRows: Int
+        public var competition: Competition
         
         public init() {
-            let theme: JejuIslandBoardTheme = JejuIslandBoardTheme(backgroundImageName: "jejuisland")
-            let mission: Mission = .init(
-                description: "매일 유산소 1시간",
-                competition: .init(
-                    players: [
-                        .init(id: "1", pieceID: "1", name: "이해석", characterImageName: "rabbit"),
-                        .init(id: "2", pieceID: "2", name: "김용재", characterImageName: "dog")
+            let theme: JejuIslandBoardTheme = .init()
+            let mission: Mission = .init(description: "매일 유산소 1시간")
+            let competition: Competition = .init(
+                players: [
+                    .init(id: "1", pieceID: "1", name: "이해석", characterImageName: "rabbit", isMe: true),
+                    .init(id: "2", pieceID: "2", name: "김용재", characterImageName: "dog")
+                ],
+                board: .init(
+                    theme: theme,
+                    events: [.item(.init(image: "", position: Position(index: 2), description: "단감 먹기"))],
+                    pieces: [
+                        .init(id: "1", position: Position(index: 0)),
+                        .init(id: "2", position: Position(index: 1))
                     ],
-                    board: .init(
-                        theme: theme,
-                        blocks: Dictionary(uniqueKeysWithValues: (0..<25).map {
-                            let position = Position(index: $0)
-                            return (
-                                position,
-                                Block(
-                                    position: position,
-                                    theme: theme,
-                                    event: ($0 % 3 == .zero && $0 != .zero) ? [.item(.init(image: "", description: "한라봉 먹기"))] : []
-                                )
-                            )
-                        }),
-                        pieces: [
-                            Piece(id: "1", position: .init(index: .zero)),
-                            Piece(id: "2", position: .init(index: .zero))
-                        ]
-                    )
+                    totalBlockCount: 25,
+                    conqueredIndex: 11,
+                    isDisabled: false
                 )
             )
             self.mission = mission
-            self.numberOfColumns = mission.board.numberOfColumns
-            self.numberOfRows = Int(ceil((Double(mission.board.totalBlockCount) / Double(mission.board.numberOfColumns))))
+            self.competition = competition
         }
     }
     

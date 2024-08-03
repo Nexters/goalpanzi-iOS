@@ -20,15 +20,19 @@ public struct Player: Identifiable {
     
     public let characterImageName: String
     
+    public var isMe: Bool
+    
     public init(
         id: PlayerID,
         pieceID: PieceID,
         name: String,
-        characterImageName: String
+        characterImageName: String,
+        isMe: Bool = false
     ) {
         self.id = id
         self.pieceID = pieceID
         self.name = name
         self.characterImageName = characterImageName
+        self.isMe = isMe
     }
 }
