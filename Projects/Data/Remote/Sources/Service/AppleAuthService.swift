@@ -11,10 +11,13 @@ import DomainAuthInterface
 import CoreNetworkInterface
 import ComposableArchitecture
 import SharedUtil
+import Alamofire
 
 extension AppleAuthService: DependencyKey {
     
     public static let liveValue: Self = {
+        let interceptor = AuthInterceptor()
+
         return Self(
             signIn: {
                 let identityToken = try await AppleAuthProvider().signIn()
@@ -23,7 +26,7 @@ extension AppleAuthService: DependencyKey {
                     httpMethod: .post,
                     bodyParameters: SignInRequestDTO(identityToken: identityToken)
                 )
-                let response = try await NetworkProvider.shared.sendRequest(endpoint)
+                let response = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
                 return response.toDomain
             }
         )

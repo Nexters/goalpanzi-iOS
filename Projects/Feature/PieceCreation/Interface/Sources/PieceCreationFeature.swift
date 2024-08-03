@@ -7,10 +7,13 @@
 
 import Foundation
 
-import ComposableArchitecture
 import DomainAuthInterface
 import DomainUser
 import DomainUserInterface
+import DataRemote
+import DataRemoteInterface
+
+import ComposableArchitecture
 
 @Reducer
 public struct PieceCreationFeature: Reducer {
@@ -21,6 +24,7 @@ public struct PieceCreationFeature: Reducer {
     public struct State: Equatable {
         var selectedPiece: Character = .rabbit
         var nickName: String = ""
+        var noticeMessage: String? = "1~6자, 한글, 영문 또는 숫자를 입력하세요."
 
         var isValidNickName: Bool = true
         var isAllCompleted: Bool = false
@@ -33,9 +37,12 @@ public struct PieceCreationFeature: Reducer {
 
         case pieceImageTapped(Character)
         case saveButtonTapped
+
+        case _setDuplicatedNicknameError
     }
 
     @Dependency(UserClient.self) var userClient
+    @Dependency(UserService.self) var userService
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -44,6 +51,7 @@ public struct PieceCreationFeature: Reducer {
             switch action {
 
             case .binding(\.nickName):
+                state.noticeMessage = "1~6자, 한글, 영문 또는 숫자를 입력하세요."
                 state.isValidNickName = self.validate(state.nickName)
                 state.isAllCompleted = state.isValidNickName && !state.nickName.isEmpty
                 return .none
@@ -55,12 +63,20 @@ public struct PieceCreationFeature: Reducer {
                 let piece = state.selectedPiece
                 return .run { send in
                     do {
-                        let response = try await userClient.createProfile(nickName, piece)
-                    } catch { // 닉네임
-                        print(error)
-                        print("닉네임이 중복되어있다.")
+                        try await userClient.createProfile(userService, nickName, piece)
+                    } catch let error as UserClientError { // 닉네임
+                        switch error {
+                        case .duplicateNickName:
+                            await send(._setDuplicatedNicknameError)
+                        case .networkDisabled:
+                            print("Network 에러")
+                        }
                     }
                 }
+            case ._setDuplicatedNicknameError:
+                state.noticeMessage = "이미 존재하는 회원 닉네임입니다."
+                state.isValidNickName = false
+                return .none
             default:
                 return .none
             }

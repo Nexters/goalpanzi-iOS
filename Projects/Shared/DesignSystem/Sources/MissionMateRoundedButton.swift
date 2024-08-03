@@ -1,20 +1,24 @@
 //
 //  MissionMateRoundedButton.swift
-//  FeaturePieceCreationInterface
+//  SharedDesignSystemInterface
 //
-//  Created by Miro on 8/1/24.
+//  Created by Miro on 8/3/24.
 //
 
 import SwiftUI
 
-import SharedDesignSystem
-
-struct MissionMateRoundedButton: View {
+public struct MissionMateRoundedButton: View {
     @Binding var isEnabled: Bool
-    let title: String
-    let action: () -> Void
+    public let title: String
+    public let action: () -> Void
 
-    var body: some View {
+    public init(isEnabled: Binding<Bool>, title: String, action: @escaping () -> Void) {
+        self._isEnabled = isEnabled
+        self.title = title
+        self.action = action
+    }
+
+    public var body: some View {
         Button(action: {
             action()
         }) {

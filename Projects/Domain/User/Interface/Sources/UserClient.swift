@@ -9,12 +9,20 @@
 import Foundation
 
 import CoreNetworkInterface
+import Alamofire
+
+public enum UserClientError: Error {
+    case duplicateNickName
+    case networkDisabled
+}
 
 public struct UserClient {
-        
-    public var createProfile: @Sendable (_ nickName: String, Character) async throws -> EmptyResponse
 
-    public init(createProfile: @escaping @Sendable (_ nickName: String, Character) async throws -> EmptyResponse) {
+    public typealias Nickname = String
+
+    public var createProfile: @Sendable (_ userService: UserServiceable, Nickname, Character) async throws -> Void
+
+    public init(createProfile: @escaping @Sendable (_ userService: UserServiceable, Nickname, Character) async throws -> Void) {
         self.createProfile = createProfile
     }
 }

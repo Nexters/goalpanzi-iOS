@@ -9,7 +9,8 @@ let project = Project.makeModule(
             interface: .PieceCreation,
             factory: .init(
                 dependencies: [
-                    .domain
+                    .domain,
+                    .data
                 ]
             )
         ),

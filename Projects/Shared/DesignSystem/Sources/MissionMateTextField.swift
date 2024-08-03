@@ -1,22 +1,27 @@
 //
 //  MissionMateTextField.swift
-//  FeaturePieceCreationInterface
+//  SharedDesignSystemInterface
 //
-//  Created by Miro on 7/31/24.
+//  Created by Miro on 8/3/24.
 //
 
 import SwiftUI
 
-import SharedDesignSystem
+public struct MissionMateTextField: View {
+    @Binding public var text: String
+    @Binding public var isValidInputText: Bool
+    @Binding public var noticeMessage: String?
 
-struct MissionMateTextField: View {
-    @Binding var text: String
-    @Binding var isValidInputText: Bool
+    public let placeholder: String
 
-    let placeholder: String
-    var noticeMessage: String? = nil
+    public init(text: Binding<String>, isValidInputText: Binding<Bool>, noticeMessage: Binding<String?>, placeholder: String) {
+        self._text = text
+        self._isValidInputText = isValidInputText
+        self._noticeMessage = noticeMessage
+        self.placeholder = placeholder
+    }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading) {
             TextField(placeholder, text: $text)
                 .font(.pretendard(kind: .body_lg, type: .medium))

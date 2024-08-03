@@ -7,12 +7,15 @@
 
 import SwiftUI
 
-import ComposableArchitecture
 import SharedDesignSystem
+import SharedDesignSystemInterface
 import DomainUserInterface
+
+import ComposableArchitecture
 
 public struct PieceCreationView: View {
     @Bindable public var store: StoreOf<PieceCreationFeature>
+
     @FocusState private var isTextFieldFocused: Bool
     @ObservedObject private var keyboardResponder = KeyboardResponder()
 
@@ -68,8 +71,8 @@ public struct PieceCreationView: View {
             MissionMateTextField(
                 text: $store.nickName,
                 isValidInputText: $store.isValidNickName,
-                placeholder: "닉네임 입력",
-                noticeMessage: "1~6자, 한글, 영문 또는 숫자를 입력하세요."
+                noticeMessage: $store.noticeMessage,
+                placeholder: "닉네임 입력"
             )
             .focused($isTextFieldFocused)
             .padding(.horizontal, 24)
@@ -77,7 +80,7 @@ public struct PieceCreationView: View {
             Spacer()
 
             MissionMateRoundedButton(isEnabled: $store.isAllCompleted, title: "저장하기") {
-                print("Button Tapped")
+                store.send(.saveButtonTapped)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 60)
@@ -85,7 +88,6 @@ public struct PieceCreationView: View {
             .padding(.bottom, 36)
         }
         .padding(.bottom, keyboardResponder.currentHeight)
-        .edgesIgnoringSafeArea(.bottom)
         .animation(.easeOut(duration: 0.3), value: keyboardResponder.currentHeight)
         .onTapGesture {
             isTextFieldFocused = false

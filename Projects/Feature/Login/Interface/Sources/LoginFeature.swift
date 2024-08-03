@@ -6,10 +6,13 @@
 //
 
 import Foundation
+
 import DomainAuth
 import DomainAuthInterface
 import DataRemote
 import DataRemoteInterface
+import CoreKeychainInterface
+
 import ComposableArchitecture
 import Alamofire
 
@@ -38,7 +41,8 @@ public struct LoginFeature: Reducer {
                 return .run { send in
                     do {
                         let response = try await authClient.signInWithApple(appleAuthService)
-                        print(response)
+                        KeychainProvider.shared.save(response.accessToken, key: .accessToken)
+                        KeychainProvider.shared.save(response.accessToken, key: .accessToken)
                     } catch {
                         print("애플 로그인 에러")
                     }

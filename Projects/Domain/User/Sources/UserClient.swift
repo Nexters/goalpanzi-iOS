@@ -7,28 +7,17 @@
 
 import Foundation
 
-//import ComposableArchitecture
-
 import DomainUserInterface
 import CoreNetworkInterface
+
 import ComposableArchitecture
+import Alamofire
 
 extension UserClient: DependencyKey {
-
     public static let liveValue: Self = {
         return Self(
-            createProfile: { (nickname, piece) in
-                let requestDTO = CreatProfileRequestDTO(
-                    nickname: nickname,
-                    characterType: piece.rawValue
-                )
-                let endpoint = Endpoint<EmptyResponse>(
-                    path: "api/auth/login/apple",
-                    httpMethod: .post,
-                    bodyParameters: requestDTO
-                )
-                let response = try await NetworkProvider.shared.sendRequest(endpoint)
-                return response
+            createProfile: { userService, nickname, character in
+                return try await userService.createProfile(nickname, character)
             }
         )
     }()

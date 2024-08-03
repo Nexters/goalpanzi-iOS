@@ -14,7 +14,16 @@ public struct KeychainProvider {
 
     private init() {}
 
-    public func create(_ value: String, key: KeychainKey) {
+    public func save(_ value: String, key: KeychainKey) {
+        let data = value.data(using: .utf8)
+        if let _ = self.read(key) {
+            self.update(data, key: key)
+            return
+        }
+        self.create(value, key:key)
+    }
+
+    private func create(_ value: String, key: KeychainKey) {
         guard let data = value.data(using: .utf8) else { return }
 
         let query: NSDictionary = [
@@ -48,7 +57,7 @@ public struct KeychainProvider {
         return String(data: data, encoding: .utf8)
     }
 
-    public func update(_ data: Data?, key: KeychainKey) {
+    private func update(_ data: Data?, key: KeychainKey) {
         guard let data else { return }
 
         let query: NSDictionary = [
