@@ -26,7 +26,8 @@ struct RootFeature {
         case destination(PresentationAction<RootDestination.Action>)
         case path(StackActionOf<RootPath>)
         case didLoad
-        case goToLogin
+        case setRootToLogin
+        case pushLogin
     }
     
     var body: some ReducerOf<Self> {
@@ -37,7 +38,7 @@ struct RootFeature {
                     do {
                         try await Task.sleep(2_000_000_000)
                         print("task sleep end")
-                        await send(.goToLogin)
+                        await send(.setRootToLogin)
                     } catch {
                         print("!!!")
                     }
@@ -48,11 +49,24 @@ struct RootFeature {
             case .path:
                 return .none
                 
-            case .goToLogin:
+            case .setRootToLogin:
                 state.destination = .login(LoginFeature.State())
+                return .run { send in
+                    do {
+                        try await Task.sleep(2_000_000_000)
+                        print("task sleep end")
+                        await send(.pushLogin)
+                    } catch {
+                        print("!!!")
+                    }
+                }
+                
+            case .pushLogin:
+                state.path.append(.login(LoginFeature.State()))
                 return .none
             }
         }
         .ifLet(\.$destination, action: \.destination)
+        .forEach(\.path, action: \.path)
     }
 }
