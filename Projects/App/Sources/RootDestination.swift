@@ -1,8 +1,8 @@
 //
 //  RootPath.swift
-//  MissionMate
+//  Feature
 //
-//  Created by Haeseok Lee on 8/3/24.
+//  Created by Haeseok Lee on 7/28/24.
 //
 
 import Foundation
@@ -11,6 +11,6 @@ import FeatureLoginInterface
 
 
 @Reducer
-enum RootPath {
+enum RootDestination {
     case login(LoginFeature)
 }
