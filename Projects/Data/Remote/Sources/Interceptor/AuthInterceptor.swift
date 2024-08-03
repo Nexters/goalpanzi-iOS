@@ -16,7 +16,6 @@ final class AuthInterceptor: NetworkRequestInterceptor {
 
     override func reissueTokens(completion: @escaping (RetryResult) -> Void) {
         guard let refreshToken = KeychainProvider.shared.read(.refreshToken) else { return }
-        let requestDTO = TokenReissueRequestDTO(refreshToken: refreshToken)
 
         let endPoint = Endpoint<TokenReissueResponseDTO>(
             path: "api/auth/token:reissue", httpMethod: .post, bodyParameters: TokenReissueRequestDTO(refreshToken: refreshToken))
