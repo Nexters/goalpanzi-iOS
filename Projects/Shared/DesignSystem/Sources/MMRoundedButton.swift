@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct MissionMateRoundedButton: View {
+public struct MMRoundedButton: View {
     @Binding var isEnabled: Bool
     public let title: String
     public let action: () -> Void

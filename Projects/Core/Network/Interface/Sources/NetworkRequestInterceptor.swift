@@ -9,9 +9,9 @@ import Foundation
 import Alamofire
 import CoreKeychainInterface
 
-open class NetworkRequestInterceptor: NSObject, RequestInterceptor {
+open class NetworkRequestInterceptor: RequestInterceptor {
 
-    public override init () {}
+    public init () {}
 
     public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
         var urlRequest = urlRequest
@@ -31,15 +31,8 @@ open class NetworkRequestInterceptor: NSObject, RequestInterceptor {
             completion(.doNotRetryWithError(error))
             return
         }
-        self.deleteAllTokens()
         self.reissueTokens(completion: completion)
     }
 
     open func reissueTokens(completion: @escaping (RetryResult) -> Void) {}
-
-    private func deleteAllTokens() {
-        KeychainProvider.shared.delete(.accessToken)
-        KeychainProvider.shared.delete(.refreshToken)
-    }
-
 }

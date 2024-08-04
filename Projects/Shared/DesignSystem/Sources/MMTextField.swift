@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct MissionMateTextField: View {
+public struct MMTextField: View {
     @Binding public var text: String
     @Binding public var isValidInputText: Bool
     @Binding public var noticeMessage: String?

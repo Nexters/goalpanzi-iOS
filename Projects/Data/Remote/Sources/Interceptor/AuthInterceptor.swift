@@ -28,8 +28,15 @@ final class AuthInterceptor: NetworkRequestInterceptor {
 
                 completion(.retry)
             } catch {
+                // TODO: 다시 로그인할 수 있도록 화면 이동
+                self.deleteAllTokens()
                 completion(.doNotRetryWithError(error))
             }
         }
+    }
+
+    private func deleteAllTokens() {
+        KeychainProvider.shared.delete(.accessToken)
+        KeychainProvider.shared.delete(.refreshToken)
     }
 }

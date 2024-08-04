@@ -68,7 +68,7 @@ public struct PieceCreationView: View {
 
             Spacer()
 
-            MissionMateTextField(
+            MMTextField(
                 text: $store.nickName,
                 isValidInputText: $store.isValidNickName,
                 noticeMessage: $store.noticeMessage,
@@ -79,7 +79,7 @@ public struct PieceCreationView: View {
 
             Spacer()
 
-            MissionMateRoundedButton(isEnabled: $store.isAllCompleted, title: "저장하기") {
+            MMRoundedButton(isEnabled: $store.isAllCompleted, title: "저장하기") {
                 store.send(.saveButtonTapped)
             }
             .frame(maxWidth: .infinity)
