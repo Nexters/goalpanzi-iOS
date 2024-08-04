@@ -17,12 +17,18 @@ public protocol BoardTheme {
 
 public protocol BlockTheme {
     
+    var startImageAsset: SharedDesignSystemImages { get }
+    
     func normalImageAsset(kind: BlockKind, disabled: Bool) -> SharedDesignSystemImages
     
     func conqueredImageAsset(kind: BlockKind) -> SharedDesignSystemImages
 }
 
 public extension BlockTheme {
+    
+    var startImageAsset: SharedDesignSystemImages {
+        SharedDesignSystemAsset.Images.start
+    }
     
     func normalImageAsset(kind: BlockKind, disabled: Bool = false) -> SharedDesignSystemImages {
         switch (kind, disabled) {
@@ -43,7 +49,7 @@ public extension BlockTheme {
         case (.thirdQuadrant, false):
             return SharedDesignSystemAsset.Images.leftDown
         case (.fourthQuardrant, true):
-            return SharedDesignSystemAsset.Images.leftDownDisabled
+            return SharedDesignSystemAsset.Images.rightDownDisabled
         case (.fourthQuardrant, false):
             return SharedDesignSystemAsset.Images.rightDown
         }

@@ -15,14 +15,21 @@ public struct Competition {
     
     public var certifications: [PlayerID: Certification]
     
+    public var info: [InfoKey: String]
+    
     public var board: Board
     
-    public init(players: [Player], board: Board) {
+    public init(players: [Player], board: Board, info: [InfoKey: String] = [:]) {
         self.players = players
         self.certifications = Dictionary(uniqueKeysWithValues: players.map {
             ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
         })
         self.board = board
+        self.info = info
+    }
+    
+    public func findMe() -> Player? {
+        return players.first(where: { $0.isMe == true })
     }
     
     public func findPlayer(by playerID: PlayerID) -> Player? {
@@ -71,5 +78,13 @@ public struct Competition {
             newResult[playerID] = certification
             return newResult
         }
+    }
+}
+
+public extension Competition {
+    
+    enum InfoKey {
+        case title
+        case subtitle
     }
 }

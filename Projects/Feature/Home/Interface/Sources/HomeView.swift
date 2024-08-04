@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
 import DomainBoardInterface
+import DomainPlayerInterface
 
 public struct HomeView: View {
     
@@ -16,7 +18,6 @@ public struct HomeView: View {
     
     public init(store: StoreOf<HomeFeature>) {
         self.store = store
-        // TEST
         SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
     
@@ -28,14 +29,12 @@ public struct HomeView: View {
     }
 }
 
-struct MainView: View {
+private struct MainView: View {
     
     let store: StoreOf<HomeFeature>
     
-    let horizontalPadding: CGFloat = 24
-    
-    func calcBlockWidth(reader: GeometryProxy) -> CGFloat {
-        (reader.size.width - horizontalPadding * 2) / 3
+    enum Constant {
+        static let horizontalPadding: CGFloat = 24
     }
     
     var body: some View {
@@ -48,56 +47,88 @@ struct MainView: View {
                     }
                 }
                 HomeBottomView(store: store)
+                    .isHidden(store.competition.board.isDisabled)
             }
         }
     }
     
     func HomeBottomView(store: StoreOf<HomeFeature>) -> some View {
-        // 하단 버튼
         VStack {
-            HStack {
-                Image(systemName: "clock.fill")
+            HStack(spacing: 8){
+                SharedDesignSystemAsset.Images.timeFill.swiftUIImage
+                    .resizable()
+                    .frame(width: 24, height: 24)
                     .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
-                Text("미션 요일: 월 화 수 목 금 토")
-                    .font(.subheadline)
+                Text(store.certificationButtonState.info)
+                    .font(.pretendard(kind: .body_lg, type: .bold))
                     .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
             }
-            .padding(.top, 18)
-            .padding(.bottom, 4)
+            .padding(.top, 16)
+            .padding(.bottom, 6)
             
             Button(action: {
-                // 버튼 액션 추가
+                store.send(.didTapCertificationButton)
             }) {
-                Text("오늘 미션 인증하기")
-                    .foregroundColor(.white)
-                    .padding()
+                Text(store.certificationButtonState.title)
+                    .font(.pretendard(kind: .body_lg, type: .bold))
+                    .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                    .frame(height: 60)
                     .frame(maxWidth: .infinity)
-                    .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                    .background(
+                        store.certificationButtonState.isEnabled
+                        ? SharedDesignSystemAsset.Colors.orange.swiftUIColor
+                        : SharedDesignSystemAsset.Colors.disabled.swiftUIColor
+                    )
                     .cornerRadius(30)
             }
-            .padding(.horizontal, horizontalPadding)
-            .padding(.bottom, 34)
+            .padding(.horizontal, Constant.horizontalPadding)
+            .padding(.bottom, 36)
+            .disabled(!store.certificationButtonState.isEnabled)
         }
-        .background(.thinMaterial)
+        .background(.ultraThinMaterial)
         .cornerRadius(20, corners: [.topLeft, .topRight])
         .frame(height: 60)
     }
     
     func CompetitionContentView(reader: GeometryProxy, store: StoreOf<HomeFeature>) -> some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 4) {
-                CompetitionInfoView()
-                BoardView(reader: reader, store: store)
+        ZStack {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 4) {
+                    CompetitionInfoView(store: store)
+                    BoardView(reader: reader, store: store)
+                }
+                .padding(.top, 167)
+                .padding(.horizontal, Constant.horizontalPadding)
+                .padding(.bottom, 142)
             }
-            .padding(.top, 167)
-            .padding(.horizontal, horizontalPadding)
-            .padding(.bottom, 142)
+            .background {
+                store.competition.board.theme.backgroundImageAsset.swiftUIImage
+                   .resizable()
+                   .scaledToFill()
+                   .edgesIgnoringSafeArea(.all)
+            }
+            .scrollDisabled(store.competition.board.isDisabled)
+            
+            if store.competition.board.isDisabled {
+                NotStartedInfoView(me: store.competition.findMe())
+                    .padding(.top, 167)
+            }
         }
-        .background {
-            store.competition.board.theme.backgroundImageAsset.swiftUIImage
-               .resizable()
-               .scaledToFill()
-               .edgesIgnoringSafeArea(.all)
+    }
+    
+    func NotStartedInfoView(me: Player?) -> some View {
+        
+        ZStack {
+            me?.character.imageAsset.swiftUIImage
+                .resizable()
+                .frame(width: 240, height: 240)
+                .offset(y: 51)
+            
+            SharedDesignSystemAsset.Images.notStartedInfoToolTip.swiftUIImage
+                .resizable()
+                .frame(width: 276, height: 96)
+                .offset(y: -110)
+            
         }
     }
     
@@ -106,64 +137,81 @@ struct MainView: View {
             NavigationBarView()
             StoryView()
         }
-        .background(.thinMaterial)
+        .background(.ultraThinMaterial)
     }
     
     func NavigationBarView() -> some View {
-        HStack(alignment: .center) {
-            SharedDesignSystemAsset.Images.flagFill.swiftUIImage
-                .resizable()
-                .frame(width: 28, height: 28)
-                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
-            Spacer()
-            Text("매일 유산소 1시간")
+        ZStack {
+            HStack(alignment: .center) {
+                Button(action: {
+                    store.send(.didTapMissionInfoButton)
+                }) {
+                    SharedDesignSystemAsset.Images.flagFill.swiftUIImage
+                        .resizable()
+                        .frame(width: 28, height: 28)
+                        .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                }
+                .overlay {
+                    SharedDesignSystemAsset.Images.missionInfoGuideToolTip.swiftUIImage
+                        .resizable()
+                        .frame(width: 161, height: 72)
+                        .offset(x: 50, y: 50)
+                        .isHidden(store.isMissionInfoGuideToolTipShowed)
+                        .onTapGesture {
+                            store.send(.didTapMissionInfoGuideToolTip)
+                        }
+                }
+                
+                Spacer()
+                
+                HStack(spacing: 12) {
+                    Button(action: {
+                        store.send(.didTapInvitationInfoButton)
+                    }) {
+                        SharedDesignSystemAsset.Images.userAddFill.swiftUIImage
+                            .resizable()
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                    }
+                    .isHidden(!store.competition.board.isDisabled)
+                    .overlay {
+                        SharedDesignSystemAsset.Images.invitationCodeGuideToolTip.swiftUIImage
+                            .resizable()
+                            .frame(width: 161, height: 72)
+                            .offset(x: -42, y: 50)
+                            .isHidden(store.isInvitationGuideToolTipShowed)
+                            .onTapGesture {
+                                print("!!!!")
+                                store.send(.didTapInvitatoinInfoToolTip)
+                            }
+                    }
+                    
+                    Button(action: {
+                        store.send(.didTapSettingButton)
+                    }) {
+                        SharedDesignSystemAsset.Images.settingFill.swiftUIImage
+                            .resizable()
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                    }
+                }
+                
+            }
+            
+            Text(store.mission.description)
                 .font(.pretendard(kind: .title_lg, type: .bold))
-                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
-            Spacer()
-            SharedDesignSystemAsset.Images.settingFill.swiftUIImage
-                .resizable()
-                .frame(width: 28, height: 28)
                 .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
         }
         .padding(.horizontal, 24)
         .frame(height: 45)
+        .zIndex(999)
     }
     
     func StoryView() -> some View {
-        // 캐릭터 리스트 섹션
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 15) {
                 ForEach(store.competition.players) { player in
-                    
-                    VStack(alignment: .center, spacing: 6) {
-                        ZStack(alignment: .top) {
-                            Image("profileImage")
-                                .resizable()
-                                .frame(width: 64, height: 64)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.orange, lineWidth: 3))
-                            if player.isMe {
-                                Text("나")
-                                    .font(.pretendard(kind: .body_md, type: .bold))
-                                    .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
-                                    .frame(width: 40, height: 18)
-                                    .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
-                                    .clipShape(Capsule())
-                                    .offset(y: -10)
-                            }
-                        }
-                        
-                        Text("\(player.name)")
-                            .font(.pretendard(kind: .body_sm, type: .medium))
-                            .foregroundColor(.black)
-                            
-                            .frame(width: 70, height: 20)
-                            .background(SharedDesignSystemAsset.Colors.gray5.swiftUIColor.opacity(0.5))
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(SharedDesignSystemAsset.Colors.white.swiftUIColor.opacity(0.5), lineWidth: 1))
-                            
-                    }
-                    
+                    PlayerView(player: player)
                 }
             }
             .padding(.top, 10)
@@ -173,33 +221,73 @@ struct MainView: View {
         .frame(height: 122)
     }
     
-    func CompetitionInfoView() -> some View {
-        // 네비게이션
+    func PlayerView(player: DomainPlayerInterface.Player) -> some View {
+        VStack(alignment: .center, spacing: 6) {
+            ZStack(alignment: .top) {
+                Button(action: {
+                    store.send(.didTapPlayer(player: player))
+                }) {
+                    if player.isCertificated {
+                        player.character.imageAsset.swiftUIImage
+                            .resizable()
+                            .frame(width: 64, height: 64)
+                            .clipShape(Circle())
+                    } else {
+                        player.character.imageAsset.swiftUIImage
+                            .resizable()
+                            .frame(width: 64, height: 64)
+                            .clipShape(Circle())
+                    }
+                }
+                if player.isMe {
+                    Text("나")
+                        .font(.pretendard(kind: .body_md, type: .bold))
+                        .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                        .frame(width: 40, height: 18)
+                        .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                        .clipShape(Capsule())
+                        .offset(y: -10)
+                }
+            }
+            
+            Text("\(player.name)")
+                .font(.pretendard(kind: .body_sm, type: .medium))
+                .lineLimit(1)
+                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                .frame(width: 70, height: 20)
+                .background(SharedDesignSystemAsset.Colors.gray5.swiftUIColor.opacity(0.5))
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(SharedDesignSystemAsset.Colors.white.swiftUIColor.opacity(0.5), lineWidth: 1))
+                
+        }
+    }
+    
+    
+    func CompetitionInfoView(store: StoreOf<HomeFeature>) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("오늘 1명이 1칸 이동")
+            Text(store.competition.info[.title] ?? "")
                 .font(.pretendard(kind: .heading_md, type: .bold))
                 .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
-            Text("나의 꾸준함 순위는? 1등")
+            Text(store.competition.info[.subtitle] ?? "")
                 .font(.pretendard(kind: .body_lg, type: .bold))
-                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor.opacity(0.5))
         }
         .padding(.top, 28)
         .padding(.bottom, 16)
     }
     
     func BoardView(reader: GeometryProxy, store: StoreOf<HomeFeature>) -> some View {
-        // 게임 보드
-        Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-            ForEach(0..<store.competition.board.numberOfRows, id: \.self) { row in
+        let numberOfRows = store.competition.board.numberOfRows
+        let numberOfColumns = store.competition.board.numberOfColumns
+        return Grid(horizontalSpacing: 0, verticalSpacing: 0) {
+            ForEach(0..<numberOfRows, id: \.self) { row in
                 GridRow {
-                    let range: [Int] = (row % 2 == 1)
-                    ? Array((0..<store.competition.board.numberOfColumns).reversed())
-                    : Array((0..<store.competition.board.numberOfColumns))
-                    ForEach(range, id: \.self) { col in
-                        let index = col + (row * store.competition.board.numberOfColumns)
+                    let indices = Array((0..<numberOfColumns))
+                    ForEach((row % 2 == 0) ? indices : indices.reversed(), id: \.self) { col in
+                        let index = col + (row * numberOfColumns)
                         BlockView(
                             block: store.competition.board.findBlock(by: Position(index: index)),
-                            width: calcBlockWidth(reader: reader)
+                            width: (reader.size.width - Constant.horizontalPadding * 2.0) / CGFloat(numberOfColumns)
                         )
                     }
                 }
@@ -209,21 +297,7 @@ struct MainView: View {
     }
 }
 
-struct CellView: View {
-    let text: String
-    let color: Color
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(color)
-            Text(text)
-                .foregroundColor(.white)
-        }
-    }
-}
-
-struct BlockView: View {
+private struct BlockView: View {
     
     let block: Block?
     
@@ -232,19 +306,33 @@ struct BlockView: View {
     var body: some View {
         ZStack(alignment: .center) {
             if let block {
-                if block.isConquered {
+                if block.isStartBlock, !block.isDisabled {
+                    block.theme.startImageAsset.swiftUIImage
+                        .resizable()
+                        .aspectRatio(1.0, contentMode: .fit)
+                    
+                } else if block.isStartBlock, block.isDisabled {
+                    block.theme.startImageAsset.swiftUIImage
+                        .resizable()
+                        .opacity(0.5)
+                        .aspectRatio(1.0, contentMode: .fit)
+                    
+                } else if block.isConquered, !block.isDisabled {
                     block.theme.conqueredImageAsset(kind: block.kind).swiftUIImage
                         .resizable()
                         .aspectRatio(1.0, contentMode: .fit)
+                    
                 } else {
                     block.theme.normalImageAsset(kind: block.kind, disabled: block.isDisabled).swiftUIImage
                         .resizable()
                         .aspectRatio(1.0, contentMode: .fit)
                 }
+                
                 if block.isStartBlock {
                     Text("START")
                         .font(.pretendard(kind: .title_lg, type: .bold))
                         .foregroundStyle(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                    
                 } else if block.isLastBlock {
                     Text("GOAL")
                         .font(.pretendard(kind: .title_lg, type: .bold))
@@ -254,31 +342,5 @@ struct BlockView: View {
                 EmptyView()
             }
         }
-    }
-}
-
-
-extension View {
-    
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
-    }
-}
-
-
-struct RoundedCorner: Shape {
-    
-    let radius: CGFloat
-    
-    let corners: UIRectCorner
-
-    init(radius: CGFloat = .infinity, corners: UIRectCorner = .allCorners) {
-        self.radius = radius
-        self.corners = corners
-    }
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
     }
 }

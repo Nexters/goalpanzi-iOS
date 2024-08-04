@@ -51,7 +51,8 @@ public struct Board {
                 ),
                 theme: theme.blockTheme,
                 isLastBlock: index == totalBlockCount - 1,
-                isConquered: index <= conqueredIndex
+                isConquered: index <= conqueredIndex,
+                isDisabled: isDisabled
             )
             return newResult
         })
