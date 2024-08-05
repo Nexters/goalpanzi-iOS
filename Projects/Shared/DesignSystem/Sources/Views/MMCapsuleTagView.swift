@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct MMCapsuleTagView: View {
-    public let text: String
+    private let text: String
 
     public init(text: String) {
         self.text = text
