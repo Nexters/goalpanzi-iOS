@@ -10,9 +10,15 @@ import SwiftUI
 import DomainUserInterface
 import SharedDesignSystem
 
+import ComposableArchitecture
+
 public struct EntranceView: View {
 
-    public init() {}
+    public var store: StoreOf<EntranceFeature>
+
+    public init(store: StoreOf<EntranceFeature>) {
+        self.store = store
+    }
 
     public var body: some View {
         VStack(spacing: 0) {
@@ -24,7 +30,7 @@ public struct EntranceView: View {
 
             Spacer(minLength: 52)
 
-            MMRoundedCapsuleView(text: "LV1. 제주도")
+            MMCapsuleTagView(text: "LV1. 제주도")
 
             Spacer()
 
@@ -41,20 +47,20 @@ public struct EntranceView: View {
             Spacer()
 
             HStack(spacing: 23) {
-                missionBoardButton(
+                entranceSelectionButton(
                     title: "미션보드\n생성하기",
                     description: "내 목표는 내가~",
                     iconImage: SharedDesignSystemAsset.Images.coloredPencil.image
                 ) {
-                    print("미션보드 생성")
+                    store.send(.createMissionButtonTapped)
                 }
 
-                missionBoardButton(
+                entranceSelectionButton(
                     title: "초대코드\n입력하기",
                     description: "초대받고 왔지~",
                     iconImage: SharedDesignSystemAsset.Images.coloredAddPerson.image
                 ) {
-                    print("미션보드 생성")
+                    store.send(.enterInvitationCodeButtonTapped)
                 }
             }
 
@@ -62,7 +68,12 @@ public struct EntranceView: View {
         }
     }
 
-    private func missionBoardButton(title: String, description: String, iconImage: UIImage, action: @escaping () -> Void) -> some View {
+    private func entranceSelectionButton(
+        title: String,
+        description: String,
+        iconImage: UIImage,
+        action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.mmBlack.opacity(0.2), lineWidth: 1)
@@ -91,23 +102,5 @@ public struct EntranceView: View {
         }
     }
 
-    struct MMRoundedCapsuleView: View {
-        let text: String
 
-        var body: some View {
-            Text(text)
-                .font(.pretendard(kind: .title_lg, type: .medium))
-                .foregroundColor(Color.mmOrange)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(.clear)
-                )
-                .overlay(
-                    Capsule()
-                        .stroke(.orange, lineWidth: 1)
-                )
-        }
-    }
 }

@@ -20,13 +20,18 @@ public struct EntranceFeature: Reducer {
     }
 
     public enum Action {
+        case createMissionButtonTapped
+        case enterInvitationCodeButtonTapped
 
     }
 
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
             switch action {
-
+            case .createMissionButtonTapped:
+                return .none
+            case .enterInvitationCodeButtonTapped:
+                return .none
             }
         }
     }
