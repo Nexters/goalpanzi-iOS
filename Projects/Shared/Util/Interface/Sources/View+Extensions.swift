@@ -22,4 +22,12 @@ public extension View {
             self
         }
     }
+    
+    func animate(using animation: Animation, _ action: @escaping () -> Void) -> some View {
+        onAppear {
+            withAnimation(animation) {
+                action()
+            }
+        }
+    }
 }

@@ -14,7 +14,11 @@ import DomainPlayerInterface
 
 public struct HomeView: View {
     
-    public let store: StoreOf<HomeFeature>
+    @Bindable public var store: StoreOf<HomeFeature>
+    
+    enum Constant {
+        static let horizontalPadding: CGFloat = 24
+    }
     
     public init(store: StoreOf<HomeFeature>) {
         self.store = store
@@ -22,37 +26,38 @@ public struct HomeView: View {
     }
     
     public var body: some View {
-        MainView(store: store)
-        .onAppear {
-            store.send(.onAppear)
+        ZStack {
+            VStack(spacing: 0) {
+                ZStack(alignment: .bottom) {
+                    ZStack(alignment: .top) {
+                        GeometryReader { reader in
+                            CompetitionContentView(reader: reader, store: store)
+                            VStack(spacing: 0) {
+                                NavigationBarView(store: store)
+                                StoryView(store: store)
+                            }
+                            .background(.ultraThinMaterial)
+                        }
+                    }
+                    BottomView(store: store)
+                        .isHidden(store.competition.board.isDisabled)
+                }
+            }
+            .onAppear {
+                store.send(.onAppear)
+            }
+            if let store = store.scope(state: \.destination?.missionInfo, action: \.destination.missionInfo) {
+                MissionInfoView(store: store)
+            }
         }
     }
 }
 
-private struct MainView: View {
+private struct BottomView: View {
     
     let store: StoreOf<HomeFeature>
     
-    enum Constant {
-        static let horizontalPadding: CGFloat = 24
-    }
-    
     var body: some View {
-        VStack(spacing: 0) {
-            ZStack(alignment: .bottom) {
-                ZStack(alignment: .top) {
-                    GeometryReader { reader in
-                        CompetitionContentView(reader: reader, store: store)
-                        HomeTopView()
-                    }
-                }
-                HomeBottomView(store: store)
-                    .isHidden(store.competition.board.isDisabled)
-            }
-        }
-    }
-    
-    func HomeBottomView(store: StoreOf<HomeFeature>) -> some View {
         VStack {
             HStack(spacing: 8){
                 SharedDesignSystemAsset.Images.timeFill.swiftUIImage
@@ -81,7 +86,7 @@ private struct MainView: View {
                     )
                     .cornerRadius(30)
             }
-            .padding(.horizontal, Constant.horizontalPadding)
+            .padding(.horizontal, HomeView.Constant.horizontalPadding)
             .padding(.bottom, 36)
             .disabled(!store.certificationButtonState.isEnabled)
         }
@@ -89,8 +94,15 @@ private struct MainView: View {
         .cornerRadius(20, corners: [.topLeft, .topRight])
         .frame(height: 60)
     }
+}
+
+private struct CompetitionContentView: View {
     
-    func CompetitionContentView(reader: GeometryProxy, store: StoreOf<HomeFeature>) -> some View {
+    let reader: GeometryProxy
+
+    let store: StoreOf<HomeFeature>
+    
+    var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -98,7 +110,7 @@ private struct MainView: View {
                     BoardView(reader: reader, store: store)
                 }
                 .padding(.top, 167)
-                .padding(.horizontal, Constant.horizontalPadding)
+                .padding(.horizontal, HomeView.Constant.horizontalPadding)
                 .padding(.bottom, 142)
             }
             .background {
@@ -115,9 +127,13 @@ private struct MainView: View {
             }
         }
     }
+}
+
+private struct NotStartedInfoView: View {
     
-    func NotStartedInfoView(me: Player?) -> some View {
-        
+    let me: Player?
+    
+    var body: some View {
         ZStack {
             me?.character.imageAsset.swiftUIImage
                 .resizable()
@@ -131,16 +147,13 @@ private struct MainView: View {
             
         }
     }
+}
+
+private struct NavigationBarView: View {
     
-    func HomeTopView() -> some View {
-        VStack(spacing: 0) {
-            NavigationBarView()
-            StoryView()
-        }
-        .background(.ultraThinMaterial)
-    }
+    let store: StoreOf<HomeFeature>
     
-    func NavigationBarView() -> some View {
+    var body: some View {
         ZStack {
             HStack(alignment: .center) {
                 Button(action: {
@@ -181,7 +194,6 @@ private struct MainView: View {
                             .offset(x: -42, y: 50)
                             .isHidden(store.isInvitationGuideToolTipShowed)
                             .onTapGesture {
-                                print("!!!!")
                                 store.send(.didTapInvitatoinInfoToolTip)
                             }
                     }
@@ -206,12 +218,17 @@ private struct MainView: View {
         .frame(height: 45)
         .zIndex(999)
     }
+}
+
+private struct StoryView: View {
     
-    func StoryView() -> some View {
+    let store: StoreOf<HomeFeature>
+    
+    var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 15) {
                 ForEach(store.competition.players) { player in
-                    PlayerView(player: player)
+                    PlayerView(player: player, store: store)
                 }
             }
             .padding(.top, 10)
@@ -220,8 +237,15 @@ private struct MainView: View {
         }
         .frame(height: 122)
     }
+}
+
+private struct PlayerView: View {
     
-    func PlayerView(player: DomainPlayerInterface.Player) -> some View {
+    let player: Player
+    
+    let store: StoreOf<HomeFeature>
+    
+    var body: some View {
         VStack(alignment: .center, spacing: 6) {
             ZStack(alignment: .top) {
                 Button(action: {
@@ -261,9 +285,13 @@ private struct MainView: View {
                 
         }
     }
+}
+
+private struct CompetitionInfoView: View {
     
+    let store: StoreOf<HomeFeature>
     
-    func CompetitionInfoView(store: StoreOf<HomeFeature>) -> some View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(store.competition.info[.title] ?? "")
                 .font(.pretendard(kind: .heading_md, type: .bold))
@@ -275,8 +303,16 @@ private struct MainView: View {
         .padding(.top, 28)
         .padding(.bottom, 16)
     }
+}
+
+
+private struct BoardView: View {
     
-    func BoardView(reader: GeometryProxy, store: StoreOf<HomeFeature>) -> some View {
+    let reader: GeometryProxy
+    
+    let store: StoreOf<HomeFeature>
+    
+    var body: some View {
         let numberOfRows = store.competition.board.numberOfRows
         let numberOfColumns = store.competition.board.numberOfColumns
         return Grid(horizontalSpacing: 0, verticalSpacing: 0) {
@@ -287,7 +323,7 @@ private struct MainView: View {
                         let index = col + (row * numberOfColumns)
                         BlockView(
                             block: store.competition.board.findBlock(by: Position(index: index)),
-                            width: (reader.size.width - Constant.horizontalPadding * 2.0) / CGFloat(numberOfColumns)
+                            width: (reader.size.width - HomeView.Constant.horizontalPadding * 2.0) / CGFloat(numberOfColumns)
                         )
                     }
                 }
@@ -296,6 +332,7 @@ private struct MainView: View {
         .padding(.top, 4)
     }
 }
+
 
 private struct BlockView: View {
     

@@ -1,4 +1,3 @@
-import SwiftUI
 import Foundation
 import ComposableArchitecture
 import DomainMissionInterface
@@ -19,6 +18,8 @@ public struct HomeFeature {
         @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = false
+        
+        @Presents var destination: Destination.State?
         
         public init() {
             let theme: JejuIslandBoardTheme = .init()
@@ -51,6 +52,11 @@ public struct HomeFeature {
         }
     }
     
+    @Reducer
+    public enum Destination {
+        case missionInfo(MissionInfoFeature)
+    }
+    
     public enum Action {
         case onAppear
         case didTapMissionInfoButton
@@ -62,6 +68,7 @@ public struct HomeFeature {
         case didTapCertificationButton
         case didTapPiece(piece: Piece)
         case movePiece(piece: Piece, to: Position)
+        case destination(PresentationAction<Destination.Action>)
     }
     
     public var body: some ReducerOf<Self> {
@@ -83,13 +90,17 @@ public struct HomeFeature {
             case .movePiece(piece: let piece, to: let to):
                 return .none
             case .didTapInvitationInfoButton:
+                state.destination = .missionInfo(MissionInfoFeature.State())
                 return .none
             case .didTapInvitatoinInfoToolTip:
                 return .none
             case .didTapMissionInfoGuideToolTip:
                 return .none
+            case .destination:
+                return .none
             }
         }
+        .ifLet(\.$destination, action: \.destination)
     }
     
     public init() {}
