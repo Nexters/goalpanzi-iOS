@@ -33,7 +33,7 @@ extension Requestable {
         }
         
         var urlRequest = URLRequest(url: url)
-        
+
         if let bodyParameters, let httpBody = try? JSONEncoder().encode(bodyParameters) {
             urlRequest.httpBody = httpBody
         }
