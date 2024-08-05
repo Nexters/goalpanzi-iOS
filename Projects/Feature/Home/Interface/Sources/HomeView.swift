@@ -26,26 +26,26 @@ public struct HomeView: View {
     }
     
     public var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                ZStack(alignment: .bottom) {
-                    ZStack(alignment: .top) {
-                        GeometryReader { reader in
-                            CompetitionContentView(reader: reader, store: store)
-                            VStack(spacing: 0) {
-                                NavigationBarView(store: store)
-                                StoryView(store: store)
-                            }
-                            .background(.ultraThinMaterial)
+        VStack(spacing: 0) {
+            ZStack(alignment: .bottom) {
+                ZStack(alignment: .top) {
+                    GeometryReader { reader in
+                        CompetitionContentView(reader: reader, store: store)
+                        VStack(spacing: 0) {
+                            NavigationBarView(store: store)
+                            StoryView(store: store)
                         }
+                        .background(.ultraThinMaterial)
                     }
-                    BottomView(store: store)
-                        .isHidden(store.competition.board.isDisabled)
                 }
+                BottomView(store: store)
+                    .isHidden(store.competition.board.isDisabled)
             }
-            .onAppear {
-                store.send(.onAppear)
-            }
+        }
+        .onAppear {
+            store.send(.onAppear)
+        }
+        .overlay {
             if let store = store.scope(state: \.destination?.missionInfo, action: \.destination.missionInfo) {
                 MissionInfoView(store: store)
             }
