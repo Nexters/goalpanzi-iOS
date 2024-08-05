@@ -7,7 +7,12 @@ let project = Project.makeModule(
     targets: [    
         .domain(
             interface: .User,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .core,
+                    .shared
+                ]
+            )
         ),
         .domain(
             implements: .User,
