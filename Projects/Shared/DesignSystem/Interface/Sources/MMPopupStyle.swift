@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SharedUtil
 
 // TODO: Fix 애니메이션이 동작하지 않는 문제
 
