@@ -4,6 +4,7 @@ generate:
 	tuist generate
 
 clean:
+	killAll Xcode && rm -rf ~/Library/Saved\ Application\ State/com.apple.dt.Xcode.savedState
 	tuist clean
 	rm -rf **/**/**/*.xcodeproj
 	rm -rf **/**/*.xcodeproj
