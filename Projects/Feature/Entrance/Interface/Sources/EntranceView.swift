@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+import DomainUserInterface
 import SharedDesignSystem
 
 public struct EntranceView: View {
@@ -31,8 +32,9 @@ public struct EntranceView: View {
                 Image(uiImage: SharedDesignSystemAsset.Images.jejuIslandBackground.image)
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 350, height: 228)
-
-                Image(uiImage: SharedDesignSystemAsset.Images.appleIcon.image)
+                // TODO: 추후에 Input으로 받을 예정
+                Image(uiImage: Character.rabbit.basicImage.image)
+                    .resizable()
                     .frame(width: 212, height: 212)
             }
 
@@ -63,18 +65,18 @@ public struct EntranceView: View {
     private func missionBoardButton(title: String, description: String, iconImage: UIImage, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 20)
-                .stroke(SharedDesignSystemAsset.Colors.black.swiftUIColor.opacity(0.2), lineWidth: 1)
+                .stroke(Color.mmBlack.opacity(0.2), lineWidth: 1)
                 .frame(width: 162, height: 188)
                 .overlay(
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(title)
                                 .font(.pretendard(kind: .title_xl, type: .bold))
-                                .foregroundStyle(SharedDesignSystemAsset.Colors.grey1.swiftUIColor)
+                                .foregroundStyle(Color.mmGray1)
                                 .multilineTextAlignment(.leading)
                             Text(description)
                                 .font(.pretendard(kind: .body_lg, type: .medium))
-                                .foregroundStyle(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
+                                .foregroundStyle(Color.mmGray3)
                         }
                         Spacer()
                         HStack {
@@ -95,7 +97,7 @@ public struct EntranceView: View {
         var body: some View {
             Text(text)
                 .font(.pretendard(kind: .title_lg, type: .medium))
-                .foregroundColor(.orange)
+                .foregroundColor(Color.mmOrange)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
