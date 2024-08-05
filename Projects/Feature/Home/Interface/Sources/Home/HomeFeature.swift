@@ -55,6 +55,8 @@ public struct HomeFeature {
     @Reducer
     public enum Destination {
         case missionInfo(MissionInfoFeature)
+        case missionInvitationInfo(MissionInvitationInfoFeature)
+        case missionDeleteAlert(MissionDeleteAlertFeature)
     }
     
     public enum Action {
@@ -78,6 +80,7 @@ public struct HomeFeature {
                 return .none
 
             case .didTapMissionInfoButton:
+                state.destination = .missionInfo(MissionInfoFeature.State())
                 return .none
             case .didTapSettingButton:
                 return .none
@@ -90,7 +93,7 @@ public struct HomeFeature {
             case .movePiece(piece: let piece, to: let to):
                 return .none
             case .didTapInvitationInfoButton:
-                state.destination = .missionInfo(MissionInfoFeature.State())
+                state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State())
                 return .none
             case .didTapInvitatoinInfoToolTip:
                 return .none

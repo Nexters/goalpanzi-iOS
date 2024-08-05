@@ -49,6 +49,12 @@ public struct HomeView: View {
             if let store = store.scope(state: \.destination?.missionInfo, action: \.destination.missionInfo) {
                 MissionInfoView(store: store)
             }
+            if let store = store.scope(state: \.destination?.missionDeleteAlert, action: \.destination.missionDeleteAlert) {
+                MissionDeleteAlertView(store: store)
+            }
+            if let store = store.scope(state: \.destination?.missionInvitationInfo, action: \.destination.missionInvitationInfo) {
+                MissionInvitationInfoView(store: store)
+            }
         }
     }
 }
