@@ -8,6 +8,7 @@ let targets: [Target] = [
             dependencies: [
                 .feature(implements: .Login),
                 .feature(interface: .Home),
+                .feature(implements: .PieceCreation),
                 .domain,
             ]
         )

@@ -13,20 +13,34 @@ import SharedDesignSystem
 
 struct RootView: View {
     
-    let store: StoreOf<RootFeature>
+    @Bindable var store: StoreOf<RootFeature>
     
     init(store: StoreOf<RootFeature>) {
         self.store = store
     }
     
     var body: some View {
-        switch store.state.destination {
-        case .login:
-            if let store = store.scope(state: \.destination?.login, action: \.destination.login) {
-                LoginView(store: store)
+        Group {
+            switch store.state.destination {
+            case .login:
+                if let store = store.scope(state: \.destination?.login, action: \.destination.login) {
+                    NavigationStack(
+                        path: $store.scope(state: \.path, action: \.path)
+                    ) {
+                        LoginView(store: store)
+                    } destination: { store in
+                        switch store.case {
+                        case let .login(store):
+                            LoginView(store: store)
+                        }
+                    }
+                }
+            case .none:
+                EmptyView()
             }
-        case .none:
-            EmptyView()
+        }
+        .task {
+            store.send(.didLoad)
         }
     }
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol AppleAuthServiceable {
-    
+
     var signIn: @Sendable () async throws -> SignInInfo { get }
 }
