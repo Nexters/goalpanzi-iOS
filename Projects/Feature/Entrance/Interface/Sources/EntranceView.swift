@@ -30,7 +30,12 @@ public struct EntranceView: View {
 
             Spacer(minLength: 52)
 
-            MMCapsuleTagView(text: "LV1. 제주도")
+            MMCapsuleTagView(
+                text: "LV1. 제주도",
+                font: .pretendard(kind: .title_lg, type: .medium),
+                horizontalPadding: 16,
+                verticalPadding: 4
+            )
 
             Spacer()
 

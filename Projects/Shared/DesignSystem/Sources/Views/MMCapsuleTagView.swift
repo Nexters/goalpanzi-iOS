@@ -9,17 +9,22 @@ import SwiftUI
 
 public struct MMCapsuleTagView: View {
     private let text: String
+    private let horizontalPadding: CGFloat
+    private let verticalPadding: CGFloat
+    private let font: Font
 
-    public init(text: String) {
+    public init(text: String, font: Font, horizontalPadding: CGFloat, verticalPadding: CGFloat) {
         self.text = text
+        self.font = font
+        self.horizontalPadding = horizontalPadding
+        self.verticalPadding = verticalPadding
     }
-
     public var body: some View {
         Text(text)
-            .font(.pretendard(kind: .title_lg, type: .medium))
+            .font(font)
             .foregroundColor(Color.mmOrange)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
             .background(
                 Capsule()
                     .fill(.clear)
