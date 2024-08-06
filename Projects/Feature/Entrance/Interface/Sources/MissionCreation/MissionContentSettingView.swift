@@ -1,14 +1,16 @@
 import SwiftUI
 import SharedDesignSystem
 
+import ComposableArchitecture
+
 public struct MissionContentSettingView: View {
-    @State var text: String = ""
-    @State var isValidInputText: Bool = true
-    @State var noticeMessage: String? = "4~12자 이내로 입력하세요."
-    @State var isEnabled: Bool = true
+
+    @Bindable public var store: StoreOf<MissionContentSettingFeature>
     @State private var keyboardHeight: CGFloat = 0
 
-    public init() {}
+    public init(store: StoreOf<MissionContentSettingFeature>) {
+        self.store = store
+    }
 
     public var body: some View {
         GeometryReader { geometry in
@@ -32,9 +34,9 @@ public struct MissionContentSettingView: View {
                         .font(.pretendard(kind: .body_md, type: .bold))
 
                     MMTextField(
-                        text: $text,
-                        isValidInputText: $isValidInputText,
-                        noticeMessage: $noticeMessage,
+                        text: $store.inputMissionContent,
+                        isValidInputText: $store.isValidMission,
+                        noticeMessage: $store.noticeMessage,
                         placeholder: "ex) 주3회 러닝하기 / 매일 책3장씩 읽기"
                     )
 
@@ -42,12 +44,12 @@ public struct MissionContentSettingView: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 80)
-                .offset(y: keyboardHeight == 0 ? 0 : -60)
+                .offset(y: keyboardHeight == 0 ? 0 : -60) // 키보드가 올라가면 적당한 높이만큼 위로 올리기.
                 
                 VStack {
                     Spacer()
 
-                    MMRoundedButton(isEnabled: $isEnabled, title: "다음") {
+                    MMRoundedButton(isEnabled: $store.isValidMission, title: "다음") {
                         print("Good")
                     }
                     .frame(height: 60)
@@ -105,3 +107,4 @@ public struct MissionContentSettingView: View {
         NotificationCenter.default.removeObserver(self)
     }
 }
+

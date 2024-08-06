@@ -6,3 +6,50 @@
 //
 
 import Foundation
+
+import ComposableArchitecture
+
+@Reducer
+public struct MissionContentSettingFeature: Reducer {
+
+    public init() {}
+
+    @ObservableState
+    public struct State: Equatable {
+        var inputMissionContent: String = ""
+        var noticeMessage: String? = "4~12자 이내로 입력하세요. (0/12)"
+
+        var isValidMission: Bool = true
+
+        public init() {}
+    }
+
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        case nextButtonTapped
+    }
+
+    public var body: some ReducerOf<Self> {
+        BindingReducer()
+        Reduce<State, Action> { state, action in
+            switch action {
+            case .binding(\.inputMissionContent):
+                state.noticeMessage = "4~12자 이내로 입력하세요.  (\(state.inputMissionContent.count)/12)"
+                state.isValidMission = self.validate(state.inputMissionContent)
+                return .none
+            case .nextButtonTapped:
+                return .none
+            default:
+                return .none
+            }
+        }
+    }
+}
+
+extension MissionContentSettingFeature {
+
+    private func validate(_ inputMissionContent: String) -> Bool {
+        let contentLength = inputMissionContent.count
+        return (contentLength >= 4 && contentLength <= 12) || contentLength == 0
+    }
+}
