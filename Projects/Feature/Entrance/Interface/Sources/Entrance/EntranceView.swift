@@ -14,62 +14,69 @@ import ComposableArchitecture
 
 public struct EntranceView: View {
 
-    public var store: StoreOf<EntranceFeature>
+    @Bindable public var store: StoreOf<EntranceFeature>
 
     public init(store: StoreOf<EntranceFeature>) {
         self.store = store
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        NavigationStack {
+            VStack(spacing: 0) {
+                Spacer()
 
-            Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
-                .font(.pretendard(kind: .heading_sm, type: .bold))
-                .multilineTextAlignment(.center)
+                Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
+                    .font(.pretendard(kind: .heading_sm, type: .bold))
+                    .multilineTextAlignment(.center)
 
-            Spacer(minLength: 52)
+                Spacer(minLength: 52)
 
-            MMCapsuleTagView(
-                text: "LV1. 제주도",
-                font: .pretendard(kind: .title_lg, type: .medium),
-                horizontalPadding: 16,
-                verticalPadding: 4
-            )
+                MMCapsuleTagView(
+                    text: "LV1. 제주도",
+                    font: .pretendard(kind: .title_lg, type: .medium),
+                    horizontalPadding: 16,
+                    verticalPadding: 4
+                )
 
-            Spacer()
+                Spacer()
 
-            ZStack {
-                Image(uiImage: SharedDesignSystemAsset.Images.jejuIslandBackground.image)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 350, height: 228)
-                // TODO: 추후에 Input으로 받을 예정
-                Image(uiImage: Character.rabbit.basicImage.image)
-                    .resizable()
-                    .frame(width: 212, height: 212)
-            }
-
-            Spacer()
-
-            HStack(spacing: 23) {
-                entranceSelectionButton(
-                    title: "미션보드\n생성하기",
-                    description: "내 목표는 내가~",
-                    iconImage: SharedDesignSystemAsset.Images.coloredPencil.image
-                ) {
-                    store.send(.createMissionButtonTapped)
+                ZStack {
+                    Image(uiImage: SharedDesignSystemAsset.Images.jejuIslandBackground.image)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 350, height: 228)
+                    // TODO: 추후에 Input으로 받을 예정
+                    Image(uiImage: Character.rabbit.basicImage.image)
+                        .resizable()
+                        .frame(width: 212, height: 212)
                 }
 
-                entranceSelectionButton(
-                    title: "초대코드\n입력하기",
-                    description: "초대받고 왔지~",
-                    iconImage: SharedDesignSystemAsset.Images.coloredAddPerson.image
-                ) {
-                    store.send(.enterInvitationCodeButtonTapped)
-                }
-            }
+                Spacer()
 
-            Spacer()
+                HStack(spacing: 23) {
+                    entranceSelectionButton(
+                        title: "미션보드\n생성하기",
+                        description: "내 목표는 내가~",
+                        iconImage: SharedDesignSystemAsset.Images.coloredPencil.image
+                    ) {
+                        store.send(.createMissionButtonTapped)
+                    }
+
+                    entranceSelectionButton(
+                        title: "초대코드\n입력하기",
+                        description: "초대받고 왔지~",
+                        iconImage: SharedDesignSystemAsset.Images.coloredAddPerson.image
+                    ) {
+                        store.send(.enterInvitationCodeButtonTapped)
+                    }
+                }
+
+                Spacer()
+            }
+            .navigationDestination(
+              item: $store.scope(state: \.destination?.missionCreationSetting, action: \.destination.missionCreationSetting)
+            ) { store in
+                MissionContentSettingView(store: store)
+            }
         }
     }
 

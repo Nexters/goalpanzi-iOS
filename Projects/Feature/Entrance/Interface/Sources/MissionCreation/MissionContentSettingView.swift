@@ -73,6 +73,7 @@ public struct MissionContentSettingView: View {
                 .padding(.horizontal, 24)
             }
         }
+        .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
