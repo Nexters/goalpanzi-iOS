@@ -9,6 +9,7 @@ import Foundation
 
 public enum DateFormat: String {
     case compactYearMonthDateTime = "yyyyMMddHHMMss"
+    case yearMonthDate = "yyyy.MM.dd"
 }
 
 extension DateFormat {
