@@ -20,7 +20,6 @@ public struct MissionDurationSettingView: View {
         self.store = store
     }
 
-
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             MMNavigationBar(
@@ -34,14 +33,10 @@ public struct MissionDurationSettingView: View {
             ) {
                 print("backButtonTapped")
             }
+            .padding(.bottom, 22)
 
-            Spacer()
-                .frame(height: 22)
-
-            authenticationDaysView
-
-            Spacer()
-                .frame(height: 60)
+            authenticationDaysHeaderView
+                .padding(.bottom, 60)
 
             Text("미션")
                 .foregroundStyle(Color.mmGray2)
@@ -116,7 +111,9 @@ public struct MissionDurationSettingView: View {
 }
 
 extension MissionDurationSettingView {
-    var authenticationDaysView: some View {
+
+    // TODO: 아래 attributed text로 하는 방법으로 바꾸기 (재사용가능하게)
+    var authenticationDaysHeaderView: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 0) {
                 Text("경쟁 기간")

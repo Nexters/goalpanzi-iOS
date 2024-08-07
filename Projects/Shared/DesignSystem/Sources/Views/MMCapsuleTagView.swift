@@ -31,7 +31,7 @@ public struct MMCapsuleTagView: View {
             )
             .overlay(
                 Capsule()
-                    .stroke(.orange, lineWidth: 1)
+                    .stroke(Color.mmOrange, lineWidth: 1)
             )
     }
 }
