@@ -64,7 +64,6 @@ public struct MissionAuthTimeSettingView: View {
             }
             .frame(height: 60)
             .padding(.bottom, 36)
-
         }
         .edgesIgnoringSafeArea(.bottom)
         .padding(.horizontal, 24)
