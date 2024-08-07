@@ -13,17 +13,18 @@ import SharedUtil
 import ComposableArchitecture
 
 public struct MissionDurationSettingView: View {
-    
-    @State private var startDate: Date?
-    @State private var endDate: Date?
-    @State private var startMinimumDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-    @State private var endMinimumDate = Date()
+
+    @Bindable public var store: StoreOf<MissionDurationSettingFeature>
+
+    public init(store: StoreOf<MissionDurationSettingFeature>) {
+        self.store = store
+    }
+
     @State private var isStartDateSelected = false
-    
-    public init() {}
-    
+
+
     public var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             MMNavigationBar(
                 title: "기간 및 요일 설정",
                 navigationAccessoryItem: AnyView(MMCapsuleTagView(
@@ -35,82 +36,98 @@ public struct MissionDurationSettingView: View {
             ) {
                 print("backButtonTapped")
             }
-            .padding(.horizontal, 24)
-            
+
+            authenticationDaysView
+
+            Text("미션")
+                .foregroundStyle(Color.mmGray2)
+                .font(.pretendard(kind: .body_md, type: .bold))
+
             HStack {
                 DateSelectionButton(
-                    date: $startDate,
-                    minimumDate: .constant(startMinimumDate),
+                    date: $store.missionStartDate,
+                    minimumDate: .constant(store.startMinimumDate),
                     isEnabled: .constant(true),
                     placeHolder: "시작일"
                 )
-                .onChange(of: startDate, { oldValue, newValue in
+                .onChange(of: store.missionStartDate, { oldValue, newValue in
                     isStartDateSelected = true
-                    guard let startDate else { return }
-                    endMinimumDate = Calendar.current.date(byAdding: .day, value: 2, to: startDate) ?? Date()
+                    store.endMinimumDate = Calendar.current.date(byAdding: .day, value: 2, to: store.missionStartDate ?? Date()) ?? Date()
                 })
                 Text("~")
                 DateSelectionButton(
-                    date: $endDate,
-                    minimumDate: $endMinimumDate,
+                    date: $store.missionEndDate,
+                    minimumDate: $store.endMinimumDate,
                     isEnabled: $isStartDateSelected,
                     placeHolder: "마감일"
                 )
             }
             .frame(maxWidth: .infinity)
+
+            Text("내일부터 시작일로 지정할 수 있어요.")
+                .font(.pretendard(size: 14, type: .medium))
+                .foregroundColor(.mmGray3)
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("인증 요일 (다중선택)")
+                    .font(.pretendard(kind: .body_md, type: .bold))
+                    .foregroundStyle(Color.mmGray2)
+
+                HStack {
+                    ForEach(Weekday.allCases, id: \.self) { day in
+                        DaySelectionButton(
+                            day: day,
+                            isSelected: store.selectedDays.contains(day),
+                            isAnySelected: !store.selectedDays.isEmpty
+                        ) {
+                            if store.selectedDays.contains(day) {
+                                store.selectedDays.remove(day)
+                            } else {
+                                store.selectedDays.insert(day)
+                            }
+                            store.send(.daySelectionButtonTapped)
+                        }
+                    }
+                }
+
+                Text("선택한 요일에만 미션 인증할 수 있어요.(ex.월,수,금)")
+                    .font(.pretendard(size: 14, type: .medium))
+                    .foregroundStyle(Color.mmGray2)
+            }
+
+            Spacer()
+
+            MMRoundedButton(isEnabled: .constant(true), title: "다음") {
+            }
+            .frame(height: 60)
+            .padding(.bottom, 36)
         }
+        .edgesIgnoringSafeArea(.bottom)
+        .padding(.horizontal, 24)
     }
 }
 
-struct DateSelectionButton: View {
-    @Binding var date: Date?
-    @Binding var minimumDate: Date
-    @Binding var isEnabled: Bool
-    
-    let placeHolder: String
-    
-    private var isDateSelected: Bool {
-        date != nil
-    }
-    
-    private var displayText: String {
-        date?.formattedString(dateFormat: .yearMonthDate) ?? placeHolder
-    }
-    
-    private var textColor: Color {
-        isDateSelected ? .black : .mmGray3
-    }
-    
-    private var backgroundColor: Color {
-        isDateSelected ? .white : .mmGray5
-    }
-    
-    private var borderColor: Color {
-        isDateSelected ? .mmGray4 : .clear
-    }
-    
-    var body: some View {
-        Text(displayText)
-            .padding()
-            .frame(width: 159, height: 60, alignment: .leading)
-            .font(.pretendard(kind: .body_sm, type: .medium)) // TODO: 폰트 수정해야됨!~!~!~!
-            .foregroundStyle(textColor)
-            .background(backgroundColor)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(borderColor, lineWidth: 1)
-                    .overlay {
-                        DatePicker(
-                            selection: Binding(
-                                get: { self.date ?? Date() },
-                                set: { self.date = $0 }),
-                            in: minimumDate...,
-                            displayedComponents: .date) {}
-                            .labelsHidden()
-                            .colorMultiply(.clear)
-                    }
-            )
-            .disabled(!isEnabled)
+extension MissionDurationSettingView {
+    var authenticationDaysView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top, spacing: 0) {
+                Text("경쟁 기간")
+                    .foregroundStyle(Color.mmOrange)
+                Text("내 ")
+                Text("인증 요일")
+                    .foregroundStyle(Color.mmOrange)
+                Text("로 계산한")
+            }
+            .font(.pretendard(kind: .title_xl, type: .light))
+
+            HStack(alignment: .top, spacing: 0) {
+                Text("총 인증 횟수는 ")
+                Text("\(String(format: "%02d", store.authenticationDays))번")
+                    .bold()
+                    .underline()
+                Text(" 이에요!")
+            }
+            .font(.pretendard(kind: .title_xl, type: .light))
+        }
     }
 }
