@@ -35,11 +35,18 @@ public struct MissionDurationSettingView: View {
                 print("backButtonTapped")
             }
 
+            Spacer()
+                .frame(height: 22)
+
             authenticationDaysView
+
+            Spacer()
+                .frame(height: 60)
 
             Text("미션")
                 .foregroundStyle(Color.mmGray2)
                 .font(.pretendard(kind: .body_md, type: .bold))
+                .padding(.bottom, 8)
 
             HStack {
                 DateSelectionButton(
@@ -61,10 +68,12 @@ public struct MissionDurationSettingView: View {
                 )
             }
             .frame(maxWidth: .infinity)
+            .padding(.bottom, 8)
 
             Text("내일부터 시작일로 지정할 수 있어요.")
-                .font(.pretendard(size: 14, type: .medium))
+                .font(.pretendard(size: 14, type: .light))
                 .foregroundStyle(Color.mmGray3)
+                .padding(.bottom, 40)
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("인증 요일 (다중선택)")
@@ -89,7 +98,7 @@ public struct MissionDurationSettingView: View {
                 }
 
                 Text("선택한 요일에만 미션 인증할 수 있어요.(ex.월,수,금)")
-                    .font(.pretendard(size: 14, type: .medium))
+                    .font(.pretendard(size: 14, type: .light))
                     .foregroundStyle(store.isSelectWeekDayEnabled ? Color.mmGray2.opacity(0.3) : Color.mmGray2)
             }
 
