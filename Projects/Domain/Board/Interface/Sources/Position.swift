@@ -17,3 +17,14 @@ public struct Position: Hashable {
         self.index = index
     }
 }
+
+public extension Position {
+    
+    static func + (lhs: Position, rhs: Position) -> Position {
+        .init(index: lhs.index + rhs.index)
+    }
+    
+    static func + (lhs: Position, rhs: Int) -> Position {
+        .init(index: lhs.index + rhs)
+    }
+}

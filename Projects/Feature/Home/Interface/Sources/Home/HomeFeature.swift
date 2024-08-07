@@ -14,31 +14,28 @@ public struct HomeFeature {
         public var mission: Mission
         public var competition: Competition
         public var certificationButtonState: CertificationButtonState
+        public var shouldStartAnimation: Bool
         
-        @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
-        @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
-        @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = false
+        @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = true
+        @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = true
+        @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = true
         
         @Presents var destination: Destination.State?
         
         public init() {
             let theme: JejuIslandBoardTheme = .init()
             let mission: Mission = .init(description: "매일 유산소 1시간")
-            let isDisabled = true
+            let isDisabled = false
             let competition: Competition = .init(
                 players: [
                     .init(id: "1", pieceID: "1", name: "이해석", character: .rabbit, isMe: true),
-                    .init(id: "2", pieceID: "2", name: "김용재", character: .rabbit)
+                    .init(id: "2", pieceID: "2", name: "김용재", character: .bear)
                 ],
                 board: .init(
                     theme: theme,
                     events: [.item(.init(image: "", position: Position(index: 2), description: "단감 먹기"))],
-                    pieces: [
-                        .init(id: "1", position: Position(index: 0)),
-                        .init(id: "2", position: Position(index: 1))
-                    ],
-                    totalBlockCount: 25,
-                    conqueredIndex: 11,
+                    totalBlockCount: 20,
+                    conqueredIndex: 1,
                     isDisabled: isDisabled
                 ),
                 info: [
@@ -49,6 +46,7 @@ public struct HomeFeature {
             self.mission = mission
             self.competition = competition
             self.certificationButtonState = .init(isEnabled: false, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
+            self.shouldStartAnimation = false
         }
     }
     
@@ -83,6 +81,7 @@ public struct HomeFeature {
                 state.destination = .missionInfo(MissionInfoFeature.State())
                 return .none
             case .didTapSettingButton:
+                state.shouldStartAnimation = true
                 return .none
             case .didTapPlayer(player: let player):
                 return .none
@@ -96,8 +95,10 @@ public struct HomeFeature {
                 state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State())
                 return .none
             case .didTapInvitatoinInfoToolTip:
+                state.isInvitationGuideToolTipShowed = true
                 return .none
             case .didTapMissionInfoGuideToolTip:
+                state.isMissionInfoGuideToolTipShowed = true
                 return .none
             case .destination:
                 return .none

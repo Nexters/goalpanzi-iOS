@@ -8,7 +8,7 @@
 import SwiftUI
 import FeatureHomeInterface
 
-struct ContentView_Previews: PreviewProvider {
+struct HomeContentView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView(store: .init(initialState: HomeFeature.State(), reducer: {
             HomeFeature()

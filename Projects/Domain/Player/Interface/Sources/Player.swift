@@ -8,6 +8,7 @@
 import Foundation
 import SharedDesignSystem
 import DomainBoardInterface
+import DomainUserInterface
 
 public typealias PlayerID = String
 
@@ -19,7 +20,7 @@ public struct Player: Identifiable {
     
     public let name: String
     
-    public let character: PlayerCharacter
+    public let character: DomainUserInterface.Character
     
     public var isMe: Bool
     
@@ -29,7 +30,7 @@ public struct Player: Identifiable {
         id: PlayerID,
         pieceID: PieceID,
         name: String,
-        character: PlayerCharacter,
+        character: DomainUserInterface.Character,
         isMe: Bool = false,
         isCertificated: Bool = false
     ) {
@@ -39,17 +40,5 @@ public struct Player: Identifiable {
         self.character = character
         self.isMe = isMe
         self.isCertificated = isCertificated
-    }
-}
-
-public enum PlayerCharacter {
-    
-    case rabbit
-    
-    public var imageAsset: SharedDesignSystemImages {
-        switch self {
-        case .rabbit:
-            return SharedDesignSystemAsset.Images.jejuMid
-        }
     }
 }

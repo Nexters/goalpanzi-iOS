@@ -19,7 +19,7 @@ public protocol BlockTheme {
     
     var startImageAsset: SharedDesignSystemImages { get }
     
-    func normalImageAsset(kind: BlockKind, disabled: Bool) -> SharedDesignSystemImages
+    func normalImageAsset(kind: BlockKind, isHighlighted: Bool) -> SharedDesignSystemImages
     
     func conqueredImageAsset(kind: BlockKind) -> SharedDesignSystemImages
 }
@@ -30,8 +30,8 @@ public extension BlockTheme {
         SharedDesignSystemAsset.Images.start
     }
     
-    func normalImageAsset(kind: BlockKind, disabled: Bool = false) -> SharedDesignSystemImages {
-        switch (kind, disabled) {
+    func normalImageAsset(kind: BlockKind, isHighlighted: Bool = false) -> SharedDesignSystemImages {
+        switch (kind, isHighlighted) {
         case (.square, true):
             return SharedDesignSystemAsset.Images.midDisabled
         case (.square, false):

@@ -19,7 +19,7 @@ public struct Board {
         Int(ceil((Double(totalBlockCount) / Double(numberOfColumns))))
     }
     
-    public var pieces: Set<Piece>
+    public private(set) var pieces: Set<Piece>
     
     public var events: [Event]
     
@@ -32,7 +32,6 @@ public struct Board {
     public init(
         theme: any BoardTheme,
         events: [Event],
-        pieces: Set<Piece>,
         totalBlockCount: Int,
         numberOfColumns : Int = 3,
         conqueredIndex: Int = .zero,
@@ -56,12 +55,12 @@ public struct Board {
             )
             return newResult
         })
-        self.pieces = pieces
         self.events = events
         self.totalBlockCount = totalBlockCount
         self.numberOfColumns = numberOfColumns
         self.conqueredIndex = conqueredIndex
         self.isDisabled = isDisabled
+        self.pieces = .init()
     }
     
     public func findBlock(by piece: Piece) -> Block? {
@@ -80,16 +79,32 @@ public struct Board {
         return pieces.first(where: { $0.id == pieceID })
     }
     
-    public mutating func move(piece: Piece, to position: Position) -> Direction? {
+    public func samePositionPieces(by position: Position) -> [Piece] {
+        pieces.filter({ $0.position == position })
+    }
+    
+    public func representativePiece(by position: Position) -> Piece? {
+        let result = samePositionPieces(by: position)
+        guard !result.isEmpty else { return nil }
+        return result.count == 1 ? result.first : result.randomElement()
+    }
+    
+    public mutating func update(pieces: Set<Piece>) {
+        self.pieces = pieces
+    }
+    
+    public func move(piece: Piece, to position: Position) -> Direction? {
         
         defer {
-            let endIndex = totalBlockCount - 1
-            let newPiece = Piece(
-                id: piece.id,
-                position: Position(index: max(endIndex, position.index + 1))
-            )
-            pieces.remove(piece)
-            pieces.insert(newPiece)
+//            let endIndex = totalBlockCount - 1
+//            let newPiece = Piece(
+//                id: piece.id,
+//                position: Position(index: max(endIndex, position.index + 1)),
+//                image: piece.image,
+//                name: piece.name
+//            )
+//            pieces.remove(piece)
+//            pieces.insert(newPiece)
         }
         
         let cycle = numberOfColumns * 2

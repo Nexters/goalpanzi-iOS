@@ -141,7 +141,7 @@ private struct NotStartedInfoView: View {
     
     var body: some View {
         ZStack {
-            me?.character.imageAsset.swiftUIImage
+            me?.character.roundImage.swiftUIImage
                 .resizable()
                 .frame(width: 240, height: 240)
                 .offset(y: 51)
@@ -175,10 +175,10 @@ private struct NavigationBarView: View {
                         .resizable()
                         .frame(width: 161, height: 72)
                         .offset(x: 50, y: 50)
-                        .isHidden(store.isMissionInfoGuideToolTipShowed)
                         .onTapGesture {
                             store.send(.didTapMissionInfoGuideToolTip)
                         }
+                        .isHidden(store.isMissionInfoGuideToolTipShowed, remove: true)
                 }
                 
                 Spacer()
@@ -198,10 +198,11 @@ private struct NavigationBarView: View {
                             .resizable()
                             .frame(width: 161, height: 72)
                             .offset(x: -42, y: 50)
-                            .isHidden(store.isInvitationGuideToolTipShowed)
+                            
                             .onTapGesture {
                                 store.send(.didTapInvitatoinInfoToolTip)
                             }
+                            .isHidden(store.isInvitationGuideToolTipShowed, remove: true)
                     }
                     
                     Button(action: {
@@ -258,12 +259,12 @@ private struct PlayerView: View {
                     store.send(.didTapPlayer(player: player))
                 }) {
                     if player.isCertificated {
-                        player.character.imageAsset.swiftUIImage
+                        player.character.roundImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)
                             .clipShape(Circle())
                     } else {
-                        player.character.imageAsset.swiftUIImage
+                        player.character.roundImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)
                             .clipShape(Circle())
@@ -308,82 +309,5 @@ private struct CompetitionInfoView: View {
         }
         .padding(.top, 28)
         .padding(.bottom, 16)
-    }
-}
-
-
-private struct BoardView: View {
-    
-    let reader: GeometryProxy
-    
-    let store: StoreOf<HomeFeature>
-    
-    var body: some View {
-        let numberOfRows = store.competition.board.numberOfRows
-        let numberOfColumns = store.competition.board.numberOfColumns
-        return Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-            ForEach(0..<numberOfRows, id: \.self) { row in
-                GridRow {
-                    let indices = Array((0..<numberOfColumns))
-                    ForEach((row % 2 == 0) ? indices : indices.reversed(), id: \.self) { col in
-                        let index = col + (row * numberOfColumns)
-                        BlockView(
-                            block: store.competition.board.findBlock(by: Position(index: index)),
-                            width: (reader.size.width - HomeView.Constant.horizontalPadding * 2.0) / CGFloat(numberOfColumns)
-                        )
-                    }
-                }
-            }
-        }
-        .padding(.top, 4)
-    }
-}
-
-
-private struct BlockView: View {
-    
-    let block: Block?
-    
-    let width: CGFloat
-    
-    var body: some View {
-        ZStack(alignment: .center) {
-            if let block {
-                if block.isStartBlock, !block.isDisabled {
-                    block.theme.startImageAsset.swiftUIImage
-                        .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
-                    
-                } else if block.isStartBlock, block.isDisabled {
-                    block.theme.startImageAsset.swiftUIImage
-                        .resizable()
-                        .opacity(0.5)
-                        .aspectRatio(1.0, contentMode: .fit)
-                    
-                } else if block.isConquered, !block.isDisabled {
-                    block.theme.conqueredImageAsset(kind: block.kind).swiftUIImage
-                        .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
-                    
-                } else {
-                    block.theme.normalImageAsset(kind: block.kind, disabled: block.isDisabled).swiftUIImage
-                        .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
-                }
-                
-                if block.isStartBlock {
-                    Text("START")
-                        .font(.pretendard(kind: .title_lg, type: .bold))
-                        .foregroundStyle(SharedDesignSystemAsset.Colors.white.swiftUIColor)
-                    
-                } else if block.isLastBlock {
-                    Text("GOAL")
-                        .font(.pretendard(kind: .title_lg, type: .bold))
-                        .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
-                }
-            } else {
-                EmptyView()
-            }
-        }
     }
 }

@@ -26,10 +26,16 @@ public struct Competition {
         })
         self.board = board
         self.info = info
+        self.board.update(pieces: createPieces(by: players))
     }
     
     public func findMe() -> Player? {
         return players.first(where: { $0.isMe == true })
+    }
+    
+    public func findMyPiece() -> Piece? {
+        guard let me = findMe() else { return nil }
+        return board.findPiece(by: me.pieceID)
     }
     
     public func findPlayer(by playerID: PlayerID) -> Player? {
@@ -43,13 +49,10 @@ public struct Competition {
         }
     }
     
-    public func representativePlayer(position: Position) -> Player? {
-        let players = players(position: position)
-        guard !players.isEmpty else { return nil }
-        if players.count == 1 {
-            return players.first
-        }
-        return players.randomElement()
+    public mutating func createPieces(by players: [Player]) -> Set<Piece> {
+        Set(players.map { player in
+            Piece(id: player.pieceID, position: .init(index: .zero), image: player.character.basicImage, name: player.character.koreanName)
+        })
     }
     
     public func numberOfPlayers(position: Position) -> Int {
