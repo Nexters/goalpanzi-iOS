@@ -45,7 +45,6 @@ public struct Board {
                 position: position,
                 kind: Self.blockKind(
                     position: position,
-                    totalBlockCount: totalBlockCount,
                     numberOfColumns: numberOfColumns
                 ),
                 theme: theme.blockTheme,
@@ -131,12 +130,11 @@ public struct Board {
         return nil
     }
 
-    public static func blockKind(position: Position, totalBlockCount: Int, numberOfColumns: Int) -> BlockKind {
+    public static func blockKind(position: Position, numberOfColumns: Int) -> BlockKind {
         
         let isStartIndex = position == .zero
-        let isLastIndex = position.index == totalBlockCount - 1
         
-        if isStartIndex || isLastIndex {
+        if isStartIndex {
             return .square
         }
         
