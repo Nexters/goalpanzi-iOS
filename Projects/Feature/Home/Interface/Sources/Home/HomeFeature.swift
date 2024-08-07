@@ -25,7 +25,8 @@ public struct HomeFeature {
         public init() {
             let theme: JejuIslandBoardTheme = .init()
             let mission: Mission = .init(description: "매일 유산소 1시간")
-            let isDisabled = false
+            let competitionState: Competition.State = .notStarted(hasOtherPlayer: true)
+            let isDisabled = competitionState != .started
             let competition: Competition = .init(
                 players: [
                     .init(id: "1", pieceID: "1", name: "이해석", character: .rabbit, isMe: true),
@@ -41,7 +42,8 @@ public struct HomeFeature {
                 info: [
                     .title: "경쟁시작 8월 15일",
                     .subtitle: "해당일에 자동으로 경쟁 시작합니다."
-                ]
+                ], 
+                state: competitionState
             )
             self.mission = mission
             self.competition = competition

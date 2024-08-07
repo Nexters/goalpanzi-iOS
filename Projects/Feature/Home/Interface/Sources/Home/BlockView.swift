@@ -24,22 +24,16 @@ struct BlockView: View {
     
     let numberOfSamePositionPieces: Int
     
-    @Binding var shouldShowRepresentativePiece: Bool
     @Binding var shouldShowMovingPiece: Bool
     @Binding var movingDirection: DomainBoardInterface.Direction?
     
     var body: some View {
         ZStack(alignment: .center) {
             if let block {
-                if block.isStartBlock, !block.isDisabled {
+                if block.isStartBlock {
                     block.theme.startImageAsset.swiftUIImage
                         .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
-                    
-                } else if block.isStartBlock, block.isDisabled {
-                    block.theme.startImageAsset.swiftUIImage
-                        .resizable()
-                        .opacity(0.5)
+                        .opacity(block.isDisabled ? 0.5 : 1.0)
                         .aspectRatio(1.0, contentMode: .fit)
                     
                 } else if block.isConquered, !block.isDisabled {
@@ -50,6 +44,7 @@ struct BlockView: View {
                 } else {
                     block.theme.normalImageAsset(kind: block.kind, isHighlighted: block.position.index % 2 == 0).swiftUIImage
                         .resizable()
+                        .opacity(block.isDisabled ? 0.5 : 1.0)
                         .aspectRatio(1.0, contentMode: .fit)
                 }
                 
@@ -69,31 +64,27 @@ struct BlockView: View {
                     GeometryReader { reader in
                         ZStack(alignment: .topTrailing) {
                             VStack(spacing: 0) {
-                                if shouldShowRepresentativePiece {
-                                    representativePiece.image.swiftUIImage
-                                        .resizable()
-                                        .aspectRatio(1.0, contentMode: .fit)
-                                        .zIndex(1)
-                                    
-                                    Text("\(representativePiece.name)")
-                                        .font(.pretendard(kind: .body_md, type: .bold))
-                                        .lineLimit(1)
-                                        .foregroundColor(
-                                            isMe
-                                            ? SharedDesignSystemAsset.Colors.white.swiftUIColor
-                                            : SharedDesignSystemAsset.Colors.gray1.swiftUIColor
-                                        )
-                                        .frame(height: 21.7)
-                                        .frame(maxWidth: .infinity)
-                                        .background(
-                                            isMe
-                                            ? SharedDesignSystemAsset.Colors.orange.swiftUIColor
-                                            : SharedDesignSystemAsset.Colors.white.swiftUIColor
-                                        )
-                                        .clipShape(Capsule())
-                                        .offset(x: 0, y: -7)
-                                        .zIndex(1)
-                                }
+                                representativePiece.image.swiftUIImage
+                                    .resizable()
+                                    .aspectRatio(1.0, contentMode: .fit)
+                                
+                                Text("\(representativePiece.name)")
+                                    .font(.pretendard(kind: .body_md, type: .bold))
+                                    .lineLimit(1)
+                                    .foregroundColor(
+                                        isMe
+                                        ? SharedDesignSystemAsset.Colors.white.swiftUIColor
+                                        : SharedDesignSystemAsset.Colors.gray1.swiftUIColor
+                                    )
+                                    .frame(height: 21.7)
+                                    .frame(maxWidth: .infinity)
+                                    .background(
+                                        isMe
+                                        ? SharedDesignSystemAsset.Colors.orange.swiftUIColor
+                                        : SharedDesignSystemAsset.Colors.white.swiftUIColor
+                                    )
+                                    .clipShape(Capsule())
+                                    .offset(x: 0, y: -7)
                             }
                             .padding(.horizontal, 12)
                             .padding(.top, 2)
@@ -101,18 +92,16 @@ struct BlockView: View {
                             
                             if numberOfSamePositionPieces > 1 {
                                 HStack(alignment: .center, spacing: 3) {
-                                    if shouldShowRepresentativePiece {
-                                        representativePiece.image.swiftUIImage
-                                            .resizable()
-                                            .frame(width: 22, height: 22)
-                                            .zIndex(1)
-                                        
-                                        Text("\(numberOfSamePositionPieces)")
-                                            .font(.pretendard(kind: .body_md, type: .bold))
-                                            .lineLimit(1)
-                                            .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
-                                            .zIndex(1)
-                                    }
+                                    representativePiece.image.swiftUIImage
+                                        .resizable()
+                                        .frame(width: 22, height: 22)
+                                        .zIndex(1)
+                                    
+                                    Text("\(numberOfSamePositionPieces)")
+                                        .font(.pretendard(kind: .body_md, type: .bold))
+                                        .lineLimit(1)
+                                        .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                                        .zIndex(1)
                                 }
                                 .padding(.leading, 4)
                                 .padding(.trailing, 8)
@@ -125,9 +114,6 @@ struct BlockView: View {
                                 .offset(x: 0, y: 2)
                             }
                         }
-                        .transition(.opacity)
-                        .animation(.easeInOut(duration: 1.0), value: shouldShowRepresentativePiece)
-                        .opacity(shouldShowRepresentativePiece ? 1.0 : 0.0)
                     }
                 }
             }

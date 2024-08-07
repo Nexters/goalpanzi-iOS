@@ -11,21 +11,29 @@ import DomainPlayerInterface
 
 public struct Competition {
     
+    public enum State: Equatable {
+        case notStarted(hasOtherPlayer: Bool)
+        case started
+    }
+    
     public var players: [Player]
     
     public var certifications: [PlayerID: Certification]
+    
+    public var state: State
     
     public var info: [InfoKey: String]
     
     public var board: Board
     
-    public init(players: [Player], board: Board, info: [InfoKey: String] = [:]) {
+    public init(players: [Player], board: Board, info: [InfoKey: String] = [:], state: State) {
         self.players = players
         self.certifications = Dictionary(uniqueKeysWithValues: players.map {
             ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
         })
         self.board = board
         self.info = info
+        self.state = state
         self.board.update(pieces: createPieces(by: players))
     }
     

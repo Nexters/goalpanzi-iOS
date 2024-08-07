@@ -17,8 +17,7 @@ struct BoardView: View {
     let reader: GeometryProxy
     
     @Bindable var store: StoreOf<HomeFeature>
-    
-    @State var shouldShowRepresentativePiece: Bool = true
+
     @State var shouldShowMovingPiece: Bool = false
     @State var movingDirection: DomainBoardInterface.Direction? = nil
     
@@ -52,7 +51,6 @@ struct BoardView: View {
                             movingPiece: myPiece?.position == position ? myPiece : nil,
                             myPiece: myPiece,
                             numberOfSamePositionPieces: store.competition.board.samePositionPieces(by: position).count,
-                            shouldShowRepresentativePiece: $shouldShowRepresentativePiece,
                             shouldShowMovingPiece: $shouldShowMovingPiece,
                             movingDirection: $movingDirection
                         )
@@ -62,13 +60,10 @@ struct BoardView: View {
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    self.shouldShowRepresentativePiece = false
+                    self.shouldShowMovingPiece = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        self.shouldShowMovingPiece = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                            guard let myPiece else { return }
-                            self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
-                        }
+                        guard let myPiece else { return }
+                        self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
                     }
                 }
             }

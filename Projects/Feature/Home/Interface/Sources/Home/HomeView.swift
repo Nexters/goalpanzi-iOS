@@ -9,6 +9,7 @@ import SwiftUI
 import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
+import DomainCompetitionInterface
 import DomainBoardInterface
 import DomainPlayerInterface
 
@@ -128,7 +129,7 @@ private struct CompetitionContentView: View {
             .scrollDisabled(store.competition.board.isDisabled)
             
             if store.competition.board.isDisabled {
-                NotStartedInfoView(me: store.competition.findMe())
+                NotStartedInfoView(me: store.competition.findMe(), competitionState: store.competition.state)
                     .padding(.top, 167)
             }
         }
@@ -139,18 +140,26 @@ private struct NotStartedInfoView: View {
     
     let me: Player?
     
+    let competitionState: Competition.State
+    
     var body: some View {
         ZStack {
-            me?.character.roundImage.swiftUIImage
+            me?.character.basicImage.swiftUIImage
                 .resizable()
                 .frame(width: 240, height: 240)
                 .offset(y: 51)
             
-            SharedDesignSystemAsset.Images.notStartedInfoToolTip.swiftUIImage
-                .resizable()
-                .frame(width: 276, height: 96)
-                .offset(y: -110)
-            
+            if competitionState == .notStarted(hasOtherPlayer: true) {
+                SharedDesignSystemAsset.Images.notStartedInfoToolTip.swiftUIImage
+                    .resizable()
+                    .frame(width: 276, height: 96)
+                    .offset(y: -110)
+            } else if competitionState == .notStarted(hasOtherPlayer: false) {
+                SharedDesignSystemAsset.Images.notStartedWarningToolTip.swiftUIImage
+                    .resizable()
+                    .frame(width: 276, height: 96)
+                    .offset(y: -110)
+            }
         }
     }
 }
@@ -255,21 +264,24 @@ private struct PlayerView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 6) {
             ZStack(alignment: .top) {
+                let shouldDisabled = !player.isMe && store.competition.state == .notStarted(hasOtherPlayer: true)
                 Button(action: {
                     store.send(.didTapPlayer(player: player))
                 }) {
                     if player.isCertificated {
-                        player.character.roundImage.swiftUIImage
+                        player.character.roundHighlightedImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)
                             .clipShape(Circle())
                     } else {
-                        player.character.roundImage.swiftUIImage
+                        player.character.roundBorderImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)
                             .clipShape(Circle())
+                            .opacity(shouldDisabled ? 0.5 : 1.0)
                     }
                 }
+                .disabled(shouldDisabled)
                 if player.isMe {
                     Text("나")
                         .font(.pretendard(kind: .body_md, type: .bold))

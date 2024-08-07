@@ -39,6 +39,28 @@ public enum Character: String, CaseIterable {
         case .bear: SharedDesignSystemAsset.Images.basicRoundBear
         }
     }
+    
+    public var roundBorderImage: SharedDesignSystemImages {
+        switch self {
+        case .rabbit: SharedDesignSystemAsset.Images.roundBorderRabbit
+        case .cat: SharedDesignSystemAsset.Images.roundBorderCat
+        case .dog: SharedDesignSystemAsset.Images.roundBorderPuppy
+        case .bird: SharedDesignSystemAsset.Images.roundBorderBird
+        case .panda: SharedDesignSystemAsset.Images.roundBorderPanda
+        case .bear: SharedDesignSystemAsset.Images.roundBorderBear
+        }
+    }
+    
+    public var roundHighlightedImage: SharedDesignSystemImages {
+        switch self {
+        case .rabbit: SharedDesignSystemAsset.Images.roundHighlightedRabbit
+        case .cat: SharedDesignSystemAsset.Images.roundHighlightedCat
+        case .dog: SharedDesignSystemAsset.Images.roundHighlightedPuppy
+        case .bird: SharedDesignSystemAsset.Images.roundHighlightedBird
+        case .panda: SharedDesignSystemAsset.Images.roundHighlightedPanda
+        case .bear: SharedDesignSystemAsset.Images.roundHighlightedBear
+        }
+    }
 
     public var basicImage: SharedDesignSystemImages {
         switch self {
