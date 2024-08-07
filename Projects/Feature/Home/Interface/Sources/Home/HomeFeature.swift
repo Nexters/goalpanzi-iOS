@@ -48,7 +48,7 @@ public struct HomeFeature {
             )
             self.mission = mission
             self.competition = competition
-            self.certificationButtonState = .init(isEnabled: isDisabled, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
+            self.certificationButtonState = .init(isEnabled: !isDisabled, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
             self.shouldStartAnimation = false
         }
     }
