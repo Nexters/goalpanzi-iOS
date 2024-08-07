@@ -21,11 +21,12 @@ public struct HomeFeature {
         @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = true
         
         @Presents var destination: Destination.State?
+        var path = StackState<Path.State>()
         
         public init() {
             let theme: JejuIslandBoardTheme = .init()
             let mission: Mission = .init(description: "매일 유산소 1시간")
-            let competitionState: Competition.State = .notStarted(hasOtherPlayer: true)
+            let competitionState: Competition.State = .started//.notStarted(hasOtherPlayer: true)
             let isDisabled = competitionState != .started
             let competition: Competition = .init(
                 players: [
@@ -35,7 +36,7 @@ public struct HomeFeature {
                 board: .init(
                     theme: theme,
                     events: [.item(.init(image: "", position: Position(index: 2), description: "단감 먹기"))],
-                    totalBlockCount: 20,
+                    totalBlockCount: 19,
                     conqueredIndex: 1,
                     isDisabled: isDisabled
                 ),
@@ -47,16 +48,22 @@ public struct HomeFeature {
             )
             self.mission = mission
             self.competition = competition
-            self.certificationButtonState = .init(isEnabled: false, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
+            self.certificationButtonState = .init(isEnabled: isDisabled, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
             self.shouldStartAnimation = false
         }
     }
     
     @Reducer
     public enum Destination {
-        case missionInfo(MissionInfoFeature)
         case missionInvitationInfo(MissionInvitationInfoFeature)
         case missionDeleteAlert(MissionDeleteAlertFeature)
+        case certificationResult(CertificationResultFeature)
+        case eventResult(EventResultFeature)
+    }
+    
+    @Reducer
+    public enum Path {
+        case missionInfo(MissionInfoFeature)
     }
     
     public enum Action {
@@ -71,6 +78,7 @@ public struct HomeFeature {
         case didTapPiece(piece: Piece)
         case movePiece(piece: Piece, to: Position)
         case destination(PresentationAction<Destination.Action>)
+        case path(StackActionOf<Path>)
     }
     
     public var body: some ReducerOf<Self> {
@@ -80,10 +88,10 @@ public struct HomeFeature {
                 return .none
 
             case .didTapMissionInfoButton:
-                state.destination = .missionInfo(MissionInfoFeature.State())
+                state.path.append(.missionInfo(MissionInfoFeature.State()))
                 return .none
             case .didTapSettingButton:
-                state.shouldStartAnimation = true
+                state.destination = .certificationResult(CertificationResultFeature.State())
                 return .none
             case .didTapPlayer(player: let player):
                 return .none
@@ -104,9 +112,12 @@ public struct HomeFeature {
                 return .none
             case .destination:
                 return .none
+            case .path:
+                return .none
             }
         }
         .ifLet(\.$destination, action: \.destination)
+        .forEach(\.path, action: \.path)
     }
     
     public init() {}

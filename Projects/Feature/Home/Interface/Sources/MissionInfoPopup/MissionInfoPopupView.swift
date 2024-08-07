@@ -1,24 +1,29 @@
 //
-//  MissionInfoView.swift
+//  MissionInfoPopupView.swift
 //  FeatureHomeInterface
 //
-//  Created by Haeseok Lee on 8/8/24.
+//  Created by Haeseok Lee on 8/4/24.
 //
+
 import SwiftUI
 import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
 
-public struct MissionInfoView: View {
+public struct MissionInfoPopupView: View {
     
-    private let store: StoreOf<MissionInfoFeature>
+    private let store: StoreOf<MissionInfoPopupFeature>
+    @State private var scale = 0.5
     
-    public init(store: StoreOf<MissionInfoFeature>) {
+    public init(store: StoreOf<MissionInfoPopupFeature>) {
         self.store = store
     }
     
     public var body: some View {
-        ScrollView {
+        ZStack {
+            SharedDesignSystemAsset.Colors.black.swiftUIColor.opacity(0.7)
+                .edgesIgnoringSafeArea(.all)
+            
             VStack(spacing: 0) {
                 VStack(spacing: 29) {
                     VStack(spacing: 12) {
@@ -40,6 +45,7 @@ public struct MissionInfoView: View {
                         }
                         .multilineTextAlignment(.center)
                     }
+                    .padding(.horizontal, 24)
                     
                     VStack(alignment: .leading, spacing: 16) {
                         ForEach(Array(store.infos.enumerated()), id: \.offset) { index, info in
@@ -65,11 +71,32 @@ public struct MissionInfoView: View {
                             
                         }
                     }
+                    .padding(.horizontal, 24)
+                    
+                    Button(action: {
+                        store.send(.didTapCloseButton)
+                    }) {
+                        Text("확인")
+                            .font(.pretendard(kind: .body_lg, type: .bold))
+                            .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                            .frame(height: 60)
+                            .frame(maxWidth: .infinity)
+                            .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                            .cornerRadius(30)
+                    }
+                    .padding(.horizontal, 24)
                 }
+                .padding(.top, 40)
+                .padding(.bottom, 34)
             }
             .frame(maxWidth: .infinity)
+            .background(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+            .cornerRadius(20)
             .padding(.horizontal, 24)
+            .scaleEffect(scale)
+            .animate(using: .spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
+                scale = 1.0
+            }
         }
     }
 }
-

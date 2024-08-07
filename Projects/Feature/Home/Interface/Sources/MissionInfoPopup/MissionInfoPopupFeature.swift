@@ -1,15 +1,15 @@
 //
-//  MissionInfoFeature.swift
+//  MissionInfoPopupFeature.swift
 //  FeatureHomeInterface
 //
-//  Created by Haeseok Lee on 8/8/24.
+//  Created by Haeseok Lee on 8/4/24.
 //
 
 import Foundation
 import ComposableArchitecture
 
 @Reducer
-public struct MissionInfoFeature {
+public struct MissionInfoPopupFeature {
     
     @Dependency(\.dismiss) var dismiss
     

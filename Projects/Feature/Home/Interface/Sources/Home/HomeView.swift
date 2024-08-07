@@ -27,34 +27,46 @@ public struct HomeView: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            ZStack(alignment: .bottom) {
-                ZStack(alignment: .top) {
-                    GeometryReader { reader in
-                        CompetitionContentView(reader: reader, store: store)
-                        VStack(spacing: 0) {
-                            NavigationBarView(store: store)
-                            StoryView(store: store)
+        NavigationStack(
+            path: $store.scope(state: \.path, action: \.path)
+        ) {
+            VStack(spacing: 0) {
+                ZStack(alignment: .bottom) {
+                    ZStack(alignment: .top) {
+                        GeometryReader { reader in
+                            CompetitionContentView(reader: reader, store: store)
+                            VStack(spacing: 0) {
+                                NavigationBarView(store: store)
+                                StoryView(store: store)
+                            }
+                            .background(.ultraThinMaterial)
                         }
-                        .background(.ultraThinMaterial)
                     }
+                    BottomView(store: store)
+                        .isHidden(store.competition.board.isDisabled)
                 }
-                BottomView(store: store)
-                    .isHidden(store.competition.board.isDisabled)
             }
-        }
-        .onAppear {
-            store.send(.onAppear)
-        }
-        .overlay {
-            if let store = store.scope(state: \.destination?.missionInfo, action: \.destination.missionInfo) {
+            .onAppear {
+                store.send(.onAppear)
+            }
+            .overlay {
+                if let store = store.scope(state: \.destination?.missionDeleteAlert, action: \.destination.missionDeleteAlert) {
+                    MissionDeleteAlertView(store: store)
+                }
+                if let store = store.scope(state: \.destination?.missionInvitationInfo, action: \.destination.missionInvitationInfo) {
+                    MissionInvitationInfoView(store: store)
+                }
+                if let store = store.scope(state: \.destination?.certificationResult, action: \.destination.certificationResult) {
+                    CertificationResultView(store: store)
+                }
+                if let store = store.scope(state: \.destination?.eventResult, action: \.destination.eventResult) {
+                    EventResultView(store: store)
+                }
+            }
+        } destination: { store in
+            switch store.case {
+            case let .missionInfo(store):
                 MissionInfoView(store: store)
-            }
-            if let store = store.scope(state: \.destination?.missionDeleteAlert, action: \.destination.missionDeleteAlert) {
-                MissionDeleteAlertView(store: store)
-            }
-            if let store = store.scope(state: \.destination?.missionInvitationInfo, action: \.destination.missionInvitationInfo) {
-                MissionInvitationInfoView(store: store)
             }
         }
     }
@@ -70,10 +82,10 @@ private struct BottomView: View {
                 SharedDesignSystemAsset.Images.timeFill.swiftUIImage
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                    .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                 Text(store.certificationButtonState.info)
                     .font(.pretendard(kind: .body_lg, type: .bold))
-                    .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                    .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
             }
             .padding(.top, 16)
             .padding(.bottom, 6)
@@ -177,7 +189,7 @@ private struct NavigationBarView: View {
                     SharedDesignSystemAsset.Images.flagFill.swiftUIImage
                         .resizable()
                         .frame(width: 28, height: 28)
-                        .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                        .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                 }
                 .overlay {
                     SharedDesignSystemAsset.Images.missionInfoGuideToolTip.swiftUIImage
@@ -199,7 +211,7 @@ private struct NavigationBarView: View {
                         SharedDesignSystemAsset.Images.userAddFill.swiftUIImage
                             .resizable()
                             .frame(width: 28, height: 28)
-                            .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                     }
                     .isHidden(!store.competition.board.isDisabled)
                     .overlay {
@@ -220,7 +232,7 @@ private struct NavigationBarView: View {
                         SharedDesignSystemAsset.Images.settingFill.swiftUIImage
                             .resizable()
                             .frame(width: 28, height: 28)
-                            .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                     }
                 }
                 
@@ -228,7 +240,7 @@ private struct NavigationBarView: View {
             
             Text(store.mission.description)
                 .font(.pretendard(kind: .title_lg, type: .bold))
-                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
         }
         .padding(.horizontal, 24)
         .frame(height: 45)
@@ -296,7 +308,7 @@ private struct PlayerView: View {
             Text("\(player.name)")
                 .font(.pretendard(kind: .body_sm, type: .medium))
                 .lineLimit(1)
-                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                 .frame(width: 70, height: 20)
                 .background(SharedDesignSystemAsset.Colors.gray5.swiftUIColor.opacity(0.5))
                 .clipShape(Capsule())
@@ -314,7 +326,7 @@ private struct CompetitionInfoView: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(store.competition.info[.title] ?? "")
                 .font(.pretendard(kind: .heading_md, type: .bold))
-                .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                .foregroundStyle(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
             Text(store.competition.info[.subtitle] ?? "")
                 .font(.pretendard(kind: .body_lg, type: .bold))
                 .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor.opacity(0.5))
