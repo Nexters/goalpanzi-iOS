@@ -16,6 +16,9 @@ public struct MissionDurationSettingFeature: Reducer {
 
     @ObservableState
     public struct State: Equatable {
+        var isStartDateSelected = false
+        var isSelectWeekDayEnabled = false
+        var isAllCompleted = false
 
         var missionStartDate: Date? = nil
         var missionEndDate: Date? = nil
@@ -43,9 +46,11 @@ public struct MissionDurationSettingFeature: Reducer {
                 return .none
             case .binding(\.missionEndDate):
                 updateAuthenticationDays(with: &state)
+                state.isSelectWeekDayEnabled = true
                 return .none
             case .daySelectionButtonTapped:
                 updateAuthenticationDays(with: &state)
+                state.isAllCompleted = (state.selectedDays.isEmpty || state.authenticationDays == 0) ? false : true
                 return .none
             default:
                 return .none

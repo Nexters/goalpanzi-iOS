@@ -12,13 +12,13 @@ import SharedDesignSystem
 struct DaySelectionButton: View {
     let day: Weekday
     let isSelected: Bool
-    let isAnySelected: Bool
+    let isEnabled: Bool
     let action: () -> Void
 
     private var backgroundColor: Color {
         if isSelected {
             return .mmGray1
-        } else if !isAnySelected {
+        } else if !isEnabled {
             return .mmGray5.opacity(0.3) // 더 짙은 회색
         } else {
             return .mmGray5  // 기존의 밝은 회색
@@ -28,7 +28,7 @@ struct DaySelectionButton: View {
     private var foregroundColor: Color {
         if isSelected {
             return .mmWhite
-        } else if !isAnySelected {
+        } else if !isEnabled {
             return .mmGray1.opacity(0.3) // 더 짙은 회색
         } else {
             return .mmGray1  // 기존의 밝은 회색

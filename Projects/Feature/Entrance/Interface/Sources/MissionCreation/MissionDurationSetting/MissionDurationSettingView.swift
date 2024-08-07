@@ -20,8 +20,6 @@ public struct MissionDurationSettingView: View {
         self.store = store
     }
 
-    @State private var isStartDateSelected = false
-
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -51,14 +49,14 @@ public struct MissionDurationSettingView: View {
                     placeHolder: "시작일"
                 )
                 .onChange(of: store.missionStartDate, { oldValue, newValue in
-                    isStartDateSelected = true
+                    store.isStartDateSelected = true
                     store.endMinimumDate = Calendar.current.date(byAdding: .day, value: 2, to: store.missionStartDate ?? Date()) ?? Date()
                 })
                 Text("~")
                 DateSelectionButton(
                     date: $store.missionEndDate,
                     minimumDate: $store.endMinimumDate,
-                    isEnabled: $isStartDateSelected,
+                    isEnabled: $store.isStartDateSelected,
                     placeHolder: "마감일"
                 )
             }
@@ -66,19 +64,19 @@ public struct MissionDurationSettingView: View {
 
             Text("내일부터 시작일로 지정할 수 있어요.")
                 .font(.pretendard(size: 14, type: .medium))
-                .foregroundColor(.mmGray3)
+                .foregroundStyle(Color.mmGray3)
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("인증 요일 (다중선택)")
                     .font(.pretendard(kind: .body_md, type: .bold))
-                    .foregroundStyle(Color.mmGray2)
+                    .foregroundStyle(store.isSelectWeekDayEnabled ? Color.mmGray2.opacity(0.3) : Color.mmGray2)
 
                 HStack {
                     ForEach(Weekday.allCases, id: \.self) { day in
                         DaySelectionButton(
                             day: day,
                             isSelected: store.selectedDays.contains(day),
-                            isAnySelected: !store.selectedDays.isEmpty
+                            isEnabled: store.missionEndDate != nil
                         ) {
                             if store.selectedDays.contains(day) {
                                 store.selectedDays.remove(day)
@@ -92,12 +90,13 @@ public struct MissionDurationSettingView: View {
 
                 Text("선택한 요일에만 미션 인증할 수 있어요.(ex.월,수,금)")
                     .font(.pretendard(size: 14, type: .medium))
-                    .foregroundStyle(Color.mmGray2)
+                    .foregroundStyle(store.isSelectWeekDayEnabled ? Color.mmGray2.opacity(0.3) : Color.mmGray2)
             }
 
             Spacer()
 
-            MMRoundedButton(isEnabled: .constant(true), title: "다음") {
+            MMRoundedButton(isEnabled: $store.isAllCompleted, title: "다음") {
+                // navigation 진행
             }
             .frame(height: 60)
             .padding(.bottom, 36)
