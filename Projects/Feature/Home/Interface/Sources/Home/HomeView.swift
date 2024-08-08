@@ -74,7 +74,7 @@ public struct HomeView: View {
 
 private struct BottomView: View {
     
-    let store: StoreOf<HomeFeature>
+    @Bindable var store: StoreOf<HomeFeature>
     
     var body: some View {
         VStack {
@@ -90,9 +90,7 @@ private struct BottomView: View {
             .padding(.top, 16)
             .padding(.bottom, 6)
             
-            Button(action: {
-                store.send(.didTapCertificationButton)
-            }) {
+            PhotoPickerView(selectedImages: $store.selectedImages.sending(\.didSelectImages), maxSelectedCount: 1) {
                 Text(store.certificationButtonState.title)
                     .font(.pretendard(kind: .body_lg, type: .bold))
                     .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
@@ -124,13 +122,15 @@ private struct CompetitionContentView: View {
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 4) {
-                    CompetitionInfoView(store: store)
-                    BoardView(reader: reader, store: store)
+                ScrollViewReader { scrollProxy in
+                    VStack(alignment: .leading, spacing: 4) {
+                        CompetitionInfoView(store: store)
+                        BoardView(reader: reader, scrollProxy: scrollProxy, store: store)
+                    }
+                    .padding(.top, 167)
+                    .padding(.horizontal, HomeView.Constant.horizontalPadding)
+                    .padding(.bottom, 142)
                 }
-                .padding(.top, 167)
-                .padding(.horizontal, HomeView.Constant.horizontalPadding)
-                .padding(.bottom, 142)
             }
             .background {
                 store.competition.board.theme.backgroundImageAsset.swiftUIImage
@@ -141,7 +141,7 @@ private struct CompetitionContentView: View {
             .scrollDisabled(store.competition.board.isDisabled)
             
             if store.competition.board.isDisabled {
-                NotStartedInfoView(me: store.competition.findMe(), competitionState: store.competition.state)
+                NotStartedInfoView(me: store.competition.me, competitionState: store.competition.state)
                     .padding(.top, 167)
             }
         }

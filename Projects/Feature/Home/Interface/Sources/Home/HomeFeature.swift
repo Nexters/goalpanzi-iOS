@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import ComposableArchitecture
 import DomainMissionInterface
 import DomainBoardInterface
@@ -15,6 +16,7 @@ public struct HomeFeature {
         public var competition: Competition
         public var certificationButtonState: CertificationButtonState
         public var shouldStartAnimation: Bool
+        public var selectedImages: [UIImage]
         
         @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = true
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = true
@@ -50,6 +52,13 @@ public struct HomeFeature {
             self.competition = competition
             self.certificationButtonState = .init(isEnabled: !isDisabled, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
             self.shouldStartAnimation = false
+            self.selectedImages = []
+            
+            let piece = competition.myPiece!
+            let newPiece = Piece(id: piece.id, position: piece.position + 9, image: piece.image, name: piece.name)
+            self.competition.board.remove(piece: piece)
+            self.competition.board.insert(piece: newPiece)
+            self.competition.board.update(conqueredIndex: newPiece.position.index)
         }
     }
     
@@ -66,7 +75,7 @@ public struct HomeFeature {
         case missionInfo(MissionInfoFeature)
     }
     
-    public enum Action {
+    public enum Action: BindableAction {
         case onAppear
         case didTapMissionInfoButton
         case didTapSettingButton
@@ -74,14 +83,16 @@ public struct HomeFeature {
         case didTapInvitatoinInfoToolTip
         case didTapMissionInfoGuideToolTip
         case didTapPlayer(player: Player)
-        case didTapCertificationButton
+        case didSelectImages([UIImage])
         case didTapPiece(piece: Piece)
         case movePiece(piece: Piece, to: Position)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
+        case binding(BindingAction<State>)
     }
     
     public var body: some ReducerOf<Self> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case .onAppear:
@@ -95,7 +106,8 @@ public struct HomeFeature {
                 return .none
             case .didTapPlayer(player: let player):
                 return .none
-            case .didTapCertificationButton:
+            case let .didSelectImages(images):
+                print(state.selectedImages)
                 return .none
             case .didTapPiece(piece: let piece):
                 return .none
@@ -113,6 +125,8 @@ public struct HomeFeature {
             case .destination:
                 return .none
             case .path:
+                return .none
+            case .binding:
                 return .none
             }
         }

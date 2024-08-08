@@ -37,12 +37,12 @@ public struct Competition {
         self.board.update(pieces: createPieces(by: players))
     }
     
-    public func findMe() -> Player? {
-        return players.first(where: { $0.isMe == true })
+    public var me: Player? {
+        players.first(where: { $0.isMe == true })
     }
     
-    public func findMyPiece() -> Piece? {
-        guard let me = findMe() else { return nil }
+    public var myPiece: Piece? {
+        guard let me else { return nil }
         return board.findPiece(by: me.pieceID)
     }
     

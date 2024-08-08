@@ -15,16 +15,16 @@ import DomainPlayerInterface
 struct BoardView: View {
     
     let reader: GeometryProxy
+    let scrollProxy: ScrollViewProxy
     
     @Bindable var store: StoreOf<HomeFeature>
-
     @State var shouldShowMovingPiece: Bool = false
     @State var movingDirection: DomainBoardInterface.Direction? = nil
     
     var body: some View {
         let numberOfRows: Int = store.competition.board.numberOfRows
         let numberOfColumns: Int = store.competition.board.numberOfColumns
-        let myPiece: Piece? = store.competition.findMyPiece()
+        let myPiece: Piece? = store.competition.myPiece
 //        if store.shouldStartAnimation {
 //            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
 //                self.shouldShowRepresentativePiece = false
@@ -55,17 +55,24 @@ struct BoardView: View {
                             movingDirection: $movingDirection
                         )
                         .zIndex(-Double(index))
+                        .id(index)
                     }
                 }
             }
             .onAppear {
+                guard let myPiece else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    self.shouldShowMovingPiece = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        guard let myPiece else { return }
-                        self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
+                    withAnimation(.spring(duration: 1.5)) {
+                        scrollProxy.scrollTo(myPiece.position.index, anchor: .center)
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+                        self.shouldShowMovingPiece = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                            self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
+                        }
                     }
                 }
+                
             }
         }
         .padding(.top, 4)

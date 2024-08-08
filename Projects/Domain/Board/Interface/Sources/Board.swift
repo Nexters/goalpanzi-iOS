@@ -92,6 +92,25 @@ public struct Board {
         self.pieces = pieces
     }
     
+    public mutating func remove(piece: Piece) {
+        self.pieces.remove(piece)
+    }
+    
+    public mutating func insert(piece: Piece) {
+        self.pieces.insert(piece)
+    }
+    
+    public mutating func update(conqueredIndex: Int) {
+        self.conqueredIndex = conqueredIndex
+        self.blocks = blocks.reduce([:], { partialResult, keyValue in
+            var newResult = partialResult
+            var (position, block) = keyValue
+            block.isConquered = block.position.index <= conqueredIndex
+            newResult[position] = block
+            return newResult
+        })
+    }
+    
     public func move(piece: Piece, to position: Position) -> Direction? {
         
         defer {
@@ -110,8 +129,8 @@ public struct Board {
         let phase1 = (0...(numberOfColumns - 1))
         let phase2 = (numberOfColumns...(cycle - 1))
         
-        let departureIndex = piece.position.index
-        let arrivalIndex = position.index
+        let departureIndex = piece.position.index % cycle
+        let arrivalIndex = position.index % cycle
         
         guard departureIndex < arrivalIndex else { return nil }
         

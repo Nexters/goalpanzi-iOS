@@ -163,6 +163,9 @@ struct BlockView: View {
     func calcNextPoint(reader: GeometryProxy, movingDirection direction: DomainBoardInterface.Direction?) -> CGPoint {
         let frame = reader.frame(in: .local)
         let (width, originX, originY) = (frame.size.width, frame.midX, frame.midY)
+        //print(reader.frame(in: .global))
+        //print("index: \(block?.position.index)", reader.frame(in: .global).midX, reader.frame(in: .global).midY)
+        //print("scrollViewHeight: ", superViewReader.size.height)
         if direction == nil {
             return CGPoint(x: originX, y: originY)
         }

@@ -21,7 +21,7 @@ public struct Block {
     
     public let isLastBlock: Bool
     
-    public let isConquered: Bool
+    public var isConquered: Bool
     
     public let isDisabled: Bool
     
