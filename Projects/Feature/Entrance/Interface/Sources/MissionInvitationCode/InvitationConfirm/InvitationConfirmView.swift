@@ -9,9 +9,15 @@ import SwiftUI
 
 import SharedDesignSystem
 
+import ComposableArchitecture
+
 public struct InvitationConfirmView: View {
     
-    public init() {} 
+    @Bindable public var store: StoreOf<InvitationConfirmFeature>
+
+    public init(store: StoreOf<InvitationConfirmFeature>) {
+        self.store = store
+    }
     
     public var body: some View {
         ZStack {
@@ -22,17 +28,17 @@ public struct InvitationConfirmView: View {
                 Spacer()
                 MMPopUpView(
                     title: "초대받은 경쟁이 맞나요?",
-                    subtitle: "*기간 대비 인증 요일을 계산해\n 인증횟수(보드판 수)는 총 12개가\n 생성되었습니다.",
-                    highlightedSubtitle: "인증횟수(보드판 수)는 총 12개",
+                    subtitle: "*기간 대비 인증 요일을 계산해\n 인증횟수(보드판 수)는 총 \(store.authenticationDays)개가\n 생성되었습니다.",
+                    highlightedSubtitle: "인증횟수(보드판 수)는 총 \(store.authenticationDays)개",
                     content: {
                         VStack(alignment: .leading, spacing: 8) {
-                            InfoRow(title: "미션", content: "메일 유신소 1시간")
+                            InfoRow(title: "미션", content: store.missionTitle)
                             Divider()
-                            InfoRow(title: "미션 기간", content: "2024.07.24~2024.08.14")
+                            InfoRow(title: "미션 기간", content: store.missionDuration)
                             Divider()
-                            InfoRow(title: "인증 요일", content: "월/수/목")
+                            InfoRow(title: "인증 요일", content: store.missionWeekDay)
                             Divider()
-                            InfoRow(title: "인증 시간", content: "오전 00~12시")
+                            InfoRow(title: "인증 시간", content: store.missionTimeOfDay)
                         }
                         .padding(.vertical, 29)
                     }, primaryButtonTitle: "맞아요", primaryButtonAction: {
