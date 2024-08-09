@@ -19,7 +19,7 @@ public struct MMPopUpView<Content: View>: View {
     private let secondaryButtonTitle: String?
     private let secondaryButtonAction: (() -> Void)?
 
-    init(
+    public init(
         title: String,
         highlightedTitle: String? = nil,
         subtitle: String,
@@ -41,8 +41,8 @@ public struct MMPopUpView<Content: View>: View {
         self.secondaryButtonAction = secondaryButtonAction
     }
 
-    public  var body: some View {
-        VStack(spacing: 12) {
+    public var body: some View {
+        VStack(spacing: 0) {
             Spacer().frame(height: 40)
 
             if let highlighted = highlightedTitle {
@@ -60,6 +60,8 @@ public struct MMPopUpView<Content: View>: View {
             }
 
             if let highlighted = highlightedSubtitle {
+                Spacer()
+                    .frame(height: 12)
                 highlightedTextView(
                     text: subtitle,
                     highlighted: highlighted,
@@ -75,17 +77,15 @@ public struct MMPopUpView<Content: View>: View {
 
             Group {
                 if !(content is EmptyView) {
-                    Spacer().frame(height: 32)
                     content
                         .frame(maxWidth: .infinity, alignment: .center)
-                    Spacer().frame(height: 32)
                 }
             }
 
             Button(action: primaryButtonAction) {
                 Text(primaryButtonTitle)
                     .frame(maxWidth: .infinity)
-                    .padding()
+                    .frame(height: 60)
                     .background(Color.mmOrange)
                     .foregroundColor(.white)
                     .cornerRadius(30)
@@ -96,18 +96,17 @@ public struct MMPopUpView<Content: View>: View {
                 Button(action: secondaryAction) {
                     Text(secondaryTitle)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.white)
-                        .foregroundColor(.gray)
+                        .frame(height: 60)
+                        .background(Color.mmWhite)
+                        .foregroundColor(Color.mmGray3)
                 }
             }
-
-            Spacer().frame(height: 34)
+            Spacer()
+                .frame(height: 18)
         }
         .padding(.horizontal, 24)
         .background(Color.white)
-        .cornerRadius(12)
-        .shadow(radius: 12)
+        .cornerRadius(20)
     }
 
     private func highlightedTextView(text: String, highlighted: String, font: Font) -> some View {
@@ -122,7 +121,7 @@ public struct MMPopUpView<Content: View>: View {
                     ForEach(parts.indices, id: \.self) { partIndex in
                         if partIndex > 0 {
                             Text(highlighted)
-                                .foregroundColor(.orange)
+                                .foregroundStyle(Color.mmOrange)
                         }
                         Text(parts[partIndex])
                     }
