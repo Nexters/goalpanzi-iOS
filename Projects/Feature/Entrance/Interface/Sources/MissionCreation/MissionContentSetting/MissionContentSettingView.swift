@@ -69,7 +69,7 @@ public struct MissionContentSettingView: View {
                         verticalPadding: 1
                     ))
                 ) {
-                    print("backButtonTapped")
+                    store.send(.backButtonTapped)
                 }
                 .padding(.horizontal, 24)
             }

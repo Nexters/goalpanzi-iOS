@@ -77,6 +77,11 @@ public struct EntranceView: View {
             ) { store in
                 MissionContentSettingView(store: store)
             }
+            .navigationDestination(
+                item: $store.scope(state: \.destination?.missionInvitationCode, action: \.destination.missionInvitationCode)
+            ) { store in
+                MissionInvitationCodeView(store: store)
+            }
         }
     }
 

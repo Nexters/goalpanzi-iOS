@@ -32,7 +32,7 @@ public struct InvitationConfirmFeature: Reducer {
         case confirmButtonTapped
         case denyButtonTapped
     }
-
+    
     public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce<State, Action> { state, action in

@@ -27,7 +27,10 @@ public struct MissionContentSettingFeature: Reducer {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case nextButtonTapped
+        case backButtonTapped
     }
+    
+    @Dependency(\.dismiss) var dismiss
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -39,6 +42,10 @@ public struct MissionContentSettingFeature: Reducer {
                 return .none
             case .nextButtonTapped:
                 return .none
+            case .backButtonTapped:
+                return .run { _ in
+                  await self.dismiss()
+                }
             default:
                 return .none
             }

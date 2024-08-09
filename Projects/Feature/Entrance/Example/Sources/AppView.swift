@@ -10,8 +10,8 @@ struct AppView: App {
     }
     var body: some Scene {
         WindowGroup {
-            MissionInvitationCodeView(store: .init(initialState: .init(), reducer: {
-                MissionInvitationCodeFeature()
+            EntranceView(store: .init(initialState: .init(), reducer: {
+                EntranceFeature()
             }))
         }
     }

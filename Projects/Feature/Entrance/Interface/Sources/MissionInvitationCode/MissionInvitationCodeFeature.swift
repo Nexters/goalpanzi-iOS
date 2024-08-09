@@ -31,8 +31,10 @@ public struct MissionInvitationCodeFeature: Reducer {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case confirmButtonTapped
-
+        case backButtonTapped
     }
+    
+    @Dependency(\.dismiss) var dismiss
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -54,6 +56,10 @@ public struct MissionInvitationCodeFeature: Reducer {
                 print("뭐냐!!!!")
                 state.isInvalid = true
                 return .none
+            case .backButtonTapped:
+                return .run { _ in
+                  await self.dismiss()
+                }
             default:
                 return .none
             }

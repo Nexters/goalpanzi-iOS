@@ -27,7 +27,6 @@ public struct MissionInvitationCodeView: View {
     }
 
     @FocusState private var textFieldFocusState: FocusTextField?
-
     @State private var keyboardHeight: CGFloat = 0
 
     public var body: some View {
@@ -36,7 +35,6 @@ public struct MissionInvitationCodeView: View {
                 VStack(alignment: .leading) {
                     Spacer()
                         .frame(height: 22)
-
 
                     VStack(alignment: .leading) {
                         invitationCodeHeaderView
@@ -146,10 +144,11 @@ public struct MissionInvitationCodeView: View {
                         verticalPadding: 1
                     ))
                 ) {
-                    print("backButtonTapped")
+                    store.send(.backButtonTapped)
                 }
             }
         }
+        .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
         .padding(.horizontal, 24)
         .animation(.default, value: keyboardHeight)

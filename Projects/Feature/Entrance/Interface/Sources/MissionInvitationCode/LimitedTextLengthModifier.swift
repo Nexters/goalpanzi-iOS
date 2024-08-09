@@ -18,6 +18,7 @@ struct LimitedTextLengthModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            .disableAutoFunctions()
             .multilineTextAlignment(.center)
             .onReceive(Just(inputText)) { _ in limitText() }
             .font(.pretendard(kind: .heading_md, type: .bold))
