@@ -6,22 +6,22 @@
 //
 
 import Foundation
+import SharedDesignSystem
 
 public enum Event {
-    case item(ItemInfo)
-}
-
-public extension Event {
+    case reward((any RewardInfo)?)
     
-    struct ItemInfo: CustomStringConvertible {
-        public let image: String
-        public let position: Position
-        public let description: String
-        
-        public init(image: String, position: Position, description: String) {
-            self.image = image
-            self.position = position
-            self.description = description
+    var position: Position? {
+        switch self {
+        case let .reward(info):
+            return info?.position
         }
     }
+}
+
+public protocol RewardInfo: CustomStringConvertible {
+    
+    var position: Position { get }
+    
+    var resultImageAsset: SharedDesignSystemImages { get }
 }

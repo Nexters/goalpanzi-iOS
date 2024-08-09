@@ -5,6 +5,7 @@ import DomainMissionInterface
 import DomainBoardInterface
 import DomainPlayerInterface
 import DomainCompetitionInterface
+import SharedDesignSystem
 import SharedThirdPartyLib
 
 @Reducer
@@ -37,8 +38,19 @@ public struct HomeFeature {
                 ],
                 board: .init(
                     theme: theme,
-                    events: [.item(.init(image: "", position: Position(index: 2), description: "단감 먹기"))],
-                    totalBlockCount: 19,
+                    events: [
+                        .reward(JejuRewardInfo(rawValue: "ORANGE", position: Position(index: 1), description: "감귤 먹기")),
+                        .reward(JejuRewardInfo(rawValue: "CANOLA_FLOWER", position: Position(index: 3), description: "유채꽃 보기")),
+                        .reward(JejuRewardInfo(rawValue: "DOLHARUBANG", position: Position(index: 6), description: "돌하르방 만나기")),
+                        .reward(JejuRewardInfo(rawValue: "HORSE_RIDING", position: Position(index: 9), description: "승마 체험하기")),
+                        .reward(JejuRewardInfo(rawValue: "HALLA_MOUNTAIN", position: Position(index: 13), description: "한라산 등반하기")),
+                        .reward(JejuRewardInfo(rawValue: "WATERFALL", position: Position(index: 17), description: "폭포 감상하기")),
+                        .reward(JejuRewardInfo(rawValue: "BLACK_PIG", position: Position(index: 21), description: "흑돼지 먹기")),
+                        .reward(JejuRewardInfo(rawValue: "SUNRISE", position: Position(index: 25), description: "성산일출봉 보기")),
+                        .reward(JejuRewardInfo(rawValue: "GREEN_TEA_FIELD", position: Position(index: 29), description: "녹차밭")),
+                        .reward(JejuRewardInfo(rawValue: "BEACH", position: Position(index: 31), description: "바다 보기"))
+                    ],
+                    totalBlockCount: 33,
                     conqueredIndex: 1,
                     isDisabled: isDisabled
                 ),
@@ -68,6 +80,8 @@ public struct HomeFeature {
         case missionDeleteAlert(MissionDeleteAlertFeature)
         case certificationResult(CertificationResultFeature)
         case eventResult(EventResultFeature)
+        case imageUpload(ImageUploadFeature)
+        case imageDetail(ImageDetailFeature)
     }
     
     @Reducer
@@ -102,7 +116,7 @@ public struct HomeFeature {
                 state.path.append(.missionInfo(MissionInfoFeature.State()))
                 return .none
             case .didTapSettingButton:
-                state.destination = .certificationResult(CertificationResultFeature.State())
+                state.destination = .imageDetail(ImageDetailFeature.State())
                 return .none
             case .didTapPlayer(player: let player):
                 return .none

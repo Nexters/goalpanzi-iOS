@@ -22,6 +22,8 @@ public protocol BlockTheme {
     func normalImageAsset(kind: BlockKind, isHighlighted: Bool) -> SharedDesignSystemImages
     
     func conqueredImageAsset(kind: BlockKind) -> SharedDesignSystemImages
+    
+    func eventImageAsset(kind: BlockKind, event: DomainBoardInterface.Event) -> SharedDesignSystemImages?
 }
 
 public extension BlockTheme {

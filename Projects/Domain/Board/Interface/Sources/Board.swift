@@ -78,6 +78,10 @@ public struct Board {
         return pieces.first(where: { $0.id == pieceID })
     }
     
+    public func findEvent(by position: Position) -> Event? {
+        return events.first(where: { $0.position == position })
+    }
+    
     public func samePositionPieces(by position: Position) -> [Piece] {
         pieces.filter({ $0.position == position })
     }

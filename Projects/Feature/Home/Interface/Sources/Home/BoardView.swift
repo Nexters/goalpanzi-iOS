@@ -46,7 +46,8 @@ struct BoardView: View {
                         let index = col + (row * numberOfColumns)
                         let position = Position(index: index)
                         BlockView(
-                            block: store.competition.board.findBlock(by: position),
+                            block: store.competition.board.findBlock(by: position), 
+                            event: store.competition.board.findEvent(by: position),
                             representativePiece: store.competition.board.representativePiece(by: position),
                             movingPiece: myPiece?.position == position ? myPiece : nil,
                             myPiece: myPiece,
@@ -62,7 +63,7 @@ struct BoardView: View {
             .onAppear {
                 guard let myPiece else { return }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    withAnimation(.spring(duration: 1.5)) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
                         scrollProxy.scrollTo(myPiece.position.index, anchor: .center)
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {

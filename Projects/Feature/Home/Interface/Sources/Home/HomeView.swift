@@ -63,6 +63,12 @@ public struct HomeView: View {
                     EventResultView(store: store)
                 }
             }
+            .fullScreenCover(item: $store.scope(state: \.destination?.imageUpload, action: \.destination.imageUpload)) { store in
+                ImageUploadView(store: store)
+            }
+            .fullScreenCover(item: $store.scope(state: \.destination?.imageDetail, action: \.destination.imageDetail)) { store in
+                ImageDetailView(store: store)
+            }
         } destination: { store in
             switch store.case {
             case let .missionInfo(store):

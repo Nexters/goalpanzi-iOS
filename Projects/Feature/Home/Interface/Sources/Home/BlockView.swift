@@ -16,6 +16,8 @@ struct BlockView: View {
     
     let block: Block?
     
+    let event: DomainBoardInterface.Event?
+    
     let representativePiece: Piece?
     
     let movingPiece: Piece?
@@ -57,6 +59,20 @@ struct BlockView: View {
                     Text("GOAL")
                         .font(.pretendard(kind: .title_lg, type: .bold))
                         .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                }
+                
+                if let event {
+                    if block.isConquered {
+                        block.theme.eventImageAsset(kind: block.kind, event: event)?.swiftUIImage
+                            .resizable()
+                            .opacity(block.isDisabled ? 0.5 : 1.0)
+                            .aspectRatio(1.0, contentMode: .fit)
+                    } else {
+                        SharedDesignSystemAsset.Images.gift.swiftUIImage
+                            .resizable()
+                            .padding(35)
+                            .opacity(block.isDisabled ? 0.5 : 1.0)
+                    }
                 }
                 
                 if let representativePiece {
@@ -163,9 +179,6 @@ struct BlockView: View {
     func calcNextPoint(reader: GeometryProxy, movingDirection direction: DomainBoardInterface.Direction?) -> CGPoint {
         let frame = reader.frame(in: .local)
         let (width, originX, originY) = (frame.size.width, frame.midX, frame.midY)
-        //print(reader.frame(in: .global))
-        //print("index: \(block?.position.index)", reader.frame(in: .global).midX, reader.frame(in: .global).midY)
-        //print("scrollViewHeight: ", superViewReader.size.height)
         if direction == nil {
             return CGPoint(x: originX, y: originY)
         }
