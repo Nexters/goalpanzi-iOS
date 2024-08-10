@@ -16,6 +16,8 @@ public struct MissionInvitationCodeFeature: Reducer {
 
     @ObservableState
     public struct State: Equatable {
+        @Presents var invitationConfirm: InvitationConfirmFeature.State?
+
         var firstInputCode: String = ""
         var secondInputCode: String = ""
         var thirdInputCode: String = ""
@@ -32,6 +34,10 @@ public struct MissionInvitationCodeFeature: Reducer {
         case binding(BindingAction<State>)
         case confirmButtonTapped
         case backButtonTapped
+        case startMission
+        
+        // MARK: Child Action
+        case invitationConfirm(PresentationAction<InvitationConfirmFeature.Action>)
     }
     
     @Dependency(\.dismiss) var dismiss
@@ -52,17 +58,26 @@ public struct MissionInvitationCodeFeature: Reducer {
                 }
                 return .none
             case .confirmButtonTapped:
-                // 여기서 비동기 처리
-                print("뭐냐!!!!")
                 state.isInvalid = true
+                state.invitationConfirm = InvitationConfirmFeature.State()
                 return .none
             case .backButtonTapped:
                 return .run { _ in
                   await self.dismiss()
                 }
+            case .invitationConfirm(.presented(.delegate(.didConfirmButtonTapped))):
+                return .run { send in
+                    await send(.startMission)
+                }
+            case .startMission:
+                return .none
+                
             default:
                 return .none
             }
+        }
+        .ifLet(\.$invitationConfirm, action: \.invitationConfirm) {
+         InvitationConfirmFeature()
         }
     }
 }

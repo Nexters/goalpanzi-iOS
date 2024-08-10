@@ -50,6 +50,7 @@ public struct InvitationConfirmView: View {
                 Spacer()
             }
         }
+        .background(Color.clear)
     }
 }
 

@@ -48,6 +48,7 @@ public struct EntranceFeature: Reducer {
                 state.path.append(.missionContentSetting(MissionContentSettingFeature.State( missionCreationData: state.$missionCreationData)))
                 return .none
             case .enterInvitationCodeButtonTapped:
+                state.path.append(.missionInputInviationCode(MissionInvitationCodeFeature.State()))
                 return .none
             case let .path(action):
                 switch action {
@@ -59,6 +60,9 @@ public struct EntranceFeature: Reducer {
                     return .none
                 case .element(id: _, action: .missionAuthTimeSetting(.startMission)):
                     print(state.missionCreationData)
+                    return .none
+                case .element(id: _, action: .missionInputInviationCode(.startMission)):
+                    print("Move to Board")
                     return .none
                 default:
                     return .none

@@ -154,6 +154,11 @@ public struct MissionInvitationCodeView: View {
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)
+        .fullScreenCover(
+            item: $store.scope(state: \.invitationConfirm, action: \.invitationConfirm)
+        ) { store in
+            InvitationConfirmView(store: store)
+        }
     }
 }
 

@@ -28,20 +28,34 @@ public struct InvitationConfirmFeature: Reducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-
+        
         case confirmButtonTapped
         case denyButtonTapped
+        
+        public enum Delegate {
+            case didConfirmButtonTapped
+        }
+        
+        case delegate(Delegate)
+
     }
+    
+    @Dependency(\.dismiss) var dismiss
     
     public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
             case .confirmButtonTapped:
+                return .run { send in
+                    await send(.delegate(.didConfirmButtonTapped))
+                }
                 return .none
             case .denyButtonTapped:
-                return .none
-            case .binding(_):
+                return .run { _ in
+                    await self.dismiss()
+                }
+            default:
                 return .none
             }
         }
