@@ -61,19 +61,19 @@ struct BoardView: View {
                 }
             }
             .onAppear {
-                guard let myPiece else { return }
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
-                        scrollProxy.scrollTo(myPiece.position.index, anchor: .center)
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
-                        self.shouldShowMovingPiece = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                            self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
-                        }
-                    }
-                }
-                
+//                guard let myPiece else { return }
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+//                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
+//                        scrollProxy.scrollTo(myPiece.position.index, anchor: .center)
+//                    }
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+//                        self.shouldShowMovingPiece = true
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+//                            self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
+//                        }
+//                    }
+//                }
+//                
             }
         }
         .padding(.top, 4)

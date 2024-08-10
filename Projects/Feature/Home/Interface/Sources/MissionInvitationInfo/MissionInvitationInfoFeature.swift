@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import UIKit
 
 @Reducer
 public struct MissionInvitationInfoFeature {
@@ -16,11 +17,12 @@ public struct MissionInvitationInfoFeature {
     @ObservableState
     public struct State {
         
-        public init() {
-            
+        public let codes: [String]
+        
+        public init(codes: [String]) {
+            self.codes = codes
         }
     }
-    
     
     public enum Action {
         case didTapCloseButton

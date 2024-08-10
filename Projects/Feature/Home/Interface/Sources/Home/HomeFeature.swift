@@ -19,9 +19,9 @@ public struct HomeFeature {
         public var shouldStartAnimation: Bool
         public var selectedImages: [UIImage]
         
-        @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = true
-        @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = true
-        @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = true
+        @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
+        @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
+        @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = false
         
         @Presents var destination: Destination.State?
         var path = StackState<Path.State>()
@@ -29,12 +29,13 @@ public struct HomeFeature {
         public init() {
             let theme: JejuIslandBoardTheme = .init()
             let mission: Mission = .init(description: "매일 유산소 1시간")
-            let competitionState: Competition.State = .started//.notStarted(hasOtherPlayer: true)
+            let competitionState: Competition.State = .notStarted(hasOtherPlayer: false)//.started//
             let isDisabled = competitionState != .started
             let competition: Competition = .init(
                 players: [
                     .init(id: "1", pieceID: "1", name: "이해석", character: .rabbit, isMe: true),
-                    .init(id: "2", pieceID: "2", name: "김용재", character: .bear)
+//                    .init(id: "2", pieceID: "2", name: "김용재", character: .bear),
+//                    .init(id: "3", pieceID: "3", name: "김용재2", character: .cat),
                 ],
                 board: .init(
                     theme: theme,
@@ -94,7 +95,7 @@ public struct HomeFeature {
         case didTapMissionInfoButton
         case didTapSettingButton
         case didTapInvitationInfoButton
-        case didTapInvitatoinInfoToolTip
+        case didTapInvitationInfoToolTip
         case didTapMissionInfoGuideToolTip
         case didTapPlayer(player: Player)
         case didSelectImages([UIImage])
@@ -111,8 +112,8 @@ public struct HomeFeature {
             switch action {
             case .onAppear:
                 return .none
-
             case .didTapMissionInfoButton:
+                state.isMissionInfoGuideToolTipShowed = true
                 state.path.append(.missionInfo(MissionInfoFeature.State()))
                 return .none
             case .didTapSettingButton:
@@ -128,9 +129,10 @@ public struct HomeFeature {
             case .movePiece(piece: let piece, to: let to):
                 return .none
             case .didTapInvitationInfoButton:
-                state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State())
+                state.isInvitationGuideToolTipShowed = true
+                state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State(codes: ["A", "Z", "3", "X"]))
                 return .none
-            case .didTapInvitatoinInfoToolTip:
+            case .didTapInvitationInfoToolTip:
                 state.isInvitationGuideToolTipShowed = true
                 return .none
             case .didTapMissionInfoGuideToolTip:

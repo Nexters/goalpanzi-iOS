@@ -5,7 +5,9 @@
 //  Created by Haeseok Lee on 8/5/24.
 //
 
+import UIKit
 import SwiftUI
+import UniformTypeIdentifiers
 import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
@@ -49,7 +51,7 @@ public struct MissionInvitationInfoView: View {
                     .padding(.horizontal, 24)
                     
                     HStack(spacing: 6) {
-                        ForEach(Array(["A", "Z", "1", "1"].enumerated()), id: \.offset) { index, letter in
+                        ForEach(Array(store.codes.enumerated()), id: \.offset) { index, letter in
                             Text(letter)
                                 .font(.pretendard(kind: .heading_md, type: .bold))
                                 .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
@@ -65,7 +67,8 @@ public struct MissionInvitationInfoView: View {
                     
                     VStack(spacing: 8) {
                         Button(action: {
-                            // 친구 초대 코드 복사 액션
+                            UIPasteboard.general.setValue(store.codes.joined(separator: ""),
+                                       forPasteboardType: UTType.plainText.identifier)
                         }) {
                             Text("친구 초대 코드 복사")
                                 .font(.pretendard(kind: .body_lg, type: .bold))

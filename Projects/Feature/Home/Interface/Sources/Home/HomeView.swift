@@ -205,7 +205,10 @@ private struct NavigationBarView: View {
                         .onTapGesture {
                             store.send(.didTapMissionInfoGuideToolTip)
                         }
-                        .isHidden(store.isMissionInfoGuideToolTipShowed, remove: true)
+                        .isHidden(
+                            store.isMissionInfoGuideToolTipShowed || store.competition.state != .notStarted(hasOtherPlayer: true),
+                            remove: true
+                        )
                 }
                 
                 Spacer()
@@ -227,9 +230,12 @@ private struct NavigationBarView: View {
                             .offset(x: -42, y: 50)
                             
                             .onTapGesture {
-                                store.send(.didTapInvitatoinInfoToolTip)
+                                store.send(.didTapInvitationInfoToolTip)
                             }
-                            .isHidden(store.isInvitationGuideToolTipShowed, remove: true)
+                            .isHidden(
+                                store.isInvitationGuideToolTipShowed || store.competition.state != .notStarted(hasOtherPlayer: false),
+                                remove: true
+                            )
                     }
                     
                     Button(action: {

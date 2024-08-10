@@ -62,7 +62,7 @@ struct BlockView: View {
                 }
                 
                 if let event {
-                    if block.isConquered {
+                    if block.isConquered, !block.isDisabled {
                         block.theme.eventImageAsset(kind: block.kind, event: event)?.swiftUIImage
                             .resizable()
                             .opacity(block.isDisabled ? 0.5 : 1.0)
@@ -75,7 +75,7 @@ struct BlockView: View {
                     }
                 }
                 
-                if let representativePiece {
+                if let representativePiece, !block.isDisabled {
                     let isMe = representativePiece == myPiece
                     GeometryReader { reader in
                         ZStack(alignment: .topTrailing) {
