@@ -27,14 +27,24 @@ public struct HomeFeature {
         var path = StackState<Path.State>()
         
         public init() {
+            let startDate = "2024-08-13 16:30"
+            let endDate = "2025-08-13 16:30"
+            let nowDate = Date()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+            
             let theme: JejuIslandBoardTheme = .init()
-            let mission: Mission = .init(description: "매일 유산소 1시간")
-            let competitionState: Competition.State = .notStarted(hasOtherPlayer: false)//.started//
+            let mission: Mission = .init(
+                description: "매일 유산소 1시간",
+                startDate: dateFormatter.date(from: startDate) ?? Date.now,
+                endDate: dateFormatter.date(from: endDate) ?? Date.now
+            )
+            let competitionState: Competition.State = .notStarted(hasOtherPlayer: true)//.notStarted(hasOtherPlayer: false)//.started//
             let isDisabled = competitionState != .started
             let competition: Competition = .init(
                 players: [
                     .init(id: "1", pieceID: "1", name: "이해석", character: .rabbit, isMe: true),
-//                    .init(id: "2", pieceID: "2", name: "김용재", character: .bear),
+                    .init(id: "2", pieceID: "2", name: "김용재", character: .bear),
 //                    .init(id: "3", pieceID: "3", name: "김용재2", character: .cat),
                 ],
                 board: .init(
@@ -111,6 +121,12 @@ public struct HomeFeature {
         Reduce { state, action in
             switch action {
             case .onAppear:
+                if state.competition.state == .notStarted(hasOtherPlayer: false)
+                    && state.mission.startDate < Date.now {
+                    state.destination = .missionDeleteAlert(MissionDeleteAlertFeature.State())
+                    return .none
+                }
+                
                 return .none
             case .didTapMissionInfoButton:
                 state.isMissionInfoGuideToolTipShowed = true

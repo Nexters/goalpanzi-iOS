@@ -26,7 +26,12 @@ public struct Competition {
     
     public var board: Board
     
-    public init(players: [Player], board: Board, info: [InfoKey: String] = [:], state: State) {
+    public init(
+        players: [Player],
+        board: Board,
+        info: [InfoKey: String] = [:],
+        state: State
+    ) {
         self.players = players
         self.certifications = Dictionary(uniqueKeysWithValues: players.map {
             ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
@@ -59,7 +64,12 @@ public struct Competition {
     
     public mutating func createPieces(by players: [Player]) -> Set<Piece> {
         Set(players.map { player in
-            Piece(id: player.pieceID, position: .init(index: .zero), image: player.character.basicImage, name: player.character.koreanName)
+            Piece(
+                id: player.pieceID,
+                position: .init(index: .zero),
+                image: player.character.basicImage,
+                name: player.character.koreanName
+            )
         })
     }
     
