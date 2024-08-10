@@ -14,41 +14,41 @@ public struct EntranceFeature: Reducer {
     
     public init() {}
     
-    @Reducer(state: .equatable)
-    public enum Destination {
-        case missionCreationSetting(MissionContentSettingFeature)
-        case missionInvitationCode(MissionInvitationCodeFeature)
-        
+    @Reducer
+    public enum Path {
+        case missionContentSetting(MissionContentSettingFeature)
+        case missionDurationSetting(MissionDurationSettingFeature)
+        case missionAuthTimeSetting(MissionAuthTimeSettingFeature)
+        case missionInputInviationCode(MissionInvitationCodeFeature)
     }
     
     @ObservableState
-    public struct State: Equatable {
-        @Presents var destination: Destination.State?
-        
+    public struct State {
+        var path = StackState<Path.State>()
+
         public init() {}
     }
     
     public enum Action {
-        case destination(PresentationAction<Destination.Action>)
-        
+        case path(StackActionOf<Path>)
+
         case createMissionButtonTapped
         case enterInvitationCodeButtonTapped
-        
     }
     
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
             switch action {
             case .createMissionButtonTapped:
-                state.destination = .missionCreationSetting(MissionContentSettingFeature.State())
+                state.path.append(.missionContentSetting(MissionContentSettingFeature.State()))
                 return .none
             case .enterInvitationCodeButtonTapped:
-                state.destination = .missionInvitationCode(MissionInvitationCodeFeature.State())
+                state.path.append(.missionInputInviationCode(MissionInvitationCodeFeature.State()))
                 return .none
-            case .destination:
+            case .path:
                 return .none
             }
         }
-        .ifLet(\.$destination, action: \.destination)
+        .forEach(\.path, action: \.path)
     }
 }
