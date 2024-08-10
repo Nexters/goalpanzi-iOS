@@ -68,6 +68,11 @@ public struct MissionAuthTimeSettingView: View {
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
         .padding(.horizontal, 24)
+        .fullScreenCover(
+            item: $store.scope(state: \.missionCreationCompleted, action: \.missionCreationCompleted)
+        ) { store in
+            MissionCreationCompletedView(store: store)
+        }
     }
 
     var guidanceHeaderView: some View {

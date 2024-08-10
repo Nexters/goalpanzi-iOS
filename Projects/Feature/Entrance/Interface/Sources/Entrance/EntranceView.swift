@@ -22,56 +22,63 @@ public struct EntranceView: View {
 
     public var body: some View {
         NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-            VStack(spacing: 0) {
-                Spacer()
+            ZStack {
+                Image(uiImage: SharedDesignSystemAsset.Images.jejuIslandMaskBackground.image)
+                    .resizable()
+                    .edgesIgnoringSafeArea(.top)
                 
-                Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
-                    .font(.pretendard(kind: .heading_sm, type: .bold))
-                    .multilineTextAlignment(.center)
-                
-                Spacer(minLength: 52)
-                
-                MMCapsuleTagView(
-                    text: "LV1. 제주도",
-                    font: .pretendard(kind: .title_lg, type: .medium),
-                    horizontalPadding: 16,
-                    verticalPadding: 4
-                )
-                
-                Spacer()
-                
-                ZStack {
-                    Image(uiImage: SharedDesignSystemAsset.Images.jejuIslandBackground.image)
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 350, height: 228)
-                    // TODO: 추후에 Input으로 받을 예정
-                    Image(uiImage: Character.rabbit.basicImage.image)
-                        .resizable()
-                        .frame(width: 212, height: 212)
-                }
-                
-                Spacer()
-                
-                HStack(spacing: 23) {
-                    entranceSelectionButton(
-                        title: "미션보드\n생성하기",
-                        description: "내 목표는 내가~",
-                        iconImage: SharedDesignSystemAsset.Images.coloredPencil.image
-                    ) {
-                        store.send(.createMissionButtonTapped)
+                VStack(spacing: 0) {
+                    Spacer()
+                    
+                    Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
+                        .font(.pretendard(kind: .heading_sm, type: .bold))
+                        .multilineTextAlignment(.center)
+                    
+                    Spacer(minLength: 52)
+                    
+                    MMCapsuleTagView(
+                        text: "LV1. 제주도",
+                        font: .pretendard(kind: .title_lg, type: .medium),
+                        horizontalPadding: 16,
+                        verticalPadding: 4
+                    )
+                    
+                    Spacer()
+                    
+                    ZStack {
+                        Image(uiImage: SharedDesignSystemAsset.Images.emptyJejuIslandBackground.image)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 350, height: 228)
+                        // TODO: 추후에 Input으로 받을 예정
+                        Image(uiImage: Character.rabbit.basicImage.image)
+                            .resizable()
+                            .frame(width: 212, height: 212)
                     }
                     
-                    entranceSelectionButton(
-                        title: "초대코드\n입력하기",
-                        description: "초대받고 왔지~",
-                        iconImage: SharedDesignSystemAsset.Images.coloredAddPerson.image
-                    ) {
-                        store.send(.enterInvitationCodeButtonTapped)
+                    Spacer()
+                    
+                    HStack(spacing: 23) {
+                        entranceSelectionButton(
+                            title: "미션보드\n생성하기",
+                            description: "내 목표는 내가~",
+                            iconImage: SharedDesignSystemAsset.Images.coloredPencil.image
+                        ) {
+                            store.send(.createMissionButtonTapped)
+                        }
+                        
+                        entranceSelectionButton(
+                            title: "초대코드\n입력하기",
+                            description: "초대받고 왔지~",
+                            iconImage: SharedDesignSystemAsset.Images.coloredAddPerson.image
+                        ) {
+                            store.send(.enterInvitationCodeButtonTapped)
+                        }
                     }
+                    Spacer()
                 }
-                
-                Spacer()
+                .edgesIgnoringSafeArea(.bottom)
             }
+            
         } destination: { store in
             switch store.case {
             case let .missionContentSetting(store):
@@ -80,10 +87,9 @@ public struct EntranceView: View {
                 MissionAuthTimeSettingView(store: store)
             case let .missionDurationSetting(store):
                 MissionDurationSettingView(store: store)
-            case let.missionInputInviationCode(store):
+            case let .missionInputInviationCode(store):
                 MissionInvitationCodeView(store: store)
             }
-            
         }
     }
 

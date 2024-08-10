@@ -19,6 +19,7 @@ public struct EntranceFeature: Reducer {
         case missionContentSetting(MissionContentSettingFeature)
         case missionDurationSetting(MissionDurationSettingFeature)
         case missionAuthTimeSetting(MissionAuthTimeSettingFeature)
+        
         case missionInputInviationCode(MissionInvitationCodeFeature)
     }
     
@@ -46,9 +47,7 @@ public struct EntranceFeature: Reducer {
             case .createMissionButtonTapped:
                 state.path.append(.missionContentSetting(MissionContentSettingFeature.State( missionCreationData: state.$missionCreationData)))
                 return .none
-//                state.path.append(.missionContentSetting(MissionContentSettingFeature.State(missionCreationData: state.$missionCreationData)))
             case .enterInvitationCodeButtonTapped:
-//                state.path.append(.missionInputInviationCode(MissionInvitationCodeFeature.State()))
                 return .none
             case let .path(action):
                 switch action {
@@ -58,8 +57,8 @@ public struct EntranceFeature: Reducer {
                 case .element(id: _, action: .missionDurationSetting(.nextButtonTapped)):
                     state.path.append(.missionAuthTimeSetting(MissionAuthTimeSettingFeature.State(missionCreationData: state.$missionCreationData)))
                     return .none
-                case .element(id: _, action: .missionAuthTimeSetting(.completeButtonTapped)):
-//                    state.path.append(.missionAuthTimeSetting(MissionAuthTimeSettingFeature.State(missionCreationData: state.$missionCreationData)))
+                case .element(id: _, action: .missionAuthTimeSetting(.startMission)):
+                    print(state.missionCreationData)
                     return .none
                 default:
                     return .none
