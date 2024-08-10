@@ -25,6 +25,7 @@ public struct MMRoundedButton: View {
             Text(title)
                 .font(.pretendard(kind: .body_lg, type: .bold))
                 .foregroundColor(.mmWhite)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(

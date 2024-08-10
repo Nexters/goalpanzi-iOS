@@ -51,7 +51,7 @@ public struct MissionContentSettingView: View {
                     Spacer()
 
                     MMRoundedButton(isEnabled: $store.isValidMission, title: "다음") {
-                        print("Good")
+                        store.send(.nextButtonTapped)
                     }
                     .frame(height: 60)
                     .padding(.horizontal, 24)

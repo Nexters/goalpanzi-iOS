@@ -18,14 +18,17 @@ public struct MissionAuthTimeSettingFeature: Reducer {
     public struct State: Equatable {
         var selectedTimeOfDay: TimeOfDay? = nil
         var isAllCompleted: Bool = false
-
-        public init() {}
+        
+        @Shared var missionCreationData: MissionCreationData
     }
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case completeButtonTapped
+        case backButtonTapped
     }
+
+    @Dependency(\.dismiss) var dismiss
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -35,7 +38,12 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                 state.isAllCompleted = true
                 return .none
             case .completeButtonTapped:
+                state.missionCreationData.timeOfDay = state.selectedTimeOfDay ?? .morning
                 return .none
+            case .backButtonTapped:
+                return .run { _ in
+                  await self.dismiss()
+                }
             default:
                 return .none
             }

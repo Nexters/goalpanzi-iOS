@@ -28,13 +28,17 @@ public struct MissionDurationSettingFeature: Reducer {
         
         var selectedDays: Set<Weekday> = []
         var authenticationDays: Int = 0
-
-        public init() {}
+        
+        @Shared var missionCreationData: MissionCreationData
     }
+
+    @Dependency(\.dismiss) var dismiss
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case daySelectionButtonTapped
+        case nextButtonTapped
+        case backButtonTapped
     }
 
     public var body: some ReducerOf<Self> {
@@ -43,15 +47,30 @@ public struct MissionDurationSettingFeature: Reducer {
             switch action {
             case .binding(\.missionStartDate):
                 updateAuthenticationDays(with: &state)
+                
                 return .none
             case .binding(\.missionEndDate):
                 updateAuthenticationDays(with: &state)
                 state.isSelectWeekDayEnabled = true
+                
                 return .none
             case .daySelectionButtonTapped:
                 updateAuthenticationDays(with: &state)
                 state.isAllCompleted = (state.selectedDays.isEmpty || state.authenticationDays == 0) ? false : true
+                
                 return .none
+            case .nextButtonTapped:
+                state.missionCreationData.startDate = state.missionStartDate ?? Date()
+                state.missionCreationData.endDate = state.missionEndDate ?? Date()
+                state.missionCreationData.authenticationDays = state.authenticationDays
+                state.missionCreationData.authenticationWeekDays = Array(state.selectedDays)
+                
+                return .none
+            case .backButtonTapped:
+                
+                return .run { _ in
+                  await self.dismiss()
+                }
             default:
                 return .none
             }

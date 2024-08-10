@@ -20,8 +20,8 @@ public struct MissionContentSettingFeature: Reducer {
         var noticeMessage: String? = "4~12자 이내로 입력하세요. (0/12)"
 
         var isValidMission: Bool = true
-
-        public init() {}
+        
+        @Shared var missionCreationData: MissionCreationData
     }
 
     public enum Action: BindableAction {
@@ -41,6 +41,7 @@ public struct MissionContentSettingFeature: Reducer {
                 state.isValidMission = self.validate(state.inputMissionContent)
                 return .none
             case .nextButtonTapped:
+                state.missionCreationData.description = state.inputMissionContent
                 return .none
             case .backButtonTapped:
                 return .run { _ in

@@ -7,7 +7,10 @@
 
 import Foundation
 
-struct MissionCreationData: Equatable {
+public struct MissionCreationData: Equatable {
+    
+    public init() {}
+    
     var description: String  = ""
     var startDate: Date = Date()
     var endDate: Date = Date()

@@ -30,7 +30,7 @@ public struct MissionAuthTimeSettingView: View {
                     verticalPadding: 1
                 ))
             ) {
-                print("backButtonTapped")
+                store.send(.backButtonTapped)
             }
             .padding(.bottom, 22)
 
@@ -60,11 +60,12 @@ public struct MissionAuthTimeSettingView: View {
             Spacer()
 
             MMRoundedButton(isEnabled: $store.isAllCompleted, title: "완성") {
-                // navigation 진행
+                store.send(.completeButtonTapped)
             }
             .frame(height: 60)
             .padding(.bottom, 36)
         }
+        .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
         .padding(.horizontal, 24)
     }
