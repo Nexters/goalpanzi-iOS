@@ -1,6 +1,9 @@
 import SwiftUI
+
 import FeatureEntranceInterface
 import SharedDesignSystem
+
+import ComposableArchitecture
 
 @main
 struct AppView: App {

@@ -1,13 +1,13 @@
 //
-//  Weekday.swift
-//  FeatureEntranceInterface
+//  WeekDay.swift
+//  DomainMission
 //
-//  Created by Miro on 8/7/24.
+//  Created by 김용재 on 8/12/24.
 //
 
 import Foundation
 
-enum Weekday: String, CaseIterable {
+public enum Weekday: String, CaseIterable {
     case monday = "MONDAY"
     case tuesday = "TUESDAY"
     case wednesday = "WEDNESDAY"
@@ -16,7 +16,7 @@ enum Weekday: String, CaseIterable {
     case saturday = "SATURDAY"
     case sunday = "SUNDAY"
 
-    var koreanName: String {
+    public var koreanName: String {
         switch self {
         case .monday: return "월"
         case .tuesday: return "화"
