@@ -7,6 +7,8 @@
 
 import Foundation
 
+import DomainMissionInterface
+
 import ComposableArchitecture
 
 @Reducer

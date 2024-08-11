@@ -10,7 +10,7 @@ import SwiftUI
 import SharedDesignSystem
 
 struct DaySelectionButton: View {
-    let day: Weekday
+    let day: String
     let isSelected: Bool
     let isEnabled: Bool
     let action: () -> Void
@@ -37,7 +37,7 @@ struct DaySelectionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(day.koreanName)
+            Text(day)
                 .frame(width: 40, height: 40)
                 .background(backgroundColor)
                 .foregroundColor(foregroundColor)

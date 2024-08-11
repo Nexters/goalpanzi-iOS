@@ -7,6 +7,8 @@
 
 import Foundation
 
+import DomainMissionInterface
+
 public struct MissionCreationData: Equatable {
     
     public init() {}

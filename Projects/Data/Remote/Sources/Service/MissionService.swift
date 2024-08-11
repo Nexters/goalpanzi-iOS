@@ -32,9 +32,15 @@ extension MissionService: DependencyKey {
                     path: "api/missions", httpMethod: .post, bodyParameters: requestDTO)
                 
                 let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
-                
-                return (response.missionId, response.invitationCode)
+                return response.toDomain
             }
         )
     }()
+}
+
+extension CreateMissionResponseDTO {
+    
+    var toDomain: (MissionID, InvitationCode) {
+        return (self.missionId, self.invitationCode)
+    }
 }

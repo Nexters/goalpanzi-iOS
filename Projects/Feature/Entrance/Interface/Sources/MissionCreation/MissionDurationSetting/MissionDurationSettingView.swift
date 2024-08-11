@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+import DomainMissionInterface
 import SharedDesignSystem
 import SharedUtil
 
@@ -78,7 +79,7 @@ public struct MissionDurationSettingView: View {
                 HStack {
                     ForEach(Weekday.allCases, id: \.self) { day in
                         DaySelectionButton(
-                            day: day,
+                            day: day.koreanName,
                             isSelected: store.selectedDays.contains(day),
                             isEnabled: store.missionEndDate != nil
                         ) {
