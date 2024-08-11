@@ -70,6 +70,22 @@ public struct MissionInfoView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 24)
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                backButton
+            }
+        }
+    }
+    
+    var backButton: some View {
+        Button {
+            store.send(.didTapCloseButton)
+        } label: {
+            SharedDesignSystemAsset.Images.arrow.swiftUIImage
+                .resizable()
+                .frame(width: 28, height: 28)
+        }
     }
 }
 

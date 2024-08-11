@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Kingfisher
 import SwiftUI
 import SharedDesignSystem
 import ComposableArchitecture
@@ -17,20 +18,21 @@ public struct ImageDetailView: View {
     public var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .topLeading) {
-                SharedDesignSystemAsset.Images.jejuBackground.swiftUIImage
+                KFImage(URL(string: store.imageURL ?? ""))
+                    .placeholder({ Color.black })
                     .resizable()
                     .edgesIgnoringSafeArea(.all)
                 HStack(alignment: .center, spacing: 8) {
-                    SharedDesignSystemAsset.Images.roundBorderRabbit.swiftUIImage
+                    store.player.character.roundBorderImage.swiftUIImage
                         .resizable()
                         .frame(width: 28, height: 28)
                         .clipShape(Circle())
                     
-                    Text("토끼는깡총깡")
+                    Text(store.player.name)
                         .font(.pretendard(kind: .body_xl, type: .bold))
                         .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                     
-                    Text("2024.07.27")
+                    Text(store.formatedDate)
                         .font(.pretendard(kind: .body_xl, type: .light))
                         .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                     

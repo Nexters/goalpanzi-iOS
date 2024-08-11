@@ -86,6 +86,9 @@ public struct HomeFeature {
             competition.board.update(conqueredPosition: Position(index: 5))
             
             
+            competition.certify(playerID: "2", imageURL: "https://picsum.photos/400/500")
+            
+            
             self.competition = competition
             self.certificationButtonState = .init(isEnabled: !isDisabled, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
             self.selectedImages = []
@@ -143,8 +146,8 @@ public struct HomeFeature {
             case .didTapSettingButton:
                 return .none
             case .didTapPlayer(player: let player):
-                guard player.isCertificated else { return .none }
-                state.destination = .imageDetail(ImageDetailFeature.State())
+                guard player.isCertificated, let certification = state.competition.findCertification(by: player.id) else { return .none }
+                state.destination = .imageDetail(ImageDetailFeature.State(player: player, updatedDate: certification.updatedAt, imageURL: certification.imageURL))
                 return .none
             case let .didSelectImages(images):
                 guard let image = images.first, let me = state.competition.me else { return .none }

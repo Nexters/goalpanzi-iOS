@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import DomainPlayerInterface
+import DomainCompetitionInterface
 import ComposableArchitecture
 
 @Reducer
@@ -15,8 +17,24 @@ public struct ImageDetailFeature {
     
     @ObservableState
     public struct State {
+        public let player: Player
+        public let updatedDate: Date
+        public let imageURL: String?
         
-        public init() {
+        public var formatedDate: String {
+            dateFormatter.string(from: updatedDate)
+        }
+        
+        private let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy.MM.dd"
+            return formatter
+        }()
+        
+        public init(player: Player, updatedDate: Date, imageURL: String?) {
+            self.player = player
+            self.updatedDate = updatedDate
+            self.imageURL = imageURL
         }
     }
     

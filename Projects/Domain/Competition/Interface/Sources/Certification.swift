@@ -20,16 +20,16 @@ public struct Certification {
         imageURL != nil
     }
     
-    public var createAt: Date?
+    public var createAt: Date
     
-    public var updatedAt: Date?
+    public var updatedAt: Date
     
     public init(
         id: String,
         playerID: PlayerID,
         imageURL: String? = nil,
-        createAt: Date? = Date.now,
-        updatedAt: Date? = Date.now
+        createAt: Date = Date.now,
+        updatedAt: Date = Date.now
     ) {
         self.id = id
         self.playerID = playerID
@@ -41,5 +41,9 @@ public struct Certification {
     public mutating func reset() {
         updatedAt = Date.now
         imageURL = nil
+    }
+    
+    public mutating func update(imageURL: String) {
+        self.imageURL = imageURL
     }
 }

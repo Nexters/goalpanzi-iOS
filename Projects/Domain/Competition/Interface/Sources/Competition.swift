@@ -33,12 +33,11 @@ public struct Competition {
         state: State
     ) {
         self.players = players
-        self.certifications = Dictionary(uniqueKeysWithValues: players.map {
-            ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
-        })
+        self.certifications = [:]
         self.board = board
         self.info = info
         self.state = state
+        self.certifications = createCertifications(by: players)
         self.board.update(pieces: createPieces(by: players))
     }
     
@@ -55,6 +54,10 @@ public struct Competition {
         return players.first(where: { $0.id == playerID })
     }
     
+    public func findCertification(by playerID: PlayerID) -> Certification? {
+        return certifications[playerID]
+    }
+    
     public func players(position: Position) -> [Player] {
         return players.filter {
             let piece = board.findPiece(by: $0.pieceID)
@@ -68,6 +71,12 @@ public struct Competition {
             return myPiece
         }
         return result.first
+    }
+    
+    public mutating func createCertifications(by players: [Player]) -> [PlayerID: Certification] {
+        Dictionary(uniqueKeysWithValues: players.map {
+            ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
+        })
     }
     
     public mutating func createPieces(by players: [Player]) -> [Position: [Piece]] {
@@ -87,10 +96,10 @@ public struct Competition {
     }
     
     public mutating func certify(playerID: PlayerID, imageURL: String) {
-        guard let old = certifications[playerID] else {
-            return
+        certifications[playerID]?.update(imageURL: imageURL)
+        if let playerIndex = players.firstIndex(where: { $0.id == playerID }) {
+            players[playerIndex].update(isCertificated: true)
         }
-        certifications[playerID] = Certification(id: old.id, playerID: old.playerID, imageURL: imageURL, createAt: old.createAt, updatedAt: Date.now)
     }
     
     public func isCertified(playerID: PlayerID) -> Bool {
@@ -107,6 +116,9 @@ public struct Competition {
             certification.reset()
             newResult[playerID] = certification
             return newResult
+        }
+        for (index, _) in players.enumerated() {
+            players[index].update(isCertificated: false)
         }
     }
 }

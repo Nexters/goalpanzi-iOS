@@ -41,4 +41,8 @@ public struct Player: Identifiable {
         self.isMe = isMe
         self.isCertificated = isCertificated
     }
+    
+    public mutating func update(isCertificated: Bool) {
+        self.isCertificated = isCertificated
+    }
 }
