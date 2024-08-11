@@ -42,15 +42,14 @@ public struct InvitationConfirmView: View {
                         }
                         .padding(.vertical, 29)
                     }, primaryButtonTitle: "맞아요", primaryButtonAction: {
-                        print("")
+                        store.send(.confirmButtonTapped)
                     }, secondaryButtonTitle: "아니에요") {
-                        print("")
+                        store.send(.denyButtonTapped)
                     }
                     .padding(.horizontal, 24)
                 Spacer()
             }
         }
-        .background(Color.clear)
     }
 }
 

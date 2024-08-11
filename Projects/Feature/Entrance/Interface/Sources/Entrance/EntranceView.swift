@@ -31,6 +31,7 @@ public struct EntranceView: View {
                     Spacer()
                     
                     Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
+                        .foregroundStyle(Color.mmGray1)
                         .font(.pretendard(kind: .heading_sm, type: .bold))
                         .multilineTextAlignment(.center)
                     
@@ -76,9 +77,8 @@ public struct EntranceView: View {
                     }
                     Spacer()
                 }
-                .edgesIgnoringSafeArea(.bottom)
             }
-            
+            .edgesIgnoringSafeArea(.bottom)
         } destination: { store in
             switch store.case {
             case let .missionContentSetting(store):

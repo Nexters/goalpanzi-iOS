@@ -50,7 +50,6 @@ public struct InvitationConfirmFeature: Reducer {
                 return .run { send in
                     await send(.delegate(.didConfirmButtonTapped))
                 }
-                return .none
             case .denyButtonTapped:
                 return .run { _ in
                     await self.dismiss()

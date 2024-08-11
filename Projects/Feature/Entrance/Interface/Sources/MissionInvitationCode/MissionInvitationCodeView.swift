@@ -158,6 +158,7 @@ public struct MissionInvitationCodeView: View {
             item: $store.scope(state: \.invitationConfirm, action: \.invitationConfirm)
         ) { store in
             InvitationConfirmView(store: store)
+                .presentationBackground(.clear)
         }
     }
 }
