@@ -90,7 +90,30 @@ public struct JejuRewardInfo: RewardInfo {
     
     public var position: Position
     
-    public var description: String
+    public var description: String {
+        switch kind {
+        case .orange:
+            return "감귤 먹기"
+        case .canolaFlower:
+            return "감귤 먹기"
+        case .dolharubang:
+            return "감귤 먹기"
+        case .horseRiding:
+            return "감귤 먹기"
+        case .hallaMountain:
+            return "감귤 먹기"
+        case .waterfall:
+            return "감귤 먹기"
+        case .blackPig:
+            return "감귤 먹기"
+        case .sunrise:
+            return "감귤 먹기"
+        case .greenTeaField:
+            return "감귤 먹기"
+        case .beach:
+            return "감귤 먹기"
+        }
+    }
     
     public var resultImageAsset: SharedDesignSystemImages {
         switch kind {
@@ -117,12 +140,11 @@ public struct JejuRewardInfo: RewardInfo {
         }
     }
 
-    public init?(rawValue: RawValue, position: Position, description: String) {
+    public init?(rawValue: RawValue, position: Position) {
         guard let kind = Kind(rawValue: rawValue) else {
             return nil
         }
         self.kind = kind
         self.position = position
-        self.description = description
     }
 }

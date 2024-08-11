@@ -10,13 +10,13 @@ import DomainMissionInterface
 
 public struct MissionService: MissionServiceable {
     
-    public var getMissions: @Sendable (String) async throws -> Mission
+    public var getMissions: @Sendable (Int) async throws -> Mission
     
-    public var deleteMissions: @Sendable (String) async throws -> Mission
+    public var deleteMissions: @Sendable (Int) async throws -> Mission
     
     public init(
-        getMissions: @escaping @Sendable (String) async throws -> Mission,
-        deleteMissions: @escaping @Sendable (String) async throws -> Mission
+        getMissions: @escaping @Sendable (Int) async throws -> Mission,
+        deleteMissions: @escaping @Sendable (Int) async throws -> Mission
     ) {
         self.getMissions = getMissions
         self.deleteMissions = deleteMissions

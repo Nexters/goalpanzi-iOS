@@ -9,7 +9,7 @@ import Foundation
 
 public protocol MissionBoardServiceable {
     
-    var getBoard: @Sendable (_ missionID: String) async throws -> MissionBoard { get }
+    var getBoard: @Sendable (_ missionID: Int) async throws -> MissionBoard { get }
 }
 
 public struct MissionBoard {

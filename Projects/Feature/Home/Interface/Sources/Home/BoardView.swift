@@ -22,8 +22,8 @@ struct BoardView: View {
     @State var movingDirection: DomainBoardInterface.Direction? = nil
     
     var body: some View {
-        let numberOfRows: Int = store.competition.board.numberOfRows
-        let numberOfColumns: Int = store.competition.board.numberOfColumns
+        let numberOfRows: Int = store.competition?.board.numberOfRows ?? 0
+        let numberOfColumns: Int = store.competition?.board.numberOfColumns ?? 0
         
         return Grid(horizontalSpacing: 0, verticalSpacing: 0) {
             ForEach(0..<numberOfRows, id: \.self) { row in
@@ -33,10 +33,10 @@ struct BoardView: View {
                         let index = col + (row * numberOfColumns)
                         let position = Position(index: index)
                         BlockView(
-                            block: store.competition.board.findBlock(by: position), 
-                            event: store.competition.board.findEvent(by: position),
-                            representativePiece: store.competition.representativePiece(by: position),
-                            numberOfSamePositionPieces: store.competition.board.findPieces(by: position).count,
+                            block: store.competition?.board.findBlock(by: position),
+                            event: store.competition?.board.findEvent(by: position),
+                            representativePiece: store.competition?.representativePiece(by: position),
+                            numberOfSamePositionPieces: store.competition?.board.findPieces(by: position).count ?? 0,
                             movingPiece: store.movingPiece?.position == position ? store.movingPiece : nil,
                             shouldShowMovingPiece: $shouldShowMovingPiece,
                             movingDirection: $movingDirection
@@ -58,7 +58,7 @@ struct BoardView: View {
                         self.shouldShowMovingPiece = true
                     }, completion: {
                         withAnimation(.easeInOut(duration: 0.5), {
-                            self.movingDirection = store.competition.board.move(piece: movingPiece, to: movingPiece.position + 1)
+                            self.movingDirection = store.competition?.board.move(piece: movingPiece, to: movingPiece.position + 1)
                         }, completion: {
                             self.store.send(.didFinishMoving(piece: store.movingPiece))
                         })

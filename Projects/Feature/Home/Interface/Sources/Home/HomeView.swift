@@ -43,10 +43,10 @@ public struct HomeView: View {
                         }
                     }
                     BottomView(store: store)
-                        .isHidden(store.competition.board.isDisabled)
+                        .isHidden(store.competition?.board.isDisabled == true)
                 }
             }
-            .onAppear {
+            .task {
                 store.send(.onAppear)
             }
             .overlay {
@@ -139,15 +139,15 @@ private struct CompetitionContentView: View {
                 }
             }
             .background {
-                store.competition.board.theme.backgroundImageAsset.swiftUIImage
+                store.competition?.board.theme.backgroundImageAsset.swiftUIImage
                    .resizable()
                    .scaledToFill()
                    .edgesIgnoringSafeArea(.all)
             }
-            .scrollDisabled(store.competition.board.isDisabled)
+            .scrollDisabled(store.competition?.board.isDisabled == true)
             
-            if store.competition.board.isDisabled {
-                NotStartedInfoView(me: store.competition.me, competitionState: store.competition.state)
+            if store.competition?.board.isDisabled == true {
+                NotStartedInfoView(me: store.competition?.me, competitionState: store.competition?.state ?? .disabled)
                     .padding(.top, 167)
             }
         }
@@ -206,7 +206,7 @@ private struct NavigationBarView: View {
                             store.send(.didTapMissionInfoGuideToolTip)
                         }
                         .isHidden(
-                            store.isMissionInfoGuideToolTipShowed || store.competition.state != .notStarted(hasOtherPlayer: true),
+                            store.isMissionInfoGuideToolTipShowed || store.competition?.state != .notStarted(hasOtherPlayer: true),
                             remove: true
                         )
                 }
@@ -222,7 +222,7 @@ private struct NavigationBarView: View {
                             .frame(width: 28, height: 28)
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                     }
-                    .isHidden(!store.competition.board.isDisabled)
+                    .isHidden(store.competition?.board.isDisabled == false)
                     .overlay {
                         SharedDesignSystemAsset.Images.invitationCodeGuideToolTip.swiftUIImage
                             .resizable()
@@ -233,7 +233,7 @@ private struct NavigationBarView: View {
                                 store.send(.didTapInvitationInfoToolTip)
                             }
                             .isHidden(
-                                store.isInvitationGuideToolTipShowed || store.competition.state != .notStarted(hasOtherPlayer: false),
+                                store.isInvitationGuideToolTipShowed || store.competition?.state != .notStarted(hasOtherPlayer: false),
                                 remove: true
                             )
                     }
@@ -250,7 +250,7 @@ private struct NavigationBarView: View {
                 
             }
             
-            Text(store.mission.description)
+            Text(store.mission?.description ?? "")
                 .font(.pretendard(kind: .title_lg, type: .bold))
                 .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
         }
@@ -267,7 +267,7 @@ private struct StoryView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 15) {
-                ForEach(store.competition.players) { player in
+                ForEach(store.competition?.players ?? []) { player in
                     PlayerView(player: player, store: store)
                 }
             }
@@ -288,7 +288,7 @@ private struct PlayerView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 6) {
             ZStack(alignment: .top) {
-                let shouldDisabled = !player.isMe && store.competition.state == .notStarted(hasOtherPlayer: true)
+                let shouldDisabled = !player.isMe && store.competition?.state == .notStarted(hasOtherPlayer: true)
                 Button(action: {
                     store.send(.didTapPlayer(player: player))
                 }) {
@@ -336,10 +336,10 @@ private struct CompetitionInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(store.competition.info[.title] ?? "")
+            Text(store.competition?.info[.title] ?? "")
                 .font(.pretendard(kind: .heading_md, type: .bold))
                 .foregroundStyle(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
-            Text(store.competition.info[.subtitle] ?? "")
+            Text(store.competition?.info[.subtitle] ?? "")
                 .font(.pretendard(kind: .body_lg, type: .bold))
                 .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor.opacity(0.5))
         }

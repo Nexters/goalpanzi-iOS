@@ -17,6 +17,25 @@ public enum Character: String, CaseIterable {
     case bird = "BIRD"
     case panda = "PANDA"
     case bear = "BEAR"
+    
+    public init?(rawValue: String) {
+        switch rawValue {
+        case "RABBIT":
+            self = .rabbit
+        case "CAT":
+            self = .cat
+        case "DOG":
+            self = .dog
+        case "BIRD":
+            self = .bird
+        case "PANDA":
+            self = .panda
+        case "BEAR":
+            self = .bear
+        default:
+            return nil
+        }
+    }
 
     public var koreanName: String {
         switch self {

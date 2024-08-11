@@ -14,6 +14,7 @@ public struct Competition {
     public enum State: Equatable {
         case notStarted(hasOtherPlayer: Bool)
         case started
+        case disabled
     }
     
     public var players: [Player]

@@ -10,9 +10,9 @@ import DomainBoardInterface
 
 public struct MissionBoardService: MissionBoardServiceable {
     
-    public var getBoard: @Sendable (_ missionID: String) async throws -> MissionBoard
+    public var getBoard: @Sendable (_ missionID: Int) async throws -> MissionBoard
     
-    public init(getBoard: @escaping @Sendable (_ missionID: String) async throws -> MissionBoard) {
+    public init(getBoard: @escaping @Sendable (_ missionID: Int) async throws -> MissionBoard) {
         self.getBoard = getBoard
     }
 }

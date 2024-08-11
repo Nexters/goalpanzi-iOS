@@ -25,6 +25,20 @@ extension MissionMemberService: DependencyKey {
         let authIntercepter = AuthInterceptor()
         
         return Self(
+            getMissionMembersMe: {
+                let endPoint = Endpoint<GetMissionMembersMeResponseDTO>(
+                    path: "api/mission-members/me",
+                    httpMethod: .get,
+                    queryParameters: EmptyRequest()
+                )
+                
+                do {
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    return response.toDomain
+                } catch {
+                    throw NSError()
+                }
+            },
             getMissionMembersRank: { missionId in
                 let endPoint = Endpoint<GetMissionMemberRankResponseDTO>(
                     path: "api/mission-members/rank",
@@ -47,5 +61,17 @@ extension GetMissionMemberRankResponseDTO {
     
     var toDomain: MissionRank {
         .init(rank: rank)
+    }
+}
+
+extension GetMissionMembersMeResponseDTO {
+    
+    var toDomain: MyMissionInfo {
+        .init(
+            profile: .init(nickname: profile.nickname, characterType: profile.characterType),
+            missions: missions.map {
+                .init(missionId: $0.missionId, description: $0.description)
+            }
+        )
     }
 }
