@@ -20,11 +20,20 @@ public struct Piece: Identifiable, Hashable {
     
     public let name: String
     
-    public init(id: PieceID, position: Position, image: SharedDesignSystemImages, name: String) {
+    public let isHighlighted: Bool
+    
+    public init(
+        id: PieceID,
+        position: Position,
+        image: SharedDesignSystemImages,
+        name: String,
+        isHighlighted: Bool
+    ) {
         self.id = id
         self.position = position
         self.image = image
         self.name = name
+        self.isHighlighted = isHighlighted
     }
     
     public static func == (lhs: Piece, rhs: Piece) -> Bool {

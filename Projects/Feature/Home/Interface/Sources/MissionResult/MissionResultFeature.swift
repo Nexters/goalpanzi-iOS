@@ -1,5 +1,5 @@
 //
-//  EventResultFeature.swift
+//  MissionResultFeature.swift
 //  FeatureHomeInterface
 //
 //  Created by Haeseok Lee on 8/8/24.
@@ -9,7 +9,7 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-public struct EventResultFeature {
+public struct MissionResultFeature {
     
     @Dependency(\.dismiss) var dismiss
     

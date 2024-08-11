@@ -15,19 +15,18 @@ import DomainPlayerInterface
 struct BlockView: View {
     
     let block: Block?
-    
     let event: DomainBoardInterface.Event?
-    
     let representativePiece: Piece?
-    
-    let movingPiece: Piece?
-    
-    let myPiece: Piece?
-    
     let numberOfSamePositionPieces: Int
+    let movingPiece: Piece?
     
     @Binding var shouldShowMovingPiece: Bool
     @Binding var movingDirection: DomainBoardInterface.Direction?
+    
+    enum AnimationPhase: Double, CaseIterable {
+        case fadingIn = 0
+        case slide = 2
+    }
     
     var body: some View {
         ZStack(alignment: .center) {
@@ -76,26 +75,25 @@ struct BlockView: View {
                 }
                 
                 if let representativePiece, !block.isDisabled {
-                    let isMe = representativePiece == myPiece
                     GeometryReader { reader in
                         ZStack(alignment: .topTrailing) {
                             VStack(spacing: 0) {
                                 representativePiece.image.swiftUIImage
                                     .resizable()
                                     .aspectRatio(1.0, contentMode: .fit)
-                                
+
                                 Text("\(representativePiece.name)")
                                     .font(.pretendard(kind: .body_md, type: .bold))
                                     .lineLimit(1)
                                     .foregroundColor(
-                                        isMe
+                                        representativePiece.isHighlighted
                                         ? SharedDesignSystemAsset.Colors.white.swiftUIColor
                                         : SharedDesignSystemAsset.Colors.gray1.swiftUIColor
                                     )
                                     .frame(height: 21.7)
                                     .frame(maxWidth: .infinity)
                                     .background(
-                                        isMe
+                                        representativePiece.isHighlighted
                                         ? SharedDesignSystemAsset.Colors.orange.swiftUIColor
                                         : SharedDesignSystemAsset.Colors.white.swiftUIColor
                                     )
@@ -135,7 +133,6 @@ struct BlockView: View {
             }
             
             if let movingPiece {
-                let isMe = movingPiece == myPiece
                 GeometryReader { reader in
                     VStack(spacing: 0) {
                         if shouldShowMovingPiece {
@@ -146,14 +143,14 @@ struct BlockView: View {
                                 .font(.pretendard(kind: .body_md, type: .bold))
                                 .lineLimit(1)
                                 .foregroundColor(
-                                    isMe
+                                    movingPiece.isHighlighted
                                     ? SharedDesignSystemAsset.Colors.white.swiftUIColor
                                     : SharedDesignSystemAsset.Colors.gray1.swiftUIColor
                                 )
                                 .frame(height: 21.7)
                                 .frame(maxWidth: .infinity)
                                 .background(
-                                    isMe
+                                    movingPiece.isHighlighted
                                     ? SharedDesignSystemAsset.Colors.orange.swiftUIColor
                                     : SharedDesignSystemAsset.Colors.white.swiftUIColor
                                 )
@@ -165,10 +162,8 @@ struct BlockView: View {
                     .padding(.top, 2)
                     .padding(.bottom, 1)
                     .transition(.opacity)
-                    .animation(.easeInOut(duration: 1.0), value: shouldShowMovingPiece)
                     .opacity(shouldShowMovingPiece ? 1.0 : 0.0)
                     .transition(.slide)
-                    .animation(.easeInOut(duration: 1.0), value: movingDirection != nil)
                     .position(calcNextPoint(reader: reader, movingDirection: movingDirection))
                 }
             }

@@ -62,15 +62,24 @@ public struct Competition {
         }
     }
     
-    public mutating func createPieces(by players: [Player]) -> Set<Piece> {
-        Set(players.map { player in
+    public func representativePiece(by position: Position) -> Piece? {
+        let result = board.findPieces(by: position)
+        if let myPiece = result.first(where: { $0.id == myPiece?.id }) {
+            return myPiece
+        }
+        return result.first
+    }
+    
+    public mutating func createPieces(by players: [Player]) -> [Position: [Piece]] {
+        [Position(index: .zero): players.map { player in
             Piece(
                 id: player.pieceID,
                 position: .init(index: .zero),
                 image: player.character.basicImage,
-                name: player.character.koreanName
+                name: player.character.koreanName,
+                isHighlighted: player.isMe
             )
-        })
+        }]
     }
     
     public func numberOfPlayers(position: Position) -> Int {

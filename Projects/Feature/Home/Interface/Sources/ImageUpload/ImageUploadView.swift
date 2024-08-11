@@ -17,20 +17,21 @@ public struct ImageUploadView: View {
         VStack(spacing: 0) {
             ZStack(alignment: .bottom) {
                 ZStack(alignment: .topLeading) {
-                    SharedDesignSystemAsset.Images.jejuBackground.swiftUIImage
+                    Image(uiImage: store.selectedImage)
                         .resizable()
                         .edgesIgnoringSafeArea(.all)
+                    
                     HStack(alignment: .center, spacing: 8) {
                         SharedDesignSystemAsset.Images.roundBorderRabbit.swiftUIImage
                             .resizable()
                             .frame(width: 28, height: 28)
                             .clipShape(Circle())
                         
-                        Text("토끼는깡총깡")
+                        Text(store.player.name)
                             .font(.pretendard(kind: .body_xl, type: .bold))
                             .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                         
-                        Text("2024.07.27")
+                        Text(store.formatedDate)
                             .font(.pretendard(kind: .body_xl, type: .light))
                             .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                         
@@ -49,11 +50,9 @@ public struct ImageUploadView: View {
                     }
                     .padding(.top, 14)
                     .padding(.horizontal, 24)
-                    
-                    
                 }
                 Button(action: {
-                    
+                    store.send(.didTapUploadButton)
                 }) {
                     Text("업로드")
                         .font(.pretendard(kind: .body_lg, type: .bold))

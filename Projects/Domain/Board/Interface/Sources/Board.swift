@@ -19,13 +19,13 @@ public struct Board {
         Int(ceil((Double(totalBlockCount) / Double(numberOfColumns))))
     }
     
-    public private(set) var pieces: Set<Piece>
+    public private(set) var pieces: [Position: [Piece]]
     
     public var events: [Event]
     
     public let totalBlockCount: Int
     
-    public var conqueredIndex: Int
+    public var conqueredPosition: Position
     
     public var isDisabled: Bool
     
@@ -34,7 +34,7 @@ public struct Board {
         events: [Event],
         totalBlockCount: Int,
         numberOfColumns : Int = 3,
-        conqueredIndex: Int = .zero,
+        conqueredPosition: Position = .zero,
         isDisabled: Bool = false
     ) {
         self.theme = theme
@@ -49,7 +49,7 @@ public struct Board {
                 ),
                 theme: theme.blockTheme,
                 isLastBlock: index == totalBlockCount - 1,
-                isConquered: index <= conqueredIndex,
+                isConquered: index <= conqueredPosition.index,
                 isDisabled: isDisabled
             )
             return newResult
@@ -57,7 +57,7 @@ public struct Board {
         self.events = events
         self.totalBlockCount = totalBlockCount
         self.numberOfColumns = numberOfColumns
-        self.conqueredIndex = conqueredIndex
+        self.conqueredPosition = conqueredPosition
         self.isDisabled = isDisabled
         self.pieces = .init()
     }
@@ -70,46 +70,46 @@ public struct Board {
         return blocks[position]
     }
     
-    public func findPiece(by position: Position) -> Piece? {
-        return pieces.first(where: { $0.position == position })
+    public func findPieces(by position: Position) -> [Piece] {
+        return pieces[position] ?? []
     }
     
     public func findPiece(by pieceID: PieceID) -> Piece? {
-        return pieces.first(where: { $0.id == pieceID })
+        return pieces.flatMap(\.value).first(where: { $0.id == pieceID })
     }
     
     public func findEvent(by position: Position) -> Event? {
         return events.first(where: { $0.position == position })
     }
     
-    public func samePositionPieces(by position: Position) -> [Piece] {
-        pieces.filter({ $0.position == position })
-    }
-    
-    public func representativePiece(by position: Position) -> Piece? {
-        let result = samePositionPieces(by: position)
-        guard !result.isEmpty else { return nil }
-        return result.count == 1 ? result.first : result.randomElement()
-    }
-    
-    public mutating func update(pieces: Set<Piece>) {
+    public mutating func update(pieces: [Position: [Piece]]) {
         self.pieces = pieces
     }
     
+    public mutating func update(piece: Piece) {
+        if pieces[piece.position] == nil {
+            pieces[piece.position] = []
+        }
+        pieces[piece.position]?.append(piece)
+    }
+    
+    public mutating func update(piece: Piece, to position: Position) {
+        remove(piece: piece)
+        update(piece: Piece(id: piece.id, position: position, image: piece.image, name: piece.name, isHighlighted: piece.isHighlighted))
+    }
+    
     public mutating func remove(piece: Piece) {
-        self.pieces.remove(piece)
+        let samePositionPieces = pieces[piece.position]
+        guard let pieceIndex = samePositionPieces?.firstIndex(of: piece) else { return }
+        pieces[piece.position]?.remove(at: pieceIndex)
     }
     
-    public mutating func insert(piece: Piece) {
-        self.pieces.insert(piece)
-    }
-    
-    public mutating func update(conqueredIndex: Int) {
-        self.conqueredIndex = conqueredIndex
+    public mutating func update(conqueredPosition: Position) {
+        self.conqueredPosition = conqueredPosition
         self.blocks = blocks.reduce([:], { partialResult, keyValue in
             var newResult = partialResult
             var (position, block) = keyValue
-            block.isConquered = block.position.index <= conqueredIndex
+            block.isConquered = block.position.index <= conqueredPosition.index
             newResult[position] = block
             return newResult
         })

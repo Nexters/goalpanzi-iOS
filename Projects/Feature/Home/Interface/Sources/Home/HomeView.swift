@@ -60,7 +60,7 @@ public struct HomeView: View {
                     CertificationResultView(store: store)
                 }
                 if let store = store.scope(state: \.destination?.eventResult, action: \.destination.eventResult) {
-                    EventResultView(store: store)
+                    MissionResultView(store: store)
                 }
             }
             .fullScreenCover(item: $store.scope(state: \.destination?.imageUpload, action: \.destination.imageUpload)) { store in

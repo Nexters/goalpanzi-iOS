@@ -16,20 +16,19 @@ public struct HomeFeature {
         public var mission: Mission
         public var competition: Competition
         public var certificationButtonState: CertificationButtonState
-        public var shouldStartAnimation: Bool
         public var selectedImages: [UIImage]
+        public var movingPiece: Piece? = nil
         
         @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isCertificationImageGuideToolTipShowed")) var isCertificationImageGuideToolTipShowed: Bool = false
         
         @Presents var destination: Destination.State?
-        var path = StackState<Path.State>()
+        public var path = StackState<Path.State>()
         
         public init() {
             let startDate = "2024-08-13 16:30"
             let endDate = "2025-08-13 16:30"
-            let nowDate = Date()
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
             
@@ -39,13 +38,16 @@ public struct HomeFeature {
                 startDate: dateFormatter.date(from: startDate) ?? Date.now,
                 endDate: dateFormatter.date(from: endDate) ?? Date.now
             )
-            let competitionState: Competition.State = .notStarted(hasOtherPlayer: true)//.notStarted(hasOtherPlayer: false)//.started//
+            let competitionState: Competition.State = .started//.notStarted(hasOtherPlayer: true)//.notStarted(hasOtherPlayer: false)//.started//
             let isDisabled = competitionState != .started
-            let competition: Competition = .init(
+            var competition: Competition = .init(
                 players: [
                     .init(id: "1", pieceID: "1", name: "이해석", character: .rabbit, isMe: true),
                     .init(id: "2", pieceID: "2", name: "김용재", character: .bear),
-//                    .init(id: "3", pieceID: "3", name: "김용재2", character: .cat),
+                    .init(id: "3", pieceID: "3", name: "김용재2", character: .cat),
+                    .init(id: "4", pieceID: "4", name: "김용재3", character: .panda),
+                    .init(id: "5", pieceID: "5", name: "김용재4", character: .dog),
+                    .init(id: "6", pieceID: "6", name: "김용재5", character: .dog),
                 ],
                 board: .init(
                     theme: theme,
@@ -62,7 +64,7 @@ public struct HomeFeature {
                         .reward(JejuRewardInfo(rawValue: "BEACH", position: Position(index: 31), description: "바다 보기"))
                     ],
                     totalBlockCount: 33,
-                    conqueredIndex: 1,
+                    conqueredPosition: .zero,
                     isDisabled: isDisabled
                 ),
                 info: [
@@ -72,16 +74,22 @@ public struct HomeFeature {
                 state: competitionState
             )
             self.mission = mission
+            
+            let piece1 = competition.board.findPiece(by: "2")
+            competition.board.update(piece: piece1!, to: Position(index: 1))
+            
+            let piece2 = competition.board.findPiece(by: "6")
+            competition.board.update(piece: piece2!, to: Position(index: 7))
+            
+            let myPiece = competition.myPiece
+            competition.board.update(piece: myPiece!, to: Position(index: 5))
+            competition.board.update(conqueredPosition: Position(index: 5))
+            
+            
             self.competition = competition
             self.certificationButtonState = .init(isEnabled: !isDisabled, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증하기")
-            self.shouldStartAnimation = false
             self.selectedImages = []
             
-            let piece = competition.myPiece!
-            let newPiece = Piece(id: piece.id, position: piece.position + 9, image: piece.image, name: piece.name)
-            self.competition.board.remove(piece: piece)
-            self.competition.board.insert(piece: newPiece)
-            self.competition.board.update(conqueredIndex: newPiece.position.index)
         }
     }
     
@@ -90,7 +98,7 @@ public struct HomeFeature {
         case missionInvitationInfo(MissionInvitationInfoFeature)
         case missionDeleteAlert(MissionDeleteAlertFeature)
         case certificationResult(CertificationResultFeature)
-        case eventResult(EventResultFeature)
+        case eventResult(MissionResultFeature)
         case imageUpload(ImageUploadFeature)
         case imageDetail(ImageDetailFeature)
     }
@@ -110,7 +118,7 @@ public struct HomeFeature {
         case didTapPlayer(player: Player)
         case didSelectImages([UIImage])
         case didTapPiece(piece: Piece)
-        case movePiece(piece: Piece, to: Position)
+        case didFinishMoving(piece: Piece?)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
@@ -133,16 +141,16 @@ public struct HomeFeature {
                 state.path.append(.missionInfo(MissionInfoFeature.State()))
                 return .none
             case .didTapSettingButton:
-                state.destination = .imageDetail(ImageDetailFeature.State())
                 return .none
             case .didTapPlayer(player: let player):
+                guard player.isCertificated else { return .none }
+                state.destination = .imageDetail(ImageDetailFeature.State())
                 return .none
             case let .didSelectImages(images):
-                print(state.selectedImages)
+                guard let image = images.first, let me = state.competition.me else { return .none }
+                state.destination = .imageUpload(ImageUploadFeature.State(player: me, selectedImage: image))
                 return .none
             case .didTapPiece(piece: let piece):
-                return .none
-            case .movePiece(piece: let piece, to: let to):
                 return .none
             case .didTapInvitationInfoButton:
                 state.isInvitationGuideToolTipShowed = true
@@ -154,7 +162,35 @@ public struct HomeFeature {
             case .didTapMissionInfoGuideToolTip:
                 state.isMissionInfoGuideToolTipShowed = true
                 return .none
-            case .destination:
+            case let .destination(action):
+                switch action {
+                case .dismiss:
+                    return .none
+                case .presented(.imageUpload(.didFinishImageUpload)):
+                    guard let myPiece = state.competition.myPiece else { return .none }
+                    let newPosition = myPiece.position + 1
+                    guard newPosition.index < state.competition.board.totalBlockCount else {
+                        // <경쟁종료됨>
+                        // 경쟁종료화면으로 이동
+                        return .none
+                    }
+                    let event = state.competition.board.findEvent(by: newPosition)
+                    state.destination = .certificationResult(CertificationResultFeature.State(event: event))
+                    return .none
+                case .presented(.certificationResult(.didTapCloseButton)):
+                    guard let myPiece = state.competition.myPiece else { return .none }
+                    state.movingPiece = myPiece
+                    state.competition.board.remove(piece: myPiece)
+                    return .none
+                case .presented(_):
+                    return .none
+                }
+            case let .didFinishMoving(myPiece):
+                guard let myPiece else { return .none }
+                let newPosition = myPiece.position + 1
+                state.competition.board.update(piece: myPiece, to: newPosition)
+                state.competition.board.update(conqueredPosition: newPosition)
+                state.movingPiece = nil
                 return .none
             case .path:
                 return .none

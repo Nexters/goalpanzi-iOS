@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import DomainBoardInterface
 import ComposableArchitecture
 
 @Reducer
@@ -16,8 +17,19 @@ public struct CertificationResultFeature {
     @ObservableState
     public struct State {
         
-        public init() {
-            
+        public let event: DomainBoardInterface.Event?
+        public var title: String
+        public var subtitle: String
+        
+        public init(event: DomainBoardInterface.Event? = nil) {
+            self.event = event
+            if let event, case let .reward(info) = event, let info {
+                title = "인증완료!!\n'\(info.description)'를 획득했어요!"
+                subtitle = "꾸준히 하면 재밌는 이벤트가 또 나타날걸요?"
+            } else {
+                title = "인증완료!!\n한 칸 이동했어요."
+                subtitle = "대단해요 오늘도 해냈어요."
+            }
         }
     }
     

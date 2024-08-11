@@ -1,5 +1,5 @@
 //
-//  EventResultView.swift
+//  MissionResultView.swift
 //  FeatureHomeInterface
 //
 //  Created by Haeseok Lee on 8/8/24.
@@ -10,12 +10,12 @@ import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
 
-public struct EventResultView: View {
+public struct MissionResultView: View {
     
-    @Bindable private var store: StoreOf<EventResultFeature>
+    @Bindable private var store: StoreOf<MissionResultFeature>
     @State private var scale = 0.5
     
-    public init(store: StoreOf<EventResultFeature>) {
+    public init(store: StoreOf<MissionResultFeature>) {
         self.store = store
     }
     

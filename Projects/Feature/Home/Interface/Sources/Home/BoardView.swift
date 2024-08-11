@@ -24,19 +24,6 @@ struct BoardView: View {
     var body: some View {
         let numberOfRows: Int = store.competition.board.numberOfRows
         let numberOfColumns: Int = store.competition.board.numberOfColumns
-        let myPiece: Piece? = store.competition.myPiece
-//        if store.shouldStartAnimation {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-//                self.shouldShowRepresentativePiece = false
-//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-//                    self.shouldShowMovingPiece = true
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-//                        guard let myPiece else { return }
-//                        self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
-//                    }
-//                }
-//            }
-//        }
         
         return Grid(horizontalSpacing: 0, verticalSpacing: 0) {
             ForEach(0..<numberOfRows, id: \.self) { row in
@@ -48,10 +35,9 @@ struct BoardView: View {
                         BlockView(
                             block: store.competition.board.findBlock(by: position), 
                             event: store.competition.board.findEvent(by: position),
-                            representativePiece: store.competition.board.representativePiece(by: position),
-                            movingPiece: myPiece?.position == position ? myPiece : nil,
-                            myPiece: myPiece,
-                            numberOfSamePositionPieces: store.competition.board.samePositionPieces(by: position).count,
+                            representativePiece: store.competition.representativePiece(by: position),
+                            numberOfSamePositionPieces: store.competition.board.findPieces(by: position).count,
+                            movingPiece: store.movingPiece?.position == position ? store.movingPiece : nil,
                             shouldShowMovingPiece: $shouldShowMovingPiece,
                             movingDirection: $movingDirection
                         )
@@ -60,23 +46,26 @@ struct BoardView: View {
                     }
                 }
             }
-            .onAppear {
-//                guard let myPiece else { return }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-//                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
-//                        scrollProxy.scrollTo(myPiece.position.index, anchor: .center)
-//                    }
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
-//                        self.shouldShowMovingPiece = true
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-//                            self.movingDirection = store.competition.board.move(piece: myPiece, to: myPiece.position + 1)
-//                        }
-//                    }
-//                }
-//                
-            }
         }
         .padding(.top, 4)
+        .onChange(of: store.movingPiece) { oldValue, newValue in
+            guard let movingPiece = newValue else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                withAnimation(.spring(duration: 0.5), {
+                    scrollProxy.scrollTo(movingPiece.position.index, anchor: .center)
+                }, completion: {
+                    withAnimation(.easeInOut(duration: 0.5), {
+                        self.shouldShowMovingPiece = true
+                    }, completion: {
+                        withAnimation(.easeInOut(duration: 0.5), {
+                            self.movingDirection = store.competition.board.move(piece: movingPiece, to: movingPiece.position + 1)
+                        }, completion: {
+                            self.store.send(.didFinishMoving(piece: store.movingPiece))
+                        })
+                    })
+                })
+            }
+        }
     }
 }
 

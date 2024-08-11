@@ -27,21 +27,27 @@ public struct CertificationResultView: View {
             VStack(spacing: 0) {
                 VStack(spacing: 32) {
                     VStack(spacing: 12) {
-                        Text("인증완료!!\n한 칸 이동했어요.")
+                        Text(store.title)
                             .multilineTextAlignment(.center)
                             .font(.pretendard(kind: .title_xl, type: .bold))
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                         
-                        Text("대단해요 오늘도 해냈어요.")
+                        Text(store.subtitle)
                             .multilineTextAlignment(.center)
                             .font(.pretendard(kind: .body_lg, type: .regular))
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
                     }
                     .padding(.horizontal, 24)
                     
-                    SharedDesignSystemAsset.Images.basicRoundBird.swiftUIImage
-                        .resizable()
-                        .frame(width: 180, height: 180)
+                    if let event = store.event, case let .reward(info) = event {
+                        info?.resultImageAsset.swiftUIImage
+                            .resizable()
+                            .frame(width: 180, height: 180)
+                    } else {
+                        SharedDesignSystemAsset.Images.move1.swiftUIImage
+                            .resizable()
+                            .frame(width: 180, height: 180)
+                    }
                     
                     Button(action: {
                         store.send(.didTapCloseButton)
