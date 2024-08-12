@@ -1,6 +1,7 @@
 import SwiftUI
 
 import SharedDesignSystem
+import SharedUtil
 
 import ComposableArchitecture
 
@@ -76,6 +77,7 @@ public struct MissionContentSettingView: View {
         }
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
+        .makeTapToHideKeyboard()
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)

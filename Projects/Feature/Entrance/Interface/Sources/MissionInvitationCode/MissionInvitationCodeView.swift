@@ -8,6 +8,7 @@
 import SwiftUI
 
 import SharedDesignSystem
+import SharedUtil
 
 import ComposableArchitecture
 
@@ -150,6 +151,7 @@ public struct MissionInvitationCodeView: View {
         }
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
+        .makeTapToHideKeyboard()
         .padding(.horizontal, 24)
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)

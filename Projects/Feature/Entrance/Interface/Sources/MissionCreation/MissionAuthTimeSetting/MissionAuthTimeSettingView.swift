@@ -93,6 +93,5 @@ public struct MissionAuthTimeSettingView: View {
             Text("신중히 선택해주세요.")
         }
         .font(.pretendard(kind: .title_xl, type: .light))
-
     }
 }
