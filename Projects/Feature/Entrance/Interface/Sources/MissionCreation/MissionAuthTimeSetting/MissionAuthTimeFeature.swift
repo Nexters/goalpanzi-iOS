@@ -26,6 +26,7 @@ public struct MissionAuthTimeSettingFeature: Reducer {
         
         var selectedTimeOfDay: TimeOfDay? = nil
         var isAllCompleted: Bool = false
+        var isCreationMissionLoading = false
     }
 
     public enum Action: BindableAction {
@@ -53,6 +54,7 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                 state.isAllCompleted = true
                 return .none
             case .completeButtonTapped:
+                state.isCreationMissionLoading = true
                 state.missionCreationData.timeOfDay = state.selectedTimeOfDay ?? .morning
                 
                 return .run { [data = state.missionCreationData] send in
@@ -70,9 +72,11 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                 }
                 
             case let .createMissionResponse(.success(response)):
+                state.isCreationMissionLoading = false
                 state.missionCreationCompleted = MissionCreationCompletedFeature.State()
                 return .none
             case let .createMissionResponse(.failure(error)):
+                state.isCreationMissionLoading = false
                 print("🚨 미션 생성 Error 발생 - \(error)")
                 return .none
                 
