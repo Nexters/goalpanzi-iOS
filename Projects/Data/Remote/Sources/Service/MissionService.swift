@@ -26,8 +26,15 @@ extension MissionService: DependencyKey {
                 let missionStartTime = missionStartTime.formattedString(dateFormat: .longYearMonthDateTimeZone)
                 let missionEndDate = missionEndDate.formattedString(dateFormat: .longYearMonthDateTimeZone)
                 let missionDays = missionDays.map { $0.rawValue }
-                let requestDTO = CreateMissionRequestDTO(description: missionContent, missionStartDate: missionStartTime, missionEndDate: missionEndDate, timeOfDay: timeOfDay.description, missionDays: missionDays, boardCount: authenticationDays)
-                
+                let requestDTO = CreateMissionRequestDTO(
+                    description: missionContent,
+                    missionStartDate: missionStartTime,
+                    missionEndDate: missionEndDate,
+                    timeOfDay: timeOfDay.rawValue,
+                    missionDays: missionDays,
+                    boardCount: authenticationDays
+                )
+
                 let endPoint = Endpoint<CreateMissionResponseDTO>(
                     path: "api/missions", httpMethod: .post, bodyParameters: requestDTO)
                 

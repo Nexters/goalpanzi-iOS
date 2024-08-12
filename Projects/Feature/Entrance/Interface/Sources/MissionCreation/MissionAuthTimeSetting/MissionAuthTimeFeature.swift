@@ -72,8 +72,8 @@ public struct MissionAuthTimeSettingFeature: Reducer {
             case let .createMissionResponse(.success(response)):
                 state.missionCreationCompleted = MissionCreationCompletedFeature.State()
                 return .none
-            case .createMissionResponse(.failure):
-                print("Failure 발생!!!!!!!!!")
+            case let .createMissionResponse(.failure(error)):
+                print("🚨 미션 생성 Error 발생 - \(error)")
                 return .none
                 
             case .backButtonTapped:
