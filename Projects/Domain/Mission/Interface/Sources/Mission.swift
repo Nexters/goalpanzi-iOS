@@ -11,9 +11,29 @@ import DomainCompetitionInterface
 
 public struct Mission {
     
-    public let competition: Competition
+    public let missionId: Int
+    public let description: String
+    public let startDate: Date
+    public let endDate: Date
+    public let timeOfDay: TimeOfDay
+    public let authenticationWeekDays: [Weekday]
+    public let authenticationDays: Int
     
-    public init(competition: Competition) {
-        self.competition = competition
+    public init(
+        missionId: Int,
+        description: String,
+        startDate: Date,
+        endDate: Date,
+        timeOfDay: TimeOfDay,
+        authenticationWeekDays: [Weekday],
+        authenticationDays: Int
+    ) {
+        self.missionId = missionId
+        self.description = description
+        self.startDate = startDate
+        self.endDate = endDate
+        self.timeOfDay = timeOfDay
+        self.authenticationWeekDays = authenticationWeekDays
+        self.authenticationDays = authenticationDays
     }
 }

@@ -14,8 +14,9 @@ import ComposableArchitecture
 
 extension MissionClient: DependencyKey {
     public static let liveValue: Self = {
-        return Self(createMission: { missionService, missionContent, missionStartTime, missionEndDate, timeOfDay, missionDays, authenticationDays in
-            return try await missionService.createMission(
+        return Self(
+            createMission: { missionService, missionContent, missionStartTime, missionEndDate, timeOfDay, missionDays, authenticationDays in
+            try await missionService.createMission(
                 missionContent,
                 missionStartTime,
                 missionEndDate,
@@ -23,6 +24,10 @@ extension MissionClient: DependencyKey {
                 missionDays,
                 authenticationDays
             )
-        })
+        },
+            fetchMissionInfo: { missionService, invitationCode in
+                try await missionService.fetchMissionInfo(invitationCode)
+            }
+        )
     }()
 }

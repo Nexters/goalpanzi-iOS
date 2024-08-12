@@ -40,3 +40,9 @@ extension Date {
     }
 }
 
+extension String {
+    public func toDate(format: DateFormat) -> Date? {
+        return format.formatter.date(from: self)
+    }
+}
+

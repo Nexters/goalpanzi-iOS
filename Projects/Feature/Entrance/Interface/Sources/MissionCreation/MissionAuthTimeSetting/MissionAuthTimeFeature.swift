@@ -23,7 +23,7 @@ public struct MissionAuthTimeSettingFeature: Reducer {
     public struct State: Equatable {
         @Presents var missionCreationCompleted: MissionCreationCompletedFeature.State?
         @Shared var missionCreationData: MissionCreationData
-        
+         
         var selectedTimeOfDay: TimeOfDay? = nil
         var isAllCompleted: Bool = false
         var isCreationMissionLoading = false
@@ -72,6 +72,7 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                 }
                 
             case let .createMissionResponse(.success(response)):
+                print(response)
                 state.isCreationMissionLoading = false
                 state.missionCreationCompleted = MissionCreationCompletedFeature.State()
                 return .none

@@ -39,6 +39,16 @@ extension MissionService: DependencyKey {
                     path: "api/missions", httpMethod: .post, bodyParameters: requestDTO)
                 
                 let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+
+                return response.toDomain
+            },
+            
+            fetchMissionInfo: { invitationCode in
+                let requestDTO = FetchMissionInfoRequestDTO(invitationCode: invitationCode)
+                let endPoint = Endpoint<FetchMissionInfoResponseDTO>(
+                    path: "api/missions", httpMethod: .get, queryParameters: requestDTO)
+                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                 
                 return response.toDomain
             }
         )
@@ -49,5 +59,24 @@ extension CreateMissionResponseDTO {
     
     var toDomain: (MissionID, InvitationCode) {
         return (self.missionId, self.invitationCode)
+    }
+}
+
+extension FetchMissionInfoResponseDTO {
+    var toDomain: (InvitationCode, Mission) {
+        let timeOfDay = TimeOfDay(rawValue: self.timeOfDay) ?? .afternoon
+        let startDate = self.missionStartDate.toDate(format: .longYearMonthDateTimeZone) ?? Date()
+        let endDate = self.missionEndDate.toDate(format: .compactYearMonthDateTime) ?? Date()
+        let authenticationWeekDays = self.missionDays.map { Weekday(rawValue: $0) ?? .friday }
+        
+        return (invitationCode, .init(
+            missionId: missionId,
+            description: description,
+            startDate: startDate,
+            endDate: endDate,
+            timeOfDay: timeOfDay,
+            authenticationWeekDays: authenticationWeekDays,
+            authenticationDays: boardCount)
+        )
     }
 }

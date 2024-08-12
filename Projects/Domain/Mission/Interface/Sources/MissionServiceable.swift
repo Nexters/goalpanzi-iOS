@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol MissionServiceable {
-
+    
     var createMission: @Sendable (
         _ missionContent: String,
         _ missionStartTime: Date,
@@ -17,4 +17,9 @@ public protocol MissionServiceable {
         _ missionDays: [Weekday],
         _ authenticationDays: Int
     ) async throws -> (MissionID, InvitationCode) { get }
+    
+    var fetchMissionInfo: @Sendable (
+        _ invitationCode: String
+    ) async throws -> (InvitationCode, Mission) { get }
+    
 }

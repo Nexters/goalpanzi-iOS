@@ -16,8 +16,6 @@ public typealias InvitationCode = String
 
 public struct MissionClient {
     
-    public typealias Nickname = String
-
     public var createMission: @Sendable (
         _ missionClient: MissionServiceable,
         _ missionContent: String,
@@ -27,16 +25,29 @@ public struct MissionClient {
         _ missionDays: [Weekday],
         _ authenticationDays: Int
     ) async throws -> (MissionID, InvitationCode)
-
-    public init(createMission: @escaping @Sendable (
+    
+    public var fetchMissionInfo: @Sendable (
         _ missionClient: MissionServiceable,
-        _ missionContent: String,
-        _ missionStartTime: Date,
-        _ missionEndDate: Date,
-        _ timeOfDay: TimeOfDay,
-        _ missionDays: [Weekday],
-        _ authenticationDays: Int
-    ) async throws -> (MissionID, InvitationCode)) {
+        _ invitationCode: String
+    ) async throws -> (InvitationCode, Mission)
+
+    public init(
+        createMission: @escaping @Sendable (
+            _ missionClient: MissionServiceable,
+            _ missionContent: String,
+            _ missionStartTime: Date,
+            _ missionEndDate: Date,
+            _ timeOfDay: TimeOfDay,
+            _ missionDays: [Weekday],
+            _ authenticationDays: Int
+        ) async throws -> (MissionID, InvitationCode),
+        
+        fetchMissionInfo: @escaping @Sendable (
+            _ missionClient: MissionServiceable,
+            _ invitationCode: String
+        ) async throws -> (InvitationCode, Mission)
+    ) {
         self.createMission = createMission
+        self.fetchMissionInfo = fetchMissionInfo
     }
 }

@@ -7,6 +7,11 @@
 
 import Foundation
 
+import DomainMissionInterface
+import DomainMission
+import DataRemote
+import DataRemoteInterface
+
 import ComposableArchitecture
 
 @Reducer
@@ -35,11 +40,14 @@ public struct MissionInvitationCodeFeature: Reducer {
         case confirmButtonTapped
         case backButtonTapped
         case startMission
+        case fetchMissionResponse(Result<(InvitationCode, Mission), Error>)
         
         // MARK: Child Action
         case invitationConfirm(PresentationAction<InvitationConfirmFeature.Action>)
     }
     
+    @Dependency(MissionClient.self) var missionClient
+    @Dependency(MissionService.self) var missionService
     @Dependency(\.dismiss) var dismiss
 
     public var body: some ReducerOf<Self> {
@@ -58,9 +66,26 @@ public struct MissionInvitationCodeFeature: Reducer {
                 }
                 return .none
             case .confirmButtonTapped:
-                state.isInvalid = true
+                let invitationCode = state.firstInputCode + state.secondInputCode + state.thirdInputCode + state.fourthInputCode
+                return .run { send in
+                    await send(.fetchMissionResponse(
+                        Result {
+                            try await self.missionClient.fetchMissionInfo(
+                                missionService,
+                                invitationCode
+                            )
+                        }
+                    ))
+                }
+            
+            case let .fetchMissionResponse(.success(response)):
                 state.invitationConfirm = InvitationConfirmFeature.State()
                 return .none
+                 
+            case let .fetchMissionResponse(.failure(error)):
+                state.isInvalid = true
+                return .none
+                
             case .backButtonTapped:
                 return .run { _ in
                   await self.dismiss()

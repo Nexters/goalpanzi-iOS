@@ -11,6 +11,7 @@ import SharedDesignSystem
 import SharedUtil
 
 import ComposableArchitecture
+import Combine
 
 public struct MissionInvitationCodeView: View {
 
@@ -42,15 +43,28 @@ public struct MissionInvitationCodeView: View {
                             .padding(.bottom, 56)
 
                         HStack {
+                            // TODO: 공통되는 로직 Modifier로 빼기(LimitedTextLengthModifier)
                             TextField("0", text: $store.firstInputCode)
-                                .modifier(LimitedTextLengthModifier(
-                                    inputText: $store.firstInputCode,
-                                    isAllInvalid: $store.isInvalid,
-                                    isAllEmpty: $store.isAllEmpty
-                                ))
+                                .disableAutoFunctions()
+                                .keyboardType(.alphabet)
+                                .multilineTextAlignment(.center)
+                                .font(.pretendard(kind: .heading_md, type: .bold))
+                                .foregroundStyle(foregroundColor)
+                                .frame(width: 72, height: 72)
+                                .background(backgroundColor)
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: 12)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(borderLineColor, lineWidth: 2)
+                                )
                                 .onChange(of: store.firstInputCode) { _, inputText in
+                                    
                                     if (inputText.count == 1) {
                                         textFieldFocusState = .second
+                                    } else {
+                                        store.firstInputCode = String(inputText.prefix(1))
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .first)
@@ -58,18 +72,30 @@ public struct MissionInvitationCodeView: View {
                             Spacer()
 
                             TextField("0", text: $store.secondInputCode)
-                                .modifier(LimitedTextLengthModifier(
-                                    inputText: $store.secondInputCode,
-                                    isAllInvalid: $store.isInvalid,
-                                    isAllEmpty: $store.isAllEmpty
-                                ))
+                                .disableAutoFunctions()
+                                .keyboardType(.alphabet)
+                                .multilineTextAlignment(.center)
+                                .font(.pretendard(kind: .heading_md, type: .bold))
+                                .foregroundStyle(foregroundColor)
+                                .frame(width: 72, height: 72)
+                                .background(backgroundColor)
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: 12)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(borderLineColor, lineWidth: 2)
+                                )
                                 .onChange(of: store.secondInputCode) { _, inputText in
+                                    
                                     if (inputText.count == 1) {
                                         textFieldFocusState = .third
                                     } else {
                                         if (inputText.count == 0) {
                                             textFieldFocusState = .first
                                         }
+                                        store.secondInputCode = String(inputText.prefix(1))
+
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .second)
@@ -77,18 +103,29 @@ public struct MissionInvitationCodeView: View {
                             Spacer()
 
                             TextField("0", text: $store.thirdInputCode)
-                                .modifier(LimitedTextLengthModifier(
-                                    inputText: $store.thirdInputCode,
-                                    isAllInvalid: $store.isInvalid,
-                                    isAllEmpty: $store.isAllEmpty
-                                ))
+                                .disableAutoFunctions()
+                                .keyboardType(.alphabet)
+                                .multilineTextAlignment(.center)
+                                .font(.pretendard(kind: .heading_md, type: .bold))
+                                .foregroundStyle(foregroundColor)
+                                .frame(width: 72, height: 72)
+                                .background(backgroundColor)
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: 12)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(borderLineColor, lineWidth: 2)
+                                )
                                 .onChange(of: store.thirdInputCode) { _, inputText in
+                                    
                                     if (inputText.count == 1) {
                                         textFieldFocusState = .fourth
                                     } else {
                                         if (inputText.count == 0) {
                                             textFieldFocusState = .second
                                         }
+                                        store.secondInputCode = String(inputText.prefix(1))
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .third)
@@ -96,14 +133,25 @@ public struct MissionInvitationCodeView: View {
                             Spacer()
 
                             TextField("0", text: $store.fourthInputCode)
-                                .modifier(LimitedTextLengthModifier(
-                                    inputText: $store.fourthInputCode,
-                                    isAllInvalid: $store.isInvalid,
-                                    isAllEmpty: $store.isAllEmpty
-                                ))
+                                .disableAutoFunctions()
+                                .keyboardType(.alphabet)
+                                .multilineTextAlignment(.center)
+                                .font(.pretendard(kind: .heading_md, type: .bold))
+                                .foregroundStyle(foregroundColor)
+                                .frame(width: 72, height: 72)
+                                .background(backgroundColor)
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: 12)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(borderLineColor, lineWidth: 2)
+                                )
                                 .onChange(of: store.fourthInputCode) { _, inputText in
                                     if (inputText.count == 0) {
                                         textFieldFocusState = .third
+                                    } else {
+                                        store.fourthInputCode = String(inputText.prefix(1))
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .fourth)
@@ -116,6 +164,8 @@ public struct MissionInvitationCodeView: View {
                                 .font(.pretendard(kind: .body_md, type: .light))
                                 .foregroundStyle(Color.mmRed)
                         }
+                        
+
 
                         Spacer()
                     }
@@ -125,7 +175,7 @@ public struct MissionInvitationCodeView: View {
 
                 VStack {
                     Spacer()
-
+                    
                     MMRoundedButton(isEnabled: $store.isAllTexFieldFilled, title: "확인") {
                         store.send(.confirmButtonTapped)
                     }
@@ -166,6 +216,32 @@ public struct MissionInvitationCodeView: View {
 }
 
 extension MissionInvitationCodeView {
+    
+    private var foregroundColor: Color {
+        if store.isAllEmpty {
+            return Color.mmDisabled
+        } else {
+            return Color.mmGray1
+        }
+    }
+
+    private var backgroundColor: Color {
+        if store.isAllEmpty {
+            return Color.mmGray5
+        } else {
+            return Color.mmWhite
+        }
+    }
+
+    private var borderLineColor: Color {
+        if store.isInvalid {
+            return Color.mmRed
+        } else if store.isAllEmpty {
+            return Color.mmWhite
+        } else {
+            return Color.mmGray4
+        }
+    }
 
     // TODO: 아래 attributed text로 하는 방법으로 바꾸기 (재사용가능하게)
     var invitationCodeHeaderView: some View {
