@@ -29,6 +29,7 @@ public struct HomeFeature {
         
         public var me: Player? = nil
         public var missionId: Int? = nil
+        public var isLoading: Bool = false
         
         @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
@@ -68,6 +69,7 @@ public struct HomeFeature {
         case didSelectImages([UIImage])
         case didTapPiece(piece: Piece)
         case didFinishMoving(piece: Piece?)
+        case loading(isLoading: Bool)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
@@ -106,7 +108,7 @@ public struct HomeFeature {
                         let (missionResult, boardResult): (Mission, MissionBoard) = try await (mission, board)
                         await send(.didFetchMissionAndBoard(missionResult, boardResult))
                     } catch {
-                        print(error)
+                        await send(.error(error))
                     }
                 }
             case let .didFetchMissionAndBoard(mission, board):
@@ -197,8 +199,15 @@ public struct HomeFeature {
                 guard let image = images.first, let me = state.competition?.me else { return .none }
                 state.destination = .imageUpload(ImageUploadFeature.State(player: me, selectedImage: image))
                 return .none
-            case .didTapPiece(piece: let piece):
-                return .none
+            case let .didTapPiece(piece):
+                guard piece == state.competition?.myPiece else { return .none }
+                return .run { send in
+                    do {
+                        
+                    } catch {
+                        await send(.error(error))
+                    }
+                }
             case .didTapInvitationInfoButton:
                 state.isInvitationGuideToolTipShowed = true
                 state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State(codes: ["A", "Z", "3", "X"]))
@@ -244,6 +253,9 @@ public struct HomeFeature {
             case .binding:
                 return .none
             case .error:
+                return .none
+            case let .loading(isLoading):
+                state.isLoading = isLoading
                 return .none
             }
         }

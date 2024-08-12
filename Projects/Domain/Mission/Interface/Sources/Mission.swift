@@ -10,7 +10,7 @@ import Foundation
 public struct Mission: CustomStringConvertible {
     
     public let missionId: Int
-    public let hostMemeverId: Int
+    public let hostMemberId: Int
     public let description: String
     public let missionStartDate: Date
     public let missionEndDate: Date
@@ -21,7 +21,7 @@ public struct Mission: CustomStringConvertible {
     
     public init(
         missionId: Int,
-        hostMemeverId: Int,
+        hostMemberId: Int,
         description: String,
         missionStartDate: Date,
         missionEndDate: Date,
@@ -31,7 +31,7 @@ public struct Mission: CustomStringConvertible {
         invitationCode: String
     ) {
         self.missionId = missionId
-        self.hostMemeverId = hostMemeverId
+        self.hostMemberId = hostMemberId
         self.description = description
         self.missionStartDate = missionStartDate
         self.missionEndDate = missionEndDate
