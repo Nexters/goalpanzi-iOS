@@ -11,12 +11,6 @@ import DomainPlayerInterface
 
 public struct Competition {
     
-    public enum State: Equatable {
-        case notStarted(hasOtherPlayer: Bool)
-        case started
-        case disabled
-    }
-    
     public var players: [Player]
     
     public var certifications: [PlayerID: Certification]
@@ -74,6 +68,20 @@ public struct Competition {
         return result.first
     }
     
+    public mutating func sortPlayersByVerifiedAt() {
+        players = players.sorted(by: { lhs, rhs in
+            guard let lhsResult = certifications[lhs.id]?.verifiedAt,
+                  let rhsResult = certifications[rhs.id]?.verifiedAt else { return false }
+            return lhsResult > rhsResult
+        })
+    }
+    
+    public mutating func moveMeToFront() {
+        guard let meIndex = players.firstIndex(where: { $0.isMe }) else { return }
+        let me = players.remove(at: meIndex)
+        players.insert(me, at: .zero)
+    }
+    
     public mutating func createCertifications(by players: [Player]) -> [PlayerID: Certification] {
         Dictionary(uniqueKeysWithValues: players.map {
             ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
@@ -81,50 +89,41 @@ public struct Competition {
     }
     
     public mutating func createPieces(by players: [Player]) -> [Position: [Piece]] {
-        [Position(index: .zero): players.map { player in
-            Piece(
-                id: player.pieceID,
-                position: .init(index: .zero),
-                image: player.character.basicImage,
-                name: player.character.koreanName,
-                isHighlighted: player.isMe
-            )
-        }]
+        Dictionary(uniqueKeysWithValues: [(
+                Position(index: .zero),
+                players.map { player in
+                    Piece(
+                        id: player.pieceID,
+                        position: .init(index: .zero),
+                        image: player.character.basicImage,
+                        name: player.name,
+                        isHighlighted: player.isMe
+                    )
+                }
+            )]
+        )
     }
     
     public func numberOfPlayers(position: Position) -> Int {
         return players(position: position).count
     }
     
-    public mutating func certify(playerID: PlayerID, imageURL: String) {
-        certifications[playerID]?.update(imageURL: imageURL)
+    public mutating func certify(playerID: PlayerID, imageURL: String, verifiedAt: Date?) {
+        certifications[playerID]?.update(imageURL: imageURL, verifiedAt: verifiedAt)
         if let playerIndex = players.firstIndex(where: { $0.id == playerID }) {
-            players[playerIndex].update(isCertificated: true)
-        }
-    }
-    
-    public func isCertified(playerID: PlayerID) -> Bool {
-        guard let certification = certifications[playerID] else {
-            return false
-        }
-        return certification.isCertified
-    }
-    
-    public mutating func resetCertifications() {
-        certifications = certifications.reduce([:]) { partialResult, keyValue in
-            var newResult = partialResult
-            var (playerID, certification) = keyValue
-            certification.reset()
-            newResult[playerID] = certification
-            return newResult
-        }
-        for (index, _) in players.enumerated() {
-            players[index].update(isCertificated: false)
+            players[playerIndex].update(isCertificated: certifications[playerID]?.isCertified ?? false)
         }
     }
 }
 
 public extension Competition {
+    
+    enum State: Equatable {
+        case notStarted(hasOtherPlayer: Bool)
+        case started
+        case disabled
+        case finished
+    }
     
     enum InfoKey {
         case title

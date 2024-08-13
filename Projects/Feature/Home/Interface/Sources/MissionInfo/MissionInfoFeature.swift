@@ -16,21 +16,32 @@ public struct MissionInfoFeature {
     @ObservableState
     public struct State {
         
+        public let missionId: Int
+        
+        public let totalBlockCount: Int
+        
         public var infos: [Info]
         
-        public init() {
-            self.infos = [
-                .init(id: "1", title: "미션", description: "매일 유산소 1시간"),
-                .init(id: "2", title: "미션 기간", description: "2024.07.24~2024.08.14"),
-                .init(id: "3", title: "인증 요일", description: "월/수/목"),
-                .init(id: "4", title: "인증 시간", description: "오전 00 ~12시")
-            ]
+        @Presents var destination: Destination.State?
+        
+        public init(missionId: Int, totalBlockCount: Int, infos: [Info]) {
+            self.missionId = missionId
+            self.totalBlockCount = totalBlockCount
+            self.infos = infos
         }
+    }
+    
+    @Reducer
+    public enum Destination {
+        case missionDelete(MissionDeleteFeature)
     }
     
     
     public enum Action {
         case didTapCloseButton
+        case didTapDeleteButton
+        case error(Error)
+        case destination(PresentationAction<Destination.Action>)
     }
     
     public var body: some ReducerOf<Self> {
@@ -40,8 +51,16 @@ public struct MissionInfoFeature {
                 return .run { _ in
                     await self.dismiss()
                 }
+            case .didTapDeleteButton:
+                state.destination = .missionDelete(MissionDeleteFeature.State(missionId: state.missionId))
+                return .none
+            case let .error(error):
+                return .none
+            case let .destination(action):
+                return .none
             }
         }
+        .ifLet(\.$destination, action: \.destination)
     }
     
     public init() {}

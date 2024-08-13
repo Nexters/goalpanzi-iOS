@@ -18,7 +18,9 @@ extension MissionVerificationService: DependencyKey {
         
         let jsonDecoder: JSONDecoder = {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            decoder.dateDecodingStrategy = .formatted(dateFormatter)
             return decoder
         }()
         
@@ -41,12 +43,8 @@ extension MissionVerificationService: DependencyKey {
                         queryParameters: GetVerificationsRequestDTO(date: ISO8601DateFormatter.string(from: date, timeZone: .current))
                     )
                     
-                    do {
-                        let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
-                        return response.toDomain
-                    } catch {
-                        throw NSError()
-                    }
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    return response.toDomain
                 } catch {
                     throw NSError()
                 }
@@ -58,12 +56,8 @@ extension MissionVerificationService: DependencyKey {
                         httpMethod: .get,
                         queryParameters: EmptyRequest()
                     )
-                    do {
-                        let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
-                        return response.toDomain
-                    } catch {
-                        throw NSError()
-                    }
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    return response.toDomain
                 } catch {
                     throw NSError()
                 }

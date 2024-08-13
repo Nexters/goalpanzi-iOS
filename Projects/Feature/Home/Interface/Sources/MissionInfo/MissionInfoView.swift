@@ -30,7 +30,7 @@ public struct MissionInfoView: View {
                                 .font(.pretendard(kind: .body_xl, type: .regular))
                                 .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
                             +
-                            Text("인증횟수(보드판 수)는 총 12개 ")
+                            Text("인증횟수(보드판 수)는 총 \(store.totalBlockCount)개 ")
                                 .font(.pretendard(kind: .body_xl, type: .regular))
                                 .foregroundColor(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
                             +
@@ -44,14 +44,27 @@ public struct MissionInfoView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         ForEach(Array(store.infos.enumerated()), id: \.offset) { index, info in
                             VStack(alignment: .leading, spacing: 0) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(info.title)
-                                        .font(.pretendard(kind: .body_md, type: .regular))
-                                        .foregroundStyle(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
-                                    Text(info.description)
-                                        .font(.pretendard(kind: .body_lg, type: .bold))
-                                        .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                                HStack(alignment: .bottom) {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(info.title)
+                                            .font(.pretendard(kind: .body_md, type: .regular))
+                                            .foregroundStyle(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
+                                        Text(info.description)
+                                            .font(.pretendard(kind: .body_lg, type: .bold))
+                                            .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
+                                    }
+                                    Spacer()
+                                    if index == .zero {
+                                        Button(action: {
+                                            store.send(.didTapDeleteButton)
+                                        }, label: {
+                                            Text("삭제하기")
+                                                .font(.pretendard(kind: .body_lg, type: .light))
+                                                .foregroundStyle(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                                        })
+                                    }
                                 }
+                                
                                 VStack(spacing: 0) {
                                     Spacer()
                                     Divider()
@@ -74,6 +87,11 @@ public struct MissionInfoView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 backButton
+            }
+        }
+        .overlay {
+            if let store = store.scope(state: \.destination?.missionDelete, action: \.destination.missionDelete) {
+                MissionDeleteView(store: store)
             }
         }
     }

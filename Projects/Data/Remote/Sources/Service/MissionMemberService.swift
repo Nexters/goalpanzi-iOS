@@ -18,7 +18,9 @@ extension MissionMemberService: DependencyKey {
         
         let jsonDecoder: JSONDecoder = {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            decoder.dateDecodingStrategy = .formatted(dateFormatter)
             return decoder
         }()
         

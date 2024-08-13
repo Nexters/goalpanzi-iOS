@@ -18,11 +18,11 @@ public struct ImageDetailFeature {
     @ObservableState
     public struct State {
         public let player: Player
-        public let updatedDate: Date
+        public let verifiedAt: Date?
         public let imageURL: String?
         
         public var formatedDate: String {
-            dateFormatter.string(from: updatedDate)
+            dateFormatter.string(from: verifiedAt ?? .now)
         }
         
         private let dateFormatter: DateFormatter = {
@@ -31,9 +31,9 @@ public struct ImageDetailFeature {
             return formatter
         }()
         
-        public init(player: Player, updatedDate: Date, imageURL: String?) {
+        public init(player: Player, verifiedAt: Date?, imageURL: String?) {
             self.player = player
-            self.updatedDate = updatedDate
+            self.verifiedAt = verifiedAt
             self.imageURL = imageURL
         }
     }

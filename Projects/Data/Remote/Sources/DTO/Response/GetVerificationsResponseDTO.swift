@@ -13,7 +13,7 @@ struct GetVerificationsResponseDTO: Decodable {
         let nickname: String
         let characterType: String
         let imageUrl: String
-        let verifiedAt: Date
+        let verifiedAt: Date?
     }
     
     let missionVerifications: [Verification]

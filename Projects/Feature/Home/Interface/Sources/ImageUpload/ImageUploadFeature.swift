@@ -7,16 +7,20 @@
 
 import Foundation
 import UIKit
+import DataRemote
+import DataRemoteInterface
 import DomainPlayerInterface
 import ComposableArchitecture
 
 @Reducer
 public struct ImageUploadFeature {
     
+    @Dependency(MissionVerificationService.self) var verificationService
     @Dependency(\.dismiss) var dismiss
     
     @ObservableState
     public struct State {
+        public let missionId: Int
         public let player: Player
         public let updatedDate: Date
         public let selectedImage: UIImage
@@ -31,7 +35,8 @@ public struct ImageUploadFeature {
             return formatter
         }()
         
-        public init(player: Player, updatedDate: Date = Date.now, selectedImage: UIImage) {
+        public init(missionId: Int, player: Player, updatedDate: Date = Date.now, selectedImage: UIImage) {
+            self.missionId = missionId
             self.player = player
             self.updatedDate = updatedDate
             self.selectedImage = selectedImage
@@ -48,7 +53,14 @@ public struct ImageUploadFeature {
         Reduce { state, action in
             switch action {
             case .didTapUploadButton:
-                return .run { send in
+                return .run { [
+                    missionId = state.missionId, 
+                    selectedImage = state.selectedImage,
+                    player = state.player
+                ] send in
+                    if let data = selectedImage.jpegData(compressionQuality: 0.8) {
+                        _ = try await verificationService.postVerificationsMe(missionId, "\(player.name)", data)
+                    }
                     await send(.didFinishImageUpload)
                 }
             case .didTapCloseButton:

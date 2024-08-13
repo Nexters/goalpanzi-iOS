@@ -18,7 +18,9 @@ extension MissionService: DependencyKey {
         
         let jsonDecoder: JSONDecoder = {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            decoder.dateDecodingStrategy = .formatted(dateFormatter)
             return decoder
         }()
         
@@ -36,6 +38,7 @@ extension MissionService: DependencyKey {
                     let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
                     return response.toDomain
                 } catch {
+                    print(error)
                     throw NSError()
                 }
             },
@@ -62,12 +65,12 @@ extension GetMissionResponseDTO {
     var toDomain: Mission {
         .init(
             missionId: missionId,
-            hostMemeverId: hostMemberId,
+            hostMemberId: hostMemberId,
             description: description,
             missionStartDate: missionStartDate,
             missionEndDate: missionEndDate,
-            timeOfDay: timeOfDay,
-            missionDays: missionDays,
+            timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
+            missionDays: missionDays.compactMap { WeekDay(rawValue: $0) },
             boardCount: boardCount,
             invitationCode: invitationCode
         )
@@ -79,12 +82,12 @@ extension DeleteMissionResponseDTO {
     var toDomain: Mission {
         .init(
             missionId: missionId,
-            hostMemeverId: hostMemberId,
+            hostMemberId: hostMemberId,
             description: description,
             missionStartDate: missionStartDate,
             missionEndDate: missionEndDate,
-            timeOfDay: timeOfDay,
-            missionDays: missionDays,
+            timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
+            missionDays: missionDays.compactMap { WeekDay(rawValue: $0) },
             boardCount: boardCount,
             invitationCode: invitationCode
         )

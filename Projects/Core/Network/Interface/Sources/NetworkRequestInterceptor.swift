@@ -16,12 +16,12 @@ open class NetworkRequestInterceptor: RequestInterceptor {
     public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
         var urlRequest = urlRequest
 
-        guard let accessToken = KeychainProvider.shared.read(.accessToken) else {
-            completion(.success(urlRequest))
-            return
-        }
+//        guard let accessToken = KeychainProvider.shared.read(.accessToken) else {
+//            completion(.success(urlRequest))
+//            return
+//        }
 
-        urlRequest.headers.add(.authorization(bearerToken: accessToken))
+        urlRequest.headers.add(.authorization(bearerToken: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMSIsImlhdCI6MTcyMzU1NDE0MSwiZXhwIjoxNzIzNjQwNTQxfQ.Gm05bYTIMsPjpUrvRv8gCVUHEnHAsKYm2OjhS5jM6p4"))
         completion(.success(urlRequest))
     }
 

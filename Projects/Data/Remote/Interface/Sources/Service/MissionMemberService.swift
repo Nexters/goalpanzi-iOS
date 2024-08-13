@@ -12,11 +12,11 @@ public struct MissionMemberService: MissionMemberServiceable {
     
     public var getMissionMembersMe: @Sendable () async throws -> MyMissionInfo
 
-    public var getMissionMembersRank: @Sendable (String) async throws -> MissionRank
+    public var getMissionMembersRank: @Sendable (Int) async throws -> MissionRank
     
     public init(
         getMissionMembersMe: @escaping @Sendable () async throws -> MyMissionInfo,
-        getMissionMembersRank: @escaping @Sendable (String) async throws -> MissionRank
+        getMissionMembersRank: @escaping @Sendable (Int) async throws -> MissionRank
     ) {
         self.getMissionMembersMe = getMissionMembersMe
         self.getMissionMembersRank = getMissionMembersRank

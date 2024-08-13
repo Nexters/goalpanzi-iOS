@@ -11,5 +11,5 @@ struct GetVerificationsMeResponseDTO: Decodable {
     let nickname: String
     let characterType: String
     let imageUrl: String
-    let verifiedAt: Date
+    let verifiedAt: Date?
 }

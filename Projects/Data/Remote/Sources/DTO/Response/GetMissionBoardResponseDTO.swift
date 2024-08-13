@@ -11,7 +11,8 @@ struct GetMissionBoardResponseDTO: Decodable {
     
     struct Board: Decodable {
         let number: Int
-        let reward: String
+        let reward: String?
+        let isMyPosition: Bool
         let missionBoardMembers: [Member]
     }
     
@@ -21,4 +22,8 @@ struct GetMissionBoardResponseDTO: Decodable {
     }
     
     let missionBoards: [Board]
+    
+    let progressCount: Int
+    
+    let rank: Int
 }

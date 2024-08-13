@@ -17,10 +17,14 @@ public struct MissionInvitationInfoFeature {
     @ObservableState
     public struct State {
         
-        public let codes: [String]
+        public let invitationCode: String
         
-        public init(codes: [String]) {
-            self.codes = codes
+        public var codes: [String] {
+            invitationCode.map { String($0) }
+        }
+        
+        public init(invitationCode: String) {
+            self.invitationCode = invitationCode
         }
     }
     

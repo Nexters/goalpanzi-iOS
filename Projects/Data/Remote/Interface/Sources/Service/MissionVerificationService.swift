@@ -10,16 +10,16 @@ import DomainCompetitionInterface
 
 public struct MissionVerificationService: MissionVerificationServiceable {
     
-    public var postVerificationsMe: @Sendable (String, String, Data) async throws -> Void
+    public var postVerificationsMe: @Sendable (Int, String, Data) async throws -> Void
     
-    public var getVerifications: @Sendable (String, Date) async throws -> MissionVerification
+    public var getVerifications: @Sendable (Int, Date) async throws -> MissionVerification
     
-    public var getVerificationsMe: @Sendable (String, Int) async throws -> MissionVerification.VerificationInfo
+    public var getVerificationsMe: @Sendable (Int, Int) async throws -> MissionVerification.VerificationInfo
     
     public init(
-        postVerificationsMe: @escaping @Sendable (String, String, Data) async throws -> Void,
-        getVerifications: @escaping @Sendable (String, Date) async throws -> MissionVerification,
-        getVerificationsMe: @escaping @Sendable (String, Int) async throws -> MissionVerification.VerificationInfo
+        postVerificationsMe: @escaping @Sendable (Int, String, Data) async throws -> Void,
+        getVerifications: @escaping @Sendable (Int, Date) async throws -> MissionVerification,
+        getVerificationsMe: @escaping @Sendable (Int, Int) async throws -> MissionVerification.VerificationInfo
     ) {
         self.postVerificationsMe = postVerificationsMe
         self.getVerifications = getVerifications

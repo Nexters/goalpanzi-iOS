@@ -26,7 +26,6 @@ public struct HomeFeature {
         public var certificationButtonState: CertificationButtonState = .init(isEnabled: false, info: "", title: "")
         public var selectedImages: [UIImage] = []
         public var movingPiece: Piece? = nil
-        
         public var me: Player? = nil
         public var missionId: Int? = nil
         public var isLoading: Bool = false
@@ -38,9 +37,7 @@ public struct HomeFeature {
         @Presents var destination: Destination.State?
         public var path = StackState<Path.State>()
         
-        public init() {
-        
-        }
+        public init() {}
     }
     
     @Reducer
@@ -51,6 +48,7 @@ public struct HomeFeature {
         case eventResult(MissionResultFeature)
         case imageUpload(ImageUploadFeature)
         case imageDetail(ImageDetailFeature)
+        case finish(FinishFeature)
     }
     
     @Reducer
@@ -75,7 +73,9 @@ public struct HomeFeature {
         case binding(BindingAction<State>)
         
         case didFetchMyMissionInfo(MyMissionInfo)
-        case didFetchMissionAndBoard(Mission, MissionBoard)
+        case didFetchVerificationAndMissionAndBoard(MissionVerification, Mission, MissionBoard)
+        case didFetchVerificationInfo(MissionVerification.VerificationInfo)
+        case didFetchRank(Int)
         case error(Error)
     }
     
@@ -105,37 +105,41 @@ public struct HomeFeature {
                         guard let missionId else { throw NSError() }
                         async let mission = try missionService.getMissions(missionId)
                         async let board = try missionBoardService.getBoard(missionId)
-                        let (missionResult, boardResult): (Mission, MissionBoard) = try await (mission, board)
-                        await send(.didFetchMissionAndBoard(missionResult, boardResult))
+                        async let verification = try missionVerificationService.getVerifications(missionId, Date.now)
+                        let (verificationResult, missionResult, boardResult): (MissionVerification, Mission, MissionBoard) = try await (verification, mission, board)
+                        await send(.didFetchVerificationAndMissionAndBoard(verificationResult, missionResult, boardResult))
                     } catch {
                         await send(.error(error))
                     }
                 }
-            case let .didFetchMissionAndBoard(mission, board):
+            case let .didFetchVerificationAndMissionAndBoard(verification, mission, board):
                 state.mission = mission
                 
                 let players: [Player] = board.missionBoards.flatMap(\.missionBoardMembers).map {
                     Player(id: $0.nickname, pieceID: $0.nickname, name: $0.nickname, character: Character(rawValue: $0.characterType) ?? .rabbit, isMe: state.me?.name == $0.nickname)
                 }
                 
-                
-                let events: [Event] = board.missionBoards.map {
-                    Event.reward(JejuRewardInfo(rawValue: $0.reward, position: Position(index: $0.number)))
+                let events: [Event] = board.missionBoards.compactMap { (info: MissionBoard.BoardInfo) -> Event? in
+                    guard let reward = info.reward else { return nil }
+                    return Event.reward(JejuRewardInfo(rawValue: reward, position: Position(index: info.number)))
                 }
                 
                 let theme: JejuIslandBoardTheme = JejuIslandBoardTheme()
                 
                 let competitionState: Competition.State = {
-                    if mission.missionStartDate >= Date.now, players.count == 1 {
+                    if mission.missionEndDate <= Date.now {
+                        return .finished
+                    }
+                    if mission.missionStartDate <= Date.now, players.count == 1 {
                         return .disabled
                     }
-                    if mission.missionStartDate >= Date.now, players.count > 1 {
+                    if mission.missionStartDate <= Date.now, players.count > 1 {
                         return .started
                     }
-                    if mission.missionStartDate < Date.now, players.count == 1 {
+                    if mission.missionStartDate > Date.now, players.count == 1 {
                         return .notStarted(hasOtherPlayer: false)
                     }
-                    if mission.missionStartDate < Date.now, players.count > 1 {
+                    if mission.missionStartDate > Date.now, players.count > 1 {
                         return .notStarted(hasOtherPlayer: true)
                     }
                     return .disabled
@@ -166,51 +170,95 @@ public struct HomeFeature {
                     }
                 }
                 
+                verification.missionVerifications.forEach {
+                    competition.certify(playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
+                }
+                competition.sortPlayersByVerifiedAt()
+                competition.moveMeToFront()
+                
                 state.competition = competition
                 state.certificationButtonState = {
                     if competition.me?.isCertificated == true {
-                        return .init(isEnabled: false, info: "미션 요일: 월 화 수 목 금 토", title: "오늘 미션 인증 완료!")
+                        let info = "미션 요일: \(mission.missionDays.map { $0.toKorean }.joined(separator: " ") )"
+                        return .init(isEnabled: false, info: info, title: "오늘 미션 인증 완료!")
                     }
-                    if competition.me?.isCertificated == false { // 미션일이고(ex 월) 미션시간전(24시전)이라면
-                        return .init(isEnabled: true, info: "오후 미션 인증은 24시까지에요", title: "오늘 미션 인증하기")
-                    }
-                    if competition.me?.isCertificated == false { // 미션일이 아니거나(ex 월) 미션시간(24시전)이 지났나면
-                        return .init(isEnabled: false, info: "오후 미션 인증은 24시까지에요", title: "오늘 미션 인증 시간 마감")
+                    if competition.me?.isCertificated == false {
+                        let isMissionTime = mission.checkIsMissionTime
+                        let info = "\(mission.timeOfDay.toKorean) 미션 인증은 \(mission.timeOfDay.endTimeString)까지에요"
+                        let title = isMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감"
+                        return .init(isEnabled: isMissionTime, info: info, title: title)
                     }
                     return .init(isEnabled: false, info: "", title: "")
                 }()
                 
-                if competitionState == .disabled {
-                    state.destination = .missionDeleteAlert(MissionDeleteAlertFeature.State())
+                switch competitionState {
+                case .disabled:
+                    guard let missionId = state.missionId else { return .none }
+                    state.destination = .missionDeleteAlert(MissionDeleteAlertFeature.State(missionId: missionId))
+                case .finished:
+                    return .run { [missionId = state.missionId] send in
+                        do {
+                            let rankInfo = try await missionMemberService.getMissionMembersRank(missionId ?? 0)
+                            await send(.didFetchRank(rankInfo.rank))
+                        } catch {
+                            await send(.error(error))
+                        }
+                    }
+                default:
+                    break
                 }
+                return .none
+            case let .didFetchRank(rank):
+                guard let missionId = state.missionId, let me = state.competition?.me else { return .none }
+                state.destination = .finish(FinishFeature.State(missionId: missionId, player: me, rank: rank))
                 return .none
             case .didTapMissionInfoButton:
                 state.isMissionInfoGuideToolTipShowed = true
-                state.path.append(.missionInfo(MissionInfoFeature.State()))
+                guard let missionId = state.missionId,
+                      let mission = state.mission,
+                      let totalBlockCount = state.competition?.board.totalBlockCount else { return .none }
+                let infos: [MissionInfoFeature.Info] = [
+                    .init(id: "1", title: "미션", description: mission.description),
+                    .init(id: "2", title: "미션 기간", description: mission.missionPeriodDescription),
+                    .init(id: "3", title: "인증 요일", description: mission.missionWeekDayDescription),
+                    .init(id: "4", title: "인증 시간", description: mission.missionTimeDescription)
+                ]
+                state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, totalBlockCount: totalBlockCount, infos: infos)))
                 return .none
             case .didTapSettingButton:
+                // 설정화면으로 이동
                 return .none
-            case .didTapPlayer(player: let player):
-                guard player.isCertificated,
-                        let certification = state.competition?.findCertification(by: player.id) else { return .none }
-                state.destination = .imageDetail(ImageDetailFeature.State(player: player, updatedDate: certification.updatedAt, imageURL: certification.imageURL))
+            case let .didTapPlayer(player):
+                guard player.isCertificated, let certification = state.competition?.findCertification(by: player.id) else { return .none }
+                state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: certification.verifiedAt ?? Date.now, imageURL: certification.imageURL))
                 return .none
             case let .didSelectImages(images):
-                guard let image = images.first, let me = state.competition?.me else { return .none }
-                state.destination = .imageUpload(ImageUploadFeature.State(player: me, selectedImage: image))
+                guard let image = images.first, let me = state.competition?.me, let missionId = state.missionId else { return .none }
+                state.destination = .imageUpload(ImageUploadFeature.State(missionId: missionId, player: me, selectedImage: image))
                 return .none
             case let .didTapPiece(piece):
                 guard piece == state.competition?.myPiece else { return .none }
-                return .run { send in
+                return .run { [mission = state.mission] send in
                     do {
-                        
+                        let verificationInfo = try await missionVerificationService.getVerificationsMe(mission?.missionId ?? 0, piece.position.index)
+                        await send(.didFetchVerificationInfo(verificationInfo))
                     } catch {
                         await send(.error(error))
                     }
                 }
+            case let .didFetchVerificationInfo(info):
+                state.destination = .imageDetail(
+                    ImageDetailFeature.State(
+                        player: Player(id: info.nickname, pieceID: info.nickname, name: info.nickname, character: Character(rawValue: info.characterType) ?? .rabbit),
+                        verifiedAt: info.verifiedAt,
+                        imageURL: info.imageUrl
+                    )
+                )
+                return .none
             case .didTapInvitationInfoButton:
                 state.isInvitationGuideToolTipShowed = true
-                state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State(codes: ["A", "Z", "3", "X"]))
+                guard let mission = state.mission else { return .none }
+                state.destination = .missionInvitationInfo(MissionInvitationInfoFeature.State(invitationCode: mission.invitationCode))
                 return .none
             case .didTapInvitationInfoToolTip:
                 state.isInvitationGuideToolTipShowed = true
@@ -225,11 +273,7 @@ public struct HomeFeature {
                 case .presented(.imageUpload(.didFinishImageUpload)):
                     guard let competition = state.competition, let myPiece = competition.myPiece else { return .none }
                     let newPosition = myPiece.position + 1
-                    guard newPosition.index < competition.board.totalBlockCount else {
-                        // <경쟁종료됨>
-                        // 경쟁종료화면으로 이동
-                        return .none
-                    }
+                    guard newPosition.index < competition.board.totalBlockCount else { return .none }
                     let event = competition.board.findEvent(by: newPosition)
                     state.destination = .certificationResult(CertificationResultFeature.State(event: event))
                     return .none
@@ -237,6 +281,12 @@ public struct HomeFeature {
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
+                    return .none
+                case .presented(.finish(.didTapConfirmButton)):
+                    // 경쟁시작화면으로 이동
+                    return .none
+                case .presented(.finish(.didTapSettingButton)):
+                    //설정화면으로 이동
                     return .none
                 case .presented(_):
                     return .none
@@ -252,7 +302,7 @@ public struct HomeFeature {
                 return .none
             case .binding:
                 return .none
-            case .error:
+            case let .error(error):
                 return .none
             case let .loading(isLoading):
                 state.isLoading = isLoading

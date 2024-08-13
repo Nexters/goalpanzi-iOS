@@ -11,7 +11,7 @@ public protocol MissionMemberServiceable {
     
     var getMissionMembersMe: @Sendable () async throws -> MyMissionInfo { get }
     
-    var getMissionMembersRank: @Sendable (_ missionId: String) async throws -> MissionRank { get }
+    var getMissionMembersRank: @Sendable (_ missionId: Int) async throws -> MissionRank { get }
 }
 
 public struct MyMissionInfo {

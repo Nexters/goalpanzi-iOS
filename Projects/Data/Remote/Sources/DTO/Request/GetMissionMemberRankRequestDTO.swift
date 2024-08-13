@@ -8,5 +8,5 @@
 import Foundation
 
 struct GetMissionMemberRankRequestDTO: Encodable {
-    let missionId: String
+    let missionId: Int
 }

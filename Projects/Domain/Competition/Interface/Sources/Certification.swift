@@ -17,33 +17,28 @@ public struct Certification {
     public var imageURL: String?
     
     public var isCertified: Bool {
-        imageURL != nil
+        if imageURL?.isEmpty == true {
+            return false
+        }
+        return imageURL != nil || verifiedAt != nil
     }
     
-    public var createAt: Date
-    
-    public var updatedAt: Date
+    public var verifiedAt: Date?
     
     public init(
         id: String,
         playerID: PlayerID,
         imageURL: String? = nil,
-        createAt: Date = Date.now,
-        updatedAt: Date = Date.now
+        verifiedAt: Date? = nil
     ) {
         self.id = id
         self.playerID = playerID
         self.imageURL = imageURL
-        self.createAt = createAt
-        self.updatedAt = updatedAt
+        self.verifiedAt = verifiedAt
     }
     
-    public mutating func reset() {
-        updatedAt = Date.now
-        imageURL = nil
-    }
-    
-    public mutating func update(imageURL: String) {
+    public mutating func update(imageURL: String, verifiedAt: Date?) {
         self.imageURL = imageURL
+        self.verifiedAt = verifiedAt
     }
 }

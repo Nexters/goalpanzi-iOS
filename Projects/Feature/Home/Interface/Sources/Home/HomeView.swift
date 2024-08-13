@@ -50,6 +50,10 @@ public struct HomeView: View {
                 store.send(.onAppear)
             }
             .overlay {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .isHidden(!store.isLoading, remove: true)
+                
                 if let store = store.scope(state: \.destination?.missionDeleteAlert, action: \.destination.missionDeleteAlert) {
                     MissionDeleteAlertView(store: store)
                 }
@@ -61,6 +65,9 @@ public struct HomeView: View {
                 }
                 if let store = store.scope(state: \.destination?.eventResult, action: \.destination.eventResult) {
                     MissionResultView(store: store)
+                }
+                if let store = store.scope(state: \.destination?.finish, action: \.destination.finish) {
+                    FinishView(store: store)
                 }
             }
             .fullScreenCover(item: $store.scope(state: \.destination?.imageUpload, action: \.destination.imageUpload)) { store in

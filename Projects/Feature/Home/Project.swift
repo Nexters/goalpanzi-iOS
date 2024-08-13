@@ -45,7 +45,7 @@ let project = Project.makeModule(
             factory: .init(
                 infoPlist: .extendingDefault(
                     with: [
-                        "BASE_URL": "",
+                        "BASE_URL": "https://mission-mate.kro.kr/",
                         "UILaunchStoryboardName": "LaunchScreen.storyboard",
                         "UIApplicationSceneManifest": [
                             "UIApplicationSupportsMultipleScenes": false,

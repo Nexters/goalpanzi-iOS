@@ -1,5 +1,4 @@
-//
-//  MissionDeleteAlertView.swift
+//  MissionDeleteView.swift
 //  FeatureHomeInterface
 //
 //  Created by Haeseok Lee on 8/5/24.
@@ -10,12 +9,12 @@ import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
 
-public struct MissionDeleteAlertView: View {
+public struct MissionDeleteView: View {
     
-    @Bindable private var store: StoreOf<MissionDeleteAlertFeature>
+    @Bindable private var store: StoreOf<MissionDeleteFeature>
     @State private var scale = 0.5
     
-    public init(store: StoreOf<MissionDeleteAlertFeature>) {
+    public init(store: StoreOf<MissionDeleteFeature>) {
         self.store = store
     }
     
@@ -27,12 +26,12 @@ public struct MissionDeleteAlertView: View {
             VStack(spacing: 0) {
                 VStack(spacing: 32) {
                     VStack(spacing: 12) {
-                        Text("시작일까지 아무도 오지않아\n미션보드를 삭제할게요.")
+                        Text("진행중인 미션을\n삭제하시겠습니까?")
                             .multilineTextAlignment(.center)
                             .font(.pretendard(kind: .title_xl, type: .bold))
                             .foregroundColor(SharedDesignSystemAsset.Colors.black.swiftUIColor)
                         
-                        Text("미션보드는 삭제되고\n초기화면 화면으로 이동해요.")
+                        Text("미션을 삭제하면\n미션보드판이 초기화돼요.")
                             .multilineTextAlignment(.center)
                             .font(.pretendard(kind: .body_lg, type: .regular))
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
@@ -51,9 +50,18 @@ public struct MissionDeleteAlertView: View {
                             .cornerRadius(30)
                     }
                     .padding(.horizontal, 24)
+                    Button(action: {
+                        store.send(.didTapCloseButton)
+                    }) {
+                        Text("닫기")
+                            .font(.pretendard(kind: .body_lg, type: .bold))
+                            .foregroundColor(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
+                            .frame(height: 60)
+                            .frame(maxWidth: .infinity)
+                    }
                 }
                 .padding(.top, 40)
-                .padding(.bottom, 34)
+                .padding(.bottom, 22)
             }
             .frame(maxWidth: .infinity)
             .background(SharedDesignSystemAsset.Colors.white.swiftUIColor)

@@ -16,10 +16,10 @@ public struct MissionBoard {
     
     public struct BoardInfo {
         public let number: Int
-        public let reward: String
+        public let reward: String?
         public let missionBoardMembers: [BoardMember]
         
-        public init(number: Int, reward: String, missionBoardMembers: [BoardMember]) {
+        public init(number: Int, reward: String?, missionBoardMembers: [BoardMember]) {
             self.number = number
             self.reward = reward
             self.missionBoardMembers = missionBoardMembers
