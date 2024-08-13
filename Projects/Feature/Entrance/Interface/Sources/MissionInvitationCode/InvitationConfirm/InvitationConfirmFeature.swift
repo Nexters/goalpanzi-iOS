@@ -24,6 +24,7 @@ public struct InvitationConfirmFeature: Reducer {
         var missionDuration: String
         var missionWeekDay: String
         var missionTimeOfDay: String
+        var invitationCode: String
 
         public init(mission: Mission) {
             self.mission = mission
@@ -32,6 +33,7 @@ public struct InvitationConfirmFeature: Reducer {
             self.missionDuration = mission.startDate.formattedString(dateFormat: .yearMonthDate) + "~" + mission.endDate.formattedString(dateFormat: .yearMonthDate)
             self.missionWeekDay = mission.authenticationWeekDays.map { $0.koreanName }.joined(separator: "/")
             self.missionTimeOfDay = mission.timeOfDay.description
+            self.invitationCode = mission.invitationCode
         }
     }
 
@@ -42,7 +44,7 @@ public struct InvitationConfirmFeature: Reducer {
         case denyButtonTapped
         
         public enum Delegate {
-            case didConfirmButtonTapped
+            case didConfirmButtonTapped(InvitationCode)
         }
         
         case delegate(Delegate)
@@ -55,8 +57,8 @@ public struct InvitationConfirmFeature: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .confirmButtonTapped:
-                return .run { send in
-                    await send(.delegate(.didConfirmButtonTapped))
+                return .run { [invitationCode = state.invitationCode] send in
+                    await send(.delegate(.didConfirmButtonTapped(invitationCode)))
                 }
             case .denyButtonTapped:
                 return .run { _ in

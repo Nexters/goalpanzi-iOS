@@ -39,7 +39,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         case binding(BindingAction<State>)
         case confirmButtonTapped
         case backButtonTapped
-        case startMission
+        case startMission(InvitationCode)
         case fetchMissionResponse(Result<Mission, Error>)
         
         // MARK: Child Action
@@ -90,9 +90,9 @@ public struct MissionInvitationCodeFeature: Reducer {
                 return .run { _ in
                   await self.dismiss()
                 }
-            case .invitationConfirm(.presented(.delegate(.didConfirmButtonTapped))):
+            case let .invitationConfirm(.presented(.delegate(.didConfirmButtonTapped(code)))):
                 return .run { send in
-                    await send(.startMission)
+                    await send(.startMission(code))
                 }
             case .startMission:
                 return .none
