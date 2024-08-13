@@ -9,6 +9,8 @@ import Foundation
 
 public enum DateFormat: String {
     case compactYearMonthDateTime = "yyyyMMddHHMMss"
+    case yearMonthDate = "yyyy.MM.dd"
+    case longYearMonthDateTimeZone = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 }
 
 extension DateFormat {
@@ -35,6 +37,12 @@ extension DateFormat {
 extension Date {
     public func formattedString(dateFormat: DateFormat) -> String {
         return dateFormat.formatter.string(from: self)
+    }
+}
+
+extension String {
+    public func toDate(format: DateFormat) -> Date? {
+        return format.formatter.date(from: self)
     }
 }
 

@@ -9,6 +9,7 @@ let project = Project.makeModule(
             interface: .Network,
             factory: .init(
                 dependencies: [
+                    .core(interface: .Keychain),
                     .shared
                 ]
             )

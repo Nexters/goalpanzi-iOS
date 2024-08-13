@@ -8,7 +8,6 @@
 // 일단 import Piece를 Domain에 넣어두기
 import Foundation
 
-import CoreNetworkInterface
 import Alamofire
 
 public enum UserClientError: Error {
