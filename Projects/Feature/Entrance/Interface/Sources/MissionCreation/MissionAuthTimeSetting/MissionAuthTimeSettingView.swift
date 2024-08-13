@@ -49,7 +49,7 @@ public struct MissionAuthTimeSettingView: View {
                         Button(action: {
                             store.selectedTimeOfDay = time
                         }) {
-                            Text(time.description)
+                            Text(time.description.replacingOccurrences(of: " ", with: "\n ", range: time.description.range(of: " ")))
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 84)
                                 .background(store.selectedTimeOfDay == time ? Color.mmGray1 : Color.mmGray5)

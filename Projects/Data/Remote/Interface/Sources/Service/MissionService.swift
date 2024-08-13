@@ -22,7 +22,7 @@ public struct MissionService: MissionServiceable {
     
     public var fetchMissionInfo: @Sendable (
         _ invitationCode: String
-    ) async throws -> (InvitationCode, Mission)
+    ) async throws -> Mission
     
     public init(
         createMission: @escaping @Sendable (
@@ -36,7 +36,7 @@ public struct MissionService: MissionServiceable {
         
         fetchMissionInfo: @escaping @Sendable (
             _ invitationCode: String
-        ) async throws -> (InvitationCode, Mission)
+        ) async throws -> Mission
     ) {
         self.createMission = createMission
         self.fetchMissionInfo = fetchMissionInfo

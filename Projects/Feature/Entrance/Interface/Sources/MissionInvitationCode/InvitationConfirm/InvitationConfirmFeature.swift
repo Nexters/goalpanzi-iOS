@@ -7,6 +7,7 @@
 
 import Foundation
 
+import DomainMissionInterface
 
 import ComposableArchitecture
 
@@ -17,13 +18,21 @@ public struct InvitationConfirmFeature: Reducer {
 
     @ObservableState
     public struct State: Equatable {
-        var authenticationDays: String = "12"
-        var missionTitle = "매일 유산소 1시간"
-        var missionDuration = "2024.07.24~2024.08.14"
-        var missionWeekDay = "월/수/목"
-        var missionTimeOfDay = "오전 00~12시"
+        var mission: Mission
+        var authenticationDays: String
+        var missionTitle: String
+        var missionDuration: String
+        var missionWeekDay: String
+        var missionTimeOfDay: String
 
-        public init() {}
+        public init(mission: Mission) {
+            self.mission = mission
+            self.authenticationDays = "\(mission.authenticationDays)"
+            self.missionTitle = mission.description
+            self.missionDuration = mission.startDate.formattedString(dateFormat: .yearMonthDate) + "~" + mission.endDate.formattedString(dateFormat: .yearMonthDate)
+            self.missionWeekDay = mission.authenticationWeekDays.map { $0.koreanName }.joined(separator: "/")
+            self.missionTimeOfDay = mission.timeOfDay.description
+        }
     }
 
     public enum Action: BindableAction {
@@ -37,7 +46,6 @@ public struct InvitationConfirmFeature: Reducer {
         }
         
         case delegate(Delegate)
-
     }
     
     @Dependency(\.dismiss) var dismiss
@@ -59,4 +67,5 @@ public struct InvitationConfirmFeature: Reducer {
             }
         }
     }
+
 }

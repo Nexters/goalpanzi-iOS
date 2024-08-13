@@ -63,20 +63,21 @@ extension CreateMissionResponseDTO {
 }
 
 extension FetchMissionInfoResponseDTO {
-    var toDomain: (InvitationCode, Mission) {
+    var toDomain: Mission {
         let timeOfDay = TimeOfDay(rawValue: self.timeOfDay) ?? .afternoon
         let startDate = self.missionStartDate.toDate(format: .longYearMonthDateTimeZone) ?? Date()
         let endDate = self.missionEndDate.toDate(format: .compactYearMonthDateTime) ?? Date()
         let authenticationWeekDays = self.missionDays.map { Weekday(rawValue: $0) ?? .friday }
         
-        return (invitationCode, .init(
+        return .init(
             missionId: missionId,
             description: description,
             startDate: startDate,
             endDate: endDate,
             timeOfDay: timeOfDay,
             authenticationWeekDays: authenticationWeekDays,
-            authenticationDays: boardCount)
+            authenticationDays: boardCount,
+            invitationCode: invitationCode
         )
     }
 }

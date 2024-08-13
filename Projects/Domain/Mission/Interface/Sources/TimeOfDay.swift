@@ -16,9 +16,9 @@ public enum TimeOfDay: String, CaseIterable {
 
     public var description: String {
         switch self {
-        case .morning: "오전\n 00~12시"
-        case .afternoon: "오후\n 12~00시"
-        case .everyday: "종일\n 00~00시"
+        case .morning: "오전 00~12시"
+        case .afternoon: "오후 12~00시"
+        case .everyday: "종일 00~00시"
         }
     }
 }

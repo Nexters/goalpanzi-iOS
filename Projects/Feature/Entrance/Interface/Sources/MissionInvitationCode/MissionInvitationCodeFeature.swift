@@ -40,7 +40,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         case confirmButtonTapped
         case backButtonTapped
         case startMission
-        case fetchMissionResponse(Result<(InvitationCode, Mission), Error>)
+        case fetchMissionResponse(Result<Mission, Error>)
         
         // MARK: Child Action
         case invitationConfirm(PresentationAction<InvitationConfirmFeature.Action>)
@@ -79,7 +79,7 @@ public struct MissionInvitationCodeFeature: Reducer {
                 }
             
             case let .fetchMissionResponse(.success(response)):
-                state.invitationConfirm = InvitationConfirmFeature.State()
+                state.invitationConfirm = InvitationConfirmFeature.State(mission: response)
                 return .none
                  
             case let .fetchMissionResponse(.failure(error)):

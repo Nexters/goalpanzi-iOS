@@ -20,6 +20,6 @@ public protocol MissionServiceable {
     
     var fetchMissionInfo: @Sendable (
         _ invitationCode: String
-    ) async throws -> (InvitationCode, Mission) { get }
+    ) async throws -> Mission { get }
     
 }

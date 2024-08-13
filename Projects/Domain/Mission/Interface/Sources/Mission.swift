@@ -9,7 +9,7 @@ import Foundation
 import DomainBoardInterface
 import DomainCompetitionInterface
 
-public struct Mission {
+public struct Mission: Equatable {
     
     public let missionId: Int
     public let description: String
@@ -18,6 +18,7 @@ public struct Mission {
     public let timeOfDay: TimeOfDay
     public let authenticationWeekDays: [Weekday]
     public let authenticationDays: Int
+    public let invitationCode: String
     
     public init(
         missionId: Int,
@@ -26,7 +27,8 @@ public struct Mission {
         endDate: Date,
         timeOfDay: TimeOfDay,
         authenticationWeekDays: [Weekday],
-        authenticationDays: Int
+        authenticationDays: Int,
+        invitationCode: String
     ) {
         self.missionId = missionId
         self.description = description
@@ -35,5 +37,6 @@ public struct Mission {
         self.timeOfDay = timeOfDay
         self.authenticationWeekDays = authenticationWeekDays
         self.authenticationDays = authenticationDays
+        self.invitationCode = invitationCode
     }
 }

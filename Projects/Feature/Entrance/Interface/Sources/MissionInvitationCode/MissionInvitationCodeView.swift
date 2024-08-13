@@ -43,7 +43,7 @@ public struct MissionInvitationCodeView: View {
                             .padding(.bottom, 56)
 
                         HStack {
-                            // TODO: 공통되는 로직 Modifier로 빼기(LimitedTextLengthModifier)
+                            // TODO: 공통되는 로직 Modifier로 빼기(LimitedTextLengthModifier - Binding이 제대로 안됨)
                             TextField("0", text: $store.firstInputCode)
                                 .disableAutoFunctions()
                                 .keyboardType(.alphabet)
@@ -165,8 +165,6 @@ public struct MissionInvitationCodeView: View {
                                 .foregroundStyle(Color.mmRed)
                         }
                         
-
-
                         Spacer()
                     }
                     .padding(.top, 80)
