@@ -22,4 +22,8 @@ public protocol MissionServiceable {
         _ invitationCode: String
     ) async throws -> Mission { get }
     
+    var joinCompetition: @Sendable (
+        _ inviationCode: String
+    ) async throws -> Void { get }
+    
 }

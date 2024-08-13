@@ -8,6 +8,9 @@
 import Foundation
 
 import DomainMissionInterface
+import DomainMission
+import DataRemote
+import DataRemoteInterface
 
 import ComposableArchitecture
 
@@ -36,6 +39,7 @@ public struct InvitationConfirmFeature: Reducer {
             self.invitationCode = mission.invitationCode
         }
     }
+    
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
@@ -43,13 +47,18 @@ public struct InvitationConfirmFeature: Reducer {
         case confirmButtonTapped
         case denyButtonTapped
         
+        case joinCompetitionResponse(Result<Void, Error>)
+        case fetchMissionResponse(Result<Mission, Error>)
+        
         public enum Delegate {
-            case didConfirmButtonTapped(InvitationCode)
+            case didConfirmButtonTapped
         }
         
         case delegate(Delegate)
     }
     
+    @Dependency(MissionClient.self) var missionClient
+    @Dependency(MissionService.self) var missionService
     @Dependency(\.dismiss) var dismiss
     
     public var body: some ReducerOf<Self> {
@@ -57,13 +66,29 @@ public struct InvitationConfirmFeature: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .confirmButtonTapped:
-                return .run { [invitationCode = state.invitationCode] send in
-                    await send(.delegate(.didConfirmButtonTapped(invitationCode)))
+                return .run { send in
+                    await send(.joinCompetitionResponse(
+                        Result {
+                            try await self.missionClient.joinCompetition(
+                                missionService,
+                                ""
+                            )
+                        }
+                    ))
                 }
             case .denyButtonTapped:
                 return .run { _ in
                     await self.dismiss()
                 }
+                
+            case .joinCompetitionResponse(.success):
+                return .run { send in
+                    await send(.delegate(.didConfirmButtonTapped))
+                }
+
+            case let .joinCompetitionResponse(.failure(error)):
+                return .none
+
             default:
                 return .none
             }

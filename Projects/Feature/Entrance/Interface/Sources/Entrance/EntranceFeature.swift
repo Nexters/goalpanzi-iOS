@@ -16,10 +16,12 @@ public struct EntranceFeature: Reducer {
     
     @Reducer
     public enum Path {
+        // 🚨 미션 생성
         case missionContentSetting(MissionContentSettingFeature)
         case missionDurationSetting(MissionDurationSettingFeature)
         case missionAuthTimeSetting(MissionAuthTimeSettingFeature)
         
+        // 🚨 초대코드 검증
         case missionInputInviationCode(MissionInvitationCodeFeature)
     }
     

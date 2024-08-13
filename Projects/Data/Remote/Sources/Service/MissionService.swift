@@ -50,6 +50,18 @@ extension MissionService: DependencyKey {
                 let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
                  
                 return response.toDomain
+            },
+            
+            joinCompetition: { invitationCode in
+                let requestDTO = JoinCompetitionRequestDTO(invitationCode: invitationCode)
+
+                let endPoint = Endpoint<Empty>(
+                    path: "api/mission-members",
+                    httpMethod: .post,
+                    bodyParameters: requestDTO
+                )
+                
+                _ = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
             }
         )
     }()

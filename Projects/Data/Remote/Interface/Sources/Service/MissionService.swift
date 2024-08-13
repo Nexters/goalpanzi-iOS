@@ -24,6 +24,10 @@ public struct MissionService: MissionServiceable {
         _ invitationCode: String
     ) async throws -> Mission
     
+    public var joinCompetition: @Sendable (
+        _ invitationCode: String
+    ) async throws -> Void
+    
     public init(
         createMission: @escaping @Sendable (
             _ missionContent: String,
@@ -36,9 +40,14 @@ public struct MissionService: MissionServiceable {
         
         fetchMissionInfo: @escaping @Sendable (
             _ invitationCode: String
-        ) async throws -> Mission
+        ) async throws -> Mission,
+        
+        joinCompetition: @escaping @Sendable (
+            _ invitationCode: String
+        ) async throws -> Void
     ) {
         self.createMission = createMission
         self.fetchMissionInfo = fetchMissionInfo
+        self.joinCompetition = joinCompetition
     }
 }

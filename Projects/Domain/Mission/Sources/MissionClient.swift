@@ -22,11 +22,13 @@ extension MissionClient: DependencyKey {
                 missionEndDate,
                 timeOfDay,
                 missionDays,
-                authenticationDays
-            )
-        },
+                authenticationDays)
+            },
             fetchMissionInfo: { missionService, invitationCode in
                 try await missionService.fetchMissionInfo(invitationCode)
+            },
+            joinCompetition: { missionService, invitationCode in
+                try await missionService.joinCompetition(invitationCode)
             }
         )
     }()

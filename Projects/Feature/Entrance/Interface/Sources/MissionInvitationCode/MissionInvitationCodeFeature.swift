@@ -37,9 +37,11 @@ public struct MissionInvitationCodeFeature: Reducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        
         case confirmButtonTapped
         case backButtonTapped
-        case startMission(InvitationCode)
+        case startMission
+        
         case fetchMissionResponse(Result<Mission, Error>)
         
         // MARK: Child Action
@@ -90,9 +92,9 @@ public struct MissionInvitationCodeFeature: Reducer {
                 return .run { _ in
                   await self.dismiss()
                 }
-            case let .invitationConfirm(.presented(.delegate(.didConfirmButtonTapped(code)))):
+            case .invitationConfirm(.presented(.delegate(.didConfirmButtonTapped))):
                 return .run { send in
-                    await send(.startMission(code))
+                    await send(.startMission)
                 }
             case .startMission:
                 return .none
