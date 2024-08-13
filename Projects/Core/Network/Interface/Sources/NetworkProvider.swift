@@ -19,7 +19,7 @@ public struct NetworkProvider: NetworkProviderType {
 
     public func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, interceptor: NetworkRequestInterceptor? = nil) async throws -> T where N.Response == T {
         let urlRequest: URLRequest = try endpoint.makeURLRequest()
-        
+
         let dataTask = AF.request(urlRequest, interceptor: interceptor)
             .validate()
             .serializingDecodable(T.self, emptyResponseCodes: [200])

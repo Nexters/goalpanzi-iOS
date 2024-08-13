@@ -20,6 +20,7 @@ open class NetworkRequestInterceptor: RequestInterceptor {
             completion(.success(urlRequest))
             return
         }
+
         urlRequest.headers.add(.authorization(bearerToken: accessToken))
         completion(.success(urlRequest))
     }
