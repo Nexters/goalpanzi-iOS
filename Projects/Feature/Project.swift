@@ -9,6 +9,7 @@ let targets: [Target] = [
                 .feature(implements: .Login),
                 .feature(implements: .PieceCreation),
                 .feature(implements: .Entrance),
+                .feature(implements: .Setting),
                 .domain,
             ]
         )
