@@ -11,7 +11,7 @@ public struct MMPopUpView<Content: View>: View {
 
     private let title: String
     private let highlightedTitle: String?
-    private let subtitle: String
+    private let subtitle: String?
     private let highlightedSubtitle: String?
     private let content: Content
     private let primaryButtonTitle: String
@@ -22,7 +22,7 @@ public struct MMPopUpView<Content: View>: View {
     public init(
         title: String,
         highlightedTitle: String? = nil,
-        subtitle: String,
+        subtitle: String? = nil,
         highlightedSubtitle: String? = nil,
         @ViewBuilder content: () -> Content,
         primaryButtonTitle: String,
@@ -58,21 +58,23 @@ public struct MMPopUpView<Content: View>: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity)
             }
-
-            if let highlighted = highlightedSubtitle {
+            
+            if let subtitle {
                 Spacer()
                     .frame(height: 12)
-                highlightedTextView(
-                    text: subtitle,
-                    highlighted: highlighted,
-                    font: .pretendard(kind: .body_xl, type: .light)
-                )
-            } else {
-                Text(subtitle)
-                    .font(.pretendard(kind: .body_xl, type: .light))
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity)
+                if let highlighted = highlightedSubtitle {
+                    highlightedTextView(
+                        text: subtitle,
+                        highlighted: highlighted,
+                        font: .pretendard(kind: .body_xl, type: .light)
+                    )
+                } else {
+                    Text(subtitle)
+                        .font(.pretendard(kind: .body_xl, type: .light))
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                }
             }
 
             Group {
@@ -81,6 +83,9 @@ public struct MMPopUpView<Content: View>: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
+            
+            Spacer()
+                .frame(height: 32)
 
             Button(action: primaryButtonAction) {
                 Text(primaryButtonTitle)

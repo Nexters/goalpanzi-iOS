@@ -40,7 +40,7 @@ public struct InvitationConfirmView: View {
                             Divider()
                             InfoRow(title: "인증 시간", content: store.missionTimeOfDay)
                         }
-                        .padding(.vertical, 29)
+                        .padding(.top, 29)
                     }, primaryButtonTitle: "맞아요", primaryButtonAction: {
                         store.send(.confirmButtonTapped)
                     }, secondaryButtonTitle: "아니에요") {

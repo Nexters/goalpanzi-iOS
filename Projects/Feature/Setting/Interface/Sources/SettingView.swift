@@ -21,7 +21,6 @@ public struct SettingView: View {
     
     public var body: some View {
         NavigationStack {
-            
             VStack(alignment: .leading, spacing: 0) {
                 MMNavigationBar(
                     title: "설정"
@@ -98,7 +97,7 @@ public struct SettingView: View {
                                 item: AnyView((AnyView(Image(systemName: "chevron.right")
                                     .foregroundStyle(Color.mmDisabled))
                                 )), action: {
-                                    store.send(.navigateAccountDeleteViewTapped)
+                                    store.send(.navigateAccountDeletionViewTapped)
                                 }
                             )
                         }
@@ -118,6 +117,18 @@ public struct SettingView: View {
                 item: $store.scope(state: \.destination?.termsOfUse, action: \.destination.termsOfUse)
             ) { store in
                 InformationView(type: .termsOfUse)
+            }
+            .fullScreenCover(
+                item: $store.scope(state: \.destination?.logout, action: \.destination.logout)
+            ) { store in
+                LogoutConfirmView(store: store)
+                    .presentationBackground(.clear)
+            }
+            .fullScreenCover(
+                item: $store.scope(state: \.destination?.accountDeletion, action: \.destination.accountDeletion)
+            ) { store in
+                AccountDeletionView(store: store)
+                    .presentationBackground(.clear)
             }
         }
     }
