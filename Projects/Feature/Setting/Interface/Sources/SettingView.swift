@@ -97,7 +97,7 @@ public struct SettingView: View {
                                 item: AnyView((AnyView(Image(systemName: "chevron.right")
                                     .foregroundStyle(Color.mmDisabled))
                                 )), action: {
-                                    store.send(.navigateAccountDeletionViewTapped)
+                                    store.send(.navigateProfileDeletionViewTapped)
                                 }
                             )
                         }
@@ -125,9 +125,9 @@ public struct SettingView: View {
                     .presentationBackground(.clear)
             }
             .fullScreenCover(
-                item: $store.scope(state: \.destination?.accountDeletion, action: \.destination.accountDeletion)
+                item: $store.scope(state: \.destination?.profileDeletion, action: \.destination.profileDeletion)
             ) { store in
-                AccountDeletionView(store: store)
+                ProfileDeletionView(store: store)
                     .presentationBackground(.clear)
             }
         }

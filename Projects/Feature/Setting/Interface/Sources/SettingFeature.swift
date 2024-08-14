@@ -20,7 +20,7 @@ public struct SettingFeature: Reducer {
         case termsOfUse
         case privacyPolicy
         case logout(LogoutConfirmFeature)
-        case accountDeletion(AccountDeletionFeature)
+        case profileDeletion(ProfileDeletionFeature)
     }
     
     
@@ -39,7 +39,7 @@ public struct SettingFeature: Reducer {
         case navigateTermsOfUseViewTapped
         case navigatePrivacyPolicyViewTapped
         case navigateLogoutViewTapped
-        case navigateAccountDeletionViewTapped
+        case navigateProfileDeletionViewTapped
         
     }
         
@@ -60,8 +60,8 @@ public struct SettingFeature: Reducer {
             case .navigateLogoutViewTapped:
                 state.destination = .logout(LogoutConfirmFeature.State())
                 return .none
-            case .navigateAccountDeletionViewTapped:
-                state.destination = .accountDeletion(AccountDeletionFeature.State())
+            case .navigateProfileDeletionViewTapped:
+                state.destination = .profileDeletion(ProfileDeletionFeature.State())
                 return .none
             case .destination(_):
                 return .none

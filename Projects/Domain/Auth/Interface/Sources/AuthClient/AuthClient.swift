@@ -8,7 +8,9 @@ import Foundation
 
 import ComposableArchitecture
 
-// MARK: - AuthClient
+public enum AuthClientError: Error {
+    case logoutFailed
+}
 
 public struct AuthClient {
     

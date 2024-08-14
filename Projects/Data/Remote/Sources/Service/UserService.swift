@@ -34,6 +34,18 @@ extension UserService: DependencyKey {
                 } catch {
                     throw UserClientError.duplicateNickName
                 }
+            },
+            deleteProfile: {
+                let endpoint = Endpoint<Empty>(
+                    path: "api/member",
+                    httpMethod: .post
+                )
+                
+                do {
+                    let _ = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                } catch {
+                    throw UserClientError.deleteProfileFailed
+                }
             }
         )
     }()

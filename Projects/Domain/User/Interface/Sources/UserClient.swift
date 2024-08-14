@@ -8,10 +8,9 @@
 // 일단 import Piece를 Domain에 넣어두기
 import Foundation
 
-import Alamofire
-
 public enum UserClientError: Error {
     case duplicateNickName
+    case deleteProfileFailed
     case networkDisabled
 }
 

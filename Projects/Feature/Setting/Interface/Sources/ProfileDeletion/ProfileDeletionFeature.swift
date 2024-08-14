@@ -1,5 +1,5 @@
 //
-//  AccountDeletionFeature.swift
+//  ProfileDeletionFeature.swift
 //  FeatureSettingInterface
 //
 //  Created by 김용재 on 8/15/24.
@@ -10,7 +10,7 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-public struct AccountDeletionFeature: Reducer {
+public struct ProfileDeletionFeature: Reducer {
     
     @ObservableState
     public struct State: Equatable {

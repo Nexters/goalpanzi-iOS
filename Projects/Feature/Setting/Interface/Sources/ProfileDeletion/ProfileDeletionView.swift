@@ -1,5 +1,5 @@
 //
-//  AccountDeletionView.swift
+//  ProfileDeletionView.swift
 //  FeatureSettingInterface
 //
 //  Created by 김용재 on 8/15/24.
@@ -11,11 +11,11 @@ import SharedDesignSystem
 
 import ComposableArchitecture
 
-public struct AccountDeletionView: View {
+public struct ProfileDeletionView: View {
         
-    @Bindable public var store: StoreOf<AccountDeletionFeature>
+    @Bindable public var store: StoreOf<ProfileDeletionFeature>
 
-    public init(store: StoreOf<AccountDeletionFeature>) {
+    public init(store: StoreOf<ProfileDeletionFeature>) {
         self.store = store
     }
     
@@ -37,7 +37,7 @@ public struct AccountDeletionView: View {
 //                        store.send(.confirmButtonTapped)
                     },
                     secondaryButtonTitle: "취소") {
-//                        store.send(.denyButtonTapped)
+                        store.send(.cancelButtonTapped)
                     }
                     .padding(.horizontal, 24)
                 Spacer()

@@ -10,4 +10,5 @@ import Foundation
 public protocol AppleAuthServiceable {
 
     var signIn: @Sendable () async throws -> SignInInfo { get }
+    var logout: @Sendable () async throws -> Void { get }
 }

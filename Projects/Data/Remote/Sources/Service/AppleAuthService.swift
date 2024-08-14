@@ -28,6 +28,18 @@ extension AppleAuthService: DependencyKey {
                 )
                 let response = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: nil)
                 return response.toDomain
+            },
+            logout: {
+                let endpoint = Endpoint<Empty>(
+                    path: "api/auth/logout",
+                    httpMethod: .post
+                )
+                
+                do {
+                    let _ = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                } catch {
+                    throw AuthClientError.logoutFailed
+                }
             }
         )
     }()

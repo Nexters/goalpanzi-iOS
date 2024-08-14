@@ -70,6 +70,8 @@ public struct PieceCreationFeature: Reducer {
                             await send(._setDuplicatedNicknameError)
                         case .networkDisabled:
                             print("Network 에러")
+                        default:
+                            print("에러 발생")
                         }
                     }
                 }

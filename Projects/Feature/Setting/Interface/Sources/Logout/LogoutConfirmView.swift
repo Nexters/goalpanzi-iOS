@@ -35,7 +35,7 @@ public struct LogoutConfirmView: View {
 //                        store.send(.confirmButtonTapped)
                     },
                     secondaryButtonTitle: "취소") {
-//                        store.send(.denyButtonTapped)
+                        store.send(.cancelButtonTapped)
                     }
                     .padding(.horizontal, 24)
                 Spacer()

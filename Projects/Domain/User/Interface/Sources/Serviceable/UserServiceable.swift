@@ -10,4 +10,5 @@ import Foundation
 public protocol UserServiceable {
 
     var createProfile: @Sendable (_ nickName: String, Character) async throws -> Void { get }
+    var deleteProfile: @Sendable () async throws -> Void { get }
 }
