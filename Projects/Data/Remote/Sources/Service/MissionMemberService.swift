@@ -33,11 +33,8 @@ extension MissionMemberService: DependencyKey {
                 )
                 
                 do {
-                    //let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
-                    //return response.toDomain
-                    return .init(profile: .init(nickname: "송 삼", characterType: "BIRD"), missions: [
-                        .init(missionId: 20, description: "테스트")
-                        ])
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    return response.toDomain
                 } catch {
                     throw NSError()
                 }
