@@ -20,6 +20,9 @@ extension UserClient: DependencyKey {
             },
             deleteProfile: { userService in
                 return try await userService.deleteProfile()
+            },
+            checkProfile: { userService in
+                return try await userService.checkProfile()
             }
         )
     }()
