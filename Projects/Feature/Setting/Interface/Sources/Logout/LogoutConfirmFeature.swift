@@ -38,10 +38,10 @@ public struct LogoutConfirmFeature: Reducer {
         case delegate(Delegate)
     }
     
-    @Dependency(\.dismiss) var dismiss
     @Dependency(AuthClient.self) var authClient
     @Dependency(AppleAuthService.self) var appleAuthService
-    
+    @Dependency(\.dismiss) var dismiss
+
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
             

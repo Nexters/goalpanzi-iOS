@@ -43,7 +43,7 @@ public struct SettingFeature: Reducer {
         
         // MARK: Child Action
         case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
-        
+        case deleteProfileSucceed(PresentationAction<ProfileDeletionFeature.Action>)
     }
         
     public var body: some ReducerOf<Self> {
@@ -67,6 +67,9 @@ public struct SettingFeature: Reducer {
                 state.destination = .profileDeletion(ProfileDeletionFeature.State())
                 return .none
             case .logoutSucceed(.presented(.delegate(.didLogoutSucceed))):
+                // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
+                return .none
+            case .deleteProfileSucceed(.presented(.delegate(.didDeleteProfileSucceed))):
                 // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
                 return .none
             case .destination(_):

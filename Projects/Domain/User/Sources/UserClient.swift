@@ -17,6 +17,9 @@ extension UserClient: DependencyKey {
         return Self(
             createProfile: { userService, nickname, character in
                 return try await userService.createProfile(nickname, character)
+            },
+            deleteProfile: { userService in
+                return try await userService.deleteProfile()
             }
         )
     }()

@@ -7,6 +7,11 @@
 
 import Foundation
 
+import DomainUser
+import DomainUserInterface
+import DataRemote
+import DataRemoteInterface
+
 import ComposableArchitecture
 
 @Reducer
@@ -18,22 +23,46 @@ public struct ProfileDeletionFeature: Reducer {
     }
     
     public enum Action {
-        case deleteAccountButtonTapped
+        case deleteProfileButtonTapped
         case cancelButtonTapped
+        
+        case deleteAccountResponse(Result<Void, Error>)
+        
+        public enum Delegate {
+            case didDeleteProfileSucceed
+        }
+        
+        case delegate(Delegate)
+
     }
     
+    @Dependency(UserClient.self) var userClient
+    @Dependency(UserService.self) var userService
     @Dependency(\.dismiss) var dismiss
     
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
             
             switch action {
-            case .deleteAccountButtonTapped:
-                return .none
+            case .deleteProfileButtonTapped:
+                return .run { send in
+                    await send(.deleteAccountResponse(Result {
+                        try await self.userClient.deleteProfile(userService)
+                    }))
+                }
             case .cancelButtonTapped:
                 return .run { _ in
                   await self.dismiss()
                 }
+            case .deleteAccountResponse(.success(_)):
+                return .run { send in
+                    await send(.delegate(.didDeleteProfileSucceed))
+                }
+            case .deleteAccountResponse(.failure(let error)):
+                print(error)
+                return .none
+            default:
+                return .none
             }
         }
     }
