@@ -57,6 +57,7 @@ public struct LogoutConfirmFeature: Reducer {
                 KeychainProvider.shared.delete(.refreshToken)
                 return .run { send in
                     await send(.delegate(.didLogoutSucceed))
+                    await self.dismiss()
                 }
             case .logoutResponse(.failure(let error)):
                 print(error)
