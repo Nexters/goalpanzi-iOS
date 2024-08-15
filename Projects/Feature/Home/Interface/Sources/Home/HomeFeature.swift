@@ -66,7 +66,6 @@ public struct HomeFeature {
         case didTapPiece(piece: Piece)
         case didFinishMoving(piece: Piece?)
         case didLoadData(Competition.State)
-        case loading(isLoading: Bool)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
@@ -273,10 +272,6 @@ public struct HomeFeature {
                 return .none
                 
             case .binding:
-                return .none
-                
-            case let .loading(isLoading):
-                state.isLoading = isLoading
                 return .none
                 
             case .didFetchMyMissionInfo(.failure):

@@ -55,9 +55,9 @@ public struct MissionInfoFeature {
             case .didTapDeleteButton:
                 state.destination = .missionDelete(MissionDeleteFeature.State(missionId: state.missionId))
                 return .none
-            case let .error(error):
+            case .error:
                 return .none
-            case let .destination(action):
+            case .destination:
                 return .none
             }
         }
