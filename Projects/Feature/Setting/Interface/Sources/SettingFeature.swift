@@ -7,6 +7,11 @@
 
 import Foundation
 
+import DomainUserInterface
+import DomainUser
+import DataRemote
+import DataRemoteInterface
+
 import ComposableArchitecture
 
 @Reducer
@@ -41,14 +46,15 @@ public struct SettingFeature: Reducer {
         case navigateLogoutViewTapped
         case navigateProfileDeletionViewTapped
         
-        case setSheetIsPresentedDelayCompleted
+        case checkProfileResponse(Result<UserProfile, Error>)
         
         // MARK: Child Action
         case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
         case deleteProfileSucceed(PresentationAction<ProfileDeletionFeature.Action>)
     }
     
-    @Dependency(\.continuousClock) var clock
+    @Dependency(UserClient.self) var userClient
+    @Dependency(UserService.self) var userService
     
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
@@ -59,9 +65,20 @@ public struct SettingFeature: Reducer {
             case .navigateUpdateProfileViewTapped(isPresented: true):
                 state.isNavigationPresented = true
                 return .run { send in
-                    try await self.clock.sleep(for: .seconds(1))
-                    await send(.setSheetIsPresentedDelayCompleted)
+                    await send(.checkProfileResponse(
+                        Result {
+                            try await self.userClient.checkProfile(userService)
+                        }
+                    ))
                 }
+                
+            case .checkProfileResponse(.success(let userProfile)):
+                state.destination = .updateProfile(UpdateProfileFeature.State(userProfile: userProfile))
+                return .none
+                
+            case .checkProfileResponse(.failure(let error)):
+                print("🚨 에러 발생!! \(error)")
+                return .none
             case .navigateUpdateProfileViewTapped(isPresented: false):
                 state.isNavigationPresented = false
                 return .none
@@ -82,10 +99,6 @@ public struct SettingFeature: Reducer {
                 return .none
             case .deleteProfileSucceed(.presented(.delegate(.didDeleteProfileSucceed))):
                 // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
-                return .none
-                
-            case .setSheetIsPresentedDelayCompleted:
-                state.destination = .updateProfile(UpdateProfileFeature.State())
                 return .none
                 
             case .destination(_):
