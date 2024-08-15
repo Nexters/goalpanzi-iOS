@@ -25,14 +25,10 @@ public struct UpdateProfileFeature: Reducer {
         var selectedPiece: Character = .rabbit
         var nickName: String = ""
         var noticeMessage: String? = "1~6자, 한글, 영문 또는 숫자를 입력하세요."
-
         var isValidNickName: Bool = true
         var isAllCompleted: Bool = false
-
-        public init(userProfile: UserProfile) {
-            self.nickName = userProfile.nickname
-            self.selectedPiece = userProfile.character
-        }
+        
+        var isCheckingProfile: Bool = true
     }
     
     public enum Action: BindableAction {
@@ -42,6 +38,9 @@ public struct UpdateProfileFeature: Reducer {
         case saveButtonTapped
         case backButtonTapped
         
+        case onAppear
+        
+        case checkProfileResponse(Result<UserProfile, Error>)
         case updateProfileResponse(Result<Void, Error>)
     }
     
@@ -54,6 +53,12 @@ public struct UpdateProfileFeature: Reducer {
 
         Reduce<State, Action> { state, action in
             switch action {
+            case .onAppear:
+                return .run { send in
+                    await send(.checkProfileResponse(
+                        Result { try await self.userClient.checkProfile(userService) }
+                    ))
+                }
             case .binding(\.nickName):
                 state.noticeMessage = "1~6자, 한글, 영문 또는 숫자를 입력하세요."
                 state.isValidNickName = self.validate(state.nickName)
@@ -62,6 +67,22 @@ public struct UpdateProfileFeature: Reducer {
             case .pieceImageTapped(let piece):
                 state.selectedPiece = piece
                 return .none
+            case .backButtonTapped:
+                return .run { _ in
+                  await self.dismiss()
+                }
+                
+            // MARK: 기존 프로필 체크
+            case .checkProfileResponse(.success(let userProfile)):
+                state.nickName = userProfile.nickname
+                state.selectedPiece = userProfile.character
+                state.isCheckingProfile = false
+                return .none
+            case .checkProfileResponse(.failure(let error)):
+                print("🚨 에러 발생!! \(error)")
+                return .none
+                
+            // MARK: 프로필 업데이트
             case .saveButtonTapped:
                 let nickName = state.nickName
                 let piece = state.selectedPiece
@@ -85,11 +106,6 @@ public struct UpdateProfileFeature: Reducer {
                         print("에러 발생")
                 }
                 return .none
-                
-            case .backButtonTapped:
-                return .run { _ in
-                  await self.dismiss()
-                }
             default:
                 return .none
             }

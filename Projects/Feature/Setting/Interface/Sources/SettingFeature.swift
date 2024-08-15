@@ -40,21 +40,16 @@ public struct SettingFeature: Reducer {
         case destination(PresentationAction<Destination.Action>)
         
         case backButtonTapped
-        case navigateUpdateProfileViewTapped(isPresented: Bool)
+        case navigateUpdateProfileViewTapped
         case navigateTermsOfUseViewTapped
         case navigatePrivacyPolicyViewTapped
         case navigateLogoutViewTapped
         case navigateProfileDeletionViewTapped
         
-        case checkProfileResponse(Result<UserProfile, Error>)
-        
         // MARK: Child Action
         case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
         case deleteProfileSucceed(PresentationAction<ProfileDeletionFeature.Action>)
     }
-    
-    @Dependency(UserClient.self) var userClient
-    @Dependency(UserService.self) var userService
     
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
@@ -62,25 +57,8 @@ public struct SettingFeature: Reducer {
             switch action {
             case .backButtonTapped:
                 return .none
-            case .navigateUpdateProfileViewTapped(isPresented: true):
-                state.isNavigationPresented = true
-                return .run { send in
-                    await send(.checkProfileResponse(
-                        Result {
-                            try await self.userClient.checkProfile(userService)
-                        }
-                    ))
-                }
-                
-            case .checkProfileResponse(.success(let userProfile)):
-                state.destination = .updateProfile(UpdateProfileFeature.State(userProfile: userProfile))
-                return .none
-                
-            case .checkProfileResponse(.failure(let error)):
-                print("🚨 에러 발생!! \(error)")
-                return .none
-            case .navigateUpdateProfileViewTapped(isPresented: false):
-                state.isNavigationPresented = false
+            case .navigateUpdateProfileViewTapped:
+                state.destination = .updateProfile(UpdateProfileFeature.State())
                 return .none
             case .navigateTermsOfUseViewTapped:
                 state.destination = .termsOfUse

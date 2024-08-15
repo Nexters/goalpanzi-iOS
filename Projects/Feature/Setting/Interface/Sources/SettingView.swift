@@ -37,7 +37,7 @@ public struct SettingView: View {
                                 item: AnyView(AnyView(Image(systemName: "chevron.right")
                                     .foregroundStyle(Color.mmDisabled))
                                 )) {
-                                    store.send(.navigateUpdateProfileViewTapped(isPresented: true))
+                                    store.send(.navigateUpdateProfileViewTapped)
                                 }
                         }
                         
@@ -108,12 +108,10 @@ public struct SettingView: View {
             .navigationBarHidden(true)
             .edgesIgnoringSafeArea(.bottom)
             .padding(.horizontal, 24)
-            .navigationDestination(isPresented: $store.isNavigationPresented.sending(\.navigateUpdateProfileViewTapped)) {
-                if let store = store.scope(state: \.destination?.updateProfile, action: \.destination.updateProfile) {
-                    UpdateProfileView(store: store)
-                } else {
-                    ProgressView()
-                }
+            .navigationDestination(
+                item: $store.scope(state: \.destination?.updateProfile, action: \.destination.updateProfile)
+            ) { store in
+                UpdateProfileView(store: store)
             }
             .navigationDestination(
                 item: $store.scope(state: \.destination?.privacyPolicy, action: \.destination.privacyPolicy)
