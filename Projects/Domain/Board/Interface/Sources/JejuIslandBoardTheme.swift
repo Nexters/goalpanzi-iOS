@@ -95,23 +95,23 @@ public struct JejuRewardInfo: RewardInfo {
         case .orange:
             return "감귤 먹기"
         case .canolaFlower:
-            return "감귤 먹기"
+            return "유채꽃 보기"
         case .dolharubang:
-            return "감귤 먹기"
+            return "돌하르방 만나기"
         case .horseRiding:
-            return "감귤 먹기"
+            return "승마 체험하기"
         case .hallaMountain:
-            return "감귤 먹기"
+            return "한라산 등반하기"
         case .waterfall:
-            return "감귤 먹기"
+            return "폭포 감상하기"
         case .blackPig:
-            return "감귤 먹기"
+            return "흑돼지 먹기"
         case .sunrise:
-            return "감귤 먹기"
+            return "성산일출봉 보기"
         case .greenTeaField:
-            return "감귤 먹기"
+            return "녹차밭"
         case .beach:
-            return "감귤 먹기"
+            return "바다 보기"
         }
     }
     
