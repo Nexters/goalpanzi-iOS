@@ -65,6 +65,7 @@ public struct HomeFeature {
         case didSelectImages([UIImage])
         case didTapPiece(piece: Piece)
         case didFinishMoving(piece: Piece?)
+        case loadData(missionId: Int)
         case didLoadData(Competition.State)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
@@ -95,12 +96,15 @@ public struct HomeFeature {
                     character: DomainUserInterface.Character(rawValue: myMissionInfo.profile.characterType) ?? .rabbit
                 )
                 state.missionId = myMissionInfo.missions.first?.missionId
-                return .run { [missionId = state.missionId] send in
+                return .send(.loadData(missionId: state.missionId ?? 0))
+                
+            case let .loadData(missionId):
+                return .run { send in
                     await send(.didFetchVerificationAndMissionAndBoard(
                         Result {
-                            async let mission = try missionService.getMissions(missionId ?? 0)
-                            async let board = try missionBoardService.getBoard(missionId ?? 0)
-                            async let verification = try missionVerificationService.getVerifications(missionId ?? 0, Date.now)
+                            async let mission = try missionService.getMissions(missionId)
+                            async let board = try missionBoardService.getBoard(missionId)
+                            async let verification = try missionVerificationService.getVerifications(missionId, Date.now)
                             return try await (verification, mission, board)
                         }
                     ))
@@ -245,17 +249,21 @@ public struct HomeFeature {
                     let event = competition.board.findEvent(by: newPosition)
                     state.destination = .certificationResult(VerificationResultFeature.State(event: event))
                     return .none
+                    
                 case .presented(.certificationResult(.didTapCloseButton)):
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
-                    return .none
+                    return .send(.loadData(missionId: state.missionId ?? 0))
+                    
                 case .presented(.finish(.didTapConfirmButton)):
                     // 경쟁시작화면으로 이동
                     return .none
+                    
                 case .presented(.finish(.didTapSettingButton)):
                     //설정화면으로 이동
                     return .none
+                    
                 case .presented(_):
                     return .none
                 }
