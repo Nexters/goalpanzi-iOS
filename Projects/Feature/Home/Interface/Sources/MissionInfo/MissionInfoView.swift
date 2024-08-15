@@ -46,10 +46,10 @@ public struct MissionInfoView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 HStack(alignment: .bottom) {
                                     VStack(alignment: .leading, spacing: 8) {
-                                        Text(info.title)
+                                        Text(info.key)
                                             .font(.pretendard(kind: .body_md, type: .regular))
                                             .foregroundStyle(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
-                                        Text(info.description)
+                                        Text(info.value)
                                             .font(.pretendard(kind: .body_lg, type: .bold))
                                             .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
                                     }

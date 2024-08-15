@@ -18,9 +18,7 @@ extension MissionMemberService: DependencyKey {
         
         let jsonDecoder: JSONDecoder = {
             let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            decoder.dateDecodingStrategy = .formatted(.serverTimeFormatter)
             return decoder
         }()
         
@@ -35,8 +33,11 @@ extension MissionMemberService: DependencyKey {
                 )
                 
                 do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
-                    return response.toDomain
+                    //let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    //return response.toDomain
+                    return .init(profile: .init(nickname: "송 삼", characterType: "BIRD"), missions: [
+                        .init(missionId: 20, description: "테스트")
+                        ])
                 } catch {
                     throw NSError()
                 }

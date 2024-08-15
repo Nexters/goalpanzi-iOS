@@ -14,7 +14,7 @@ import DomainPlayerInterface
 
 struct BoardView: View {
     
-    let reader: GeometryProxy
+    let proxy: GeometryProxy
     let scrollProxy: ScrollViewProxy
     
     @Bindable var store: StoreOf<HomeFeature>

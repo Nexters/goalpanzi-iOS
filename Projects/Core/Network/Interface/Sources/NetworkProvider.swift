@@ -41,9 +41,9 @@ public struct NetworkProvider: NetworkProviderType {
     }
     
     public func upload(url: String, imageName: String, imageJPEGData: Data, interceptor: NetworkRequestInterceptor? = nil) async throws -> Empty {
-        let headers : HTTPHeaders = [
-            "Content-Type" : "multipart/form-data",
-        ]
+        guard let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as? String else {
+            throw NSError()
+        }
         return try await AF.upload(
             multipartFormData: { multipart in
                 multipart.append(imageJPEGData, withName: "photo", fileName: "\(imageName).jpg", mimeType: "image/jpeg")
@@ -51,9 +51,9 @@ public struct NetworkProvider: NetworkProviderType {
                     multipart.append(value, withName: "imageFile")
                 }
             },
-            to: url,
+            to: baseURL + url,
             method: .post,
-            headers: headers,
+            headers: ["Content-Type" : "multipart/form-data"],
             interceptor: interceptor
         )
         .uploadProgress { progress in

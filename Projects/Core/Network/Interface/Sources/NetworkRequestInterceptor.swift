@@ -21,7 +21,7 @@ open class NetworkRequestInterceptor: RequestInterceptor {
 //            return
 //        }
 
-        urlRequest.headers.add(.authorization(bearerToken: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMSIsImlhdCI6MTcyMzU1NDE0MSwiZXhwIjoxNzIzNjQwNTQxfQ.Gm05bYTIMsPjpUrvRv8gCVUHEnHAsKYm2OjhS5jM6p4"))
+        urlRequest.headers.add(.authorization(bearerToken: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyOCIsImlhdCI6MTcyMzY0MDY2MSwiZXhwIjoxNzIzNzI3MDYxfQ.khtM52C4ykGEhRtvdwQU9v4qNDW11Vq4AFQOTFfhnoU"))
         completion(.success(urlRequest))
     }
 

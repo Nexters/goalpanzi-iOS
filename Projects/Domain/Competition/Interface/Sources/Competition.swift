@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import DomainMissionInterface
 import DomainBoardInterface
 import DomainPlayerInterface
 
@@ -45,19 +46,8 @@ public struct Competition {
         return board.findPiece(by: me.pieceID)
     }
     
-    public func findPlayer(by playerID: PlayerID) -> Player? {
-        return players.first(where: { $0.id == playerID })
-    }
-    
     public func findCertification(by playerID: PlayerID) -> Certification? {
         return certifications[playerID]
-    }
-    
-    public func players(position: Position) -> [Player] {
-        return players.filter {
-            let piece = board.findPiece(by: $0.pieceID)
-            return piece?.position == position
-        }
     }
     
     public func representativePiece(by position: Position) -> Piece? {
@@ -104,11 +94,7 @@ public struct Competition {
         )
     }
     
-    public func numberOfPlayers(position: Position) -> Int {
-        return players(position: position).count
-    }
-    
-    public mutating func certify(playerID: PlayerID, imageURL: String, verifiedAt: Date?) {
+    public mutating func verify(playerID: PlayerID, imageURL: String, verifiedAt: Date?) {
         certifications[playerID]?.update(imageURL: imageURL, verifiedAt: verifiedAt)
         if let playerIndex = players.firstIndex(where: { $0.id == playerID }) {
             players[playerIndex].update(isCertificated: certifications[playerID]?.isCertified ?? false)
@@ -128,5 +114,27 @@ public extension Competition {
     enum InfoKey {
         case title
         case subtitle
+    }
+}
+
+public extension Mission {
+    
+    func competitionState(hasOtherPlayers: Bool) -> Competition.State {
+        if missionEndDate <= Date.now {
+            return .finished
+        }
+        if missionStartDate <= Date.now, hasOtherPlayers == false {
+            return .disabled
+        }
+        if missionStartDate <= Date.now, hasOtherPlayers == true {
+            return .started
+        }
+        if missionStartDate > Date.now, hasOtherPlayers == false {
+            return .notStarted(hasOtherPlayer: false)
+        }
+        if missionStartDate > Date.now, hasOtherPlayers == true {
+            return .notStarted(hasOtherPlayer: true)
+        }
+        return .disabled
     }
 }

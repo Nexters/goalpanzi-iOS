@@ -1,26 +1,32 @@
 //
-//  MissionResultFeature.swift
+//  InvitationInfoFeature.swift
 //  FeatureHomeInterface
 //
-//  Created by Haeseok Lee on 8/8/24.
+//  Created by Haeseok Lee on 8/5/24.
 //
 
 import Foundation
 import ComposableArchitecture
+import UIKit
 
 @Reducer
-public struct MissionResultFeature {
+public struct InvitationInfoFeature {
     
     @Dependency(\.dismiss) var dismiss
     
     @ObservableState
     public struct State {
         
-        public init() {
-            
+        public let invitationCode: String
+        
+        public var codes: [String] {
+            invitationCode.map { String($0) }
+        }
+        
+        public init(invitationCode: String) {
+            self.invitationCode = invitationCode
         }
     }
-    
     
     public enum Action {
         case didTapCloseButton

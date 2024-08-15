@@ -1,5 +1,5 @@
 //
-//  CertificationResultFeature.swift
+//  VerificationResultFeature.swift
 //  FeatureHomeInterface
 //
 //  Created by Haeseok Lee on 8/8/24.
@@ -10,7 +10,7 @@ import DomainBoardInterface
 import ComposableArchitecture
 
 @Reducer
-public struct CertificationResultFeature {
+public struct VerificationResultFeature {
     
     @Dependency(\.dismiss) var dismiss
     

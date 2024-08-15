@@ -1,5 +1,5 @@
 //
-//  MissionInvitationInfoView.swift
+//  InvitationInfoView.swift
 //  FeatureHomeInterface
 //
 //  Created by Haeseok Lee on 8/5/24.
@@ -12,12 +12,12 @@ import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
 
-public struct MissionInvitationInfoView: View {
+public struct InvitationInfoView: View {
     
-    @Bindable private var store: StoreOf<MissionInvitationInfoFeature>
+    @Bindable private var store: StoreOf<InvitationInfoFeature>
     @State private var scale = 0.5
     
-    public init(store: StoreOf<MissionInvitationInfoFeature>) {
+    public init(store: StoreOf<InvitationInfoFeature>) {
         self.store = store
     }
     

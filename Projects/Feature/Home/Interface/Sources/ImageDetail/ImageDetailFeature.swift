@@ -22,14 +22,8 @@ public struct ImageDetailFeature {
         public let imageURL: String?
         
         public var formatedDate: String {
-            dateFormatter.string(from: verifiedAt ?? .now)
+            DateFormatter.yearMonthDayFormatter.string(from: verifiedAt ?? .now)
         }
-        
-        private let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy.MM.dd"
-            return formatter
-        }()
         
         public init(player: Player, verifiedAt: Date?, imageURL: String?) {
             self.player = player

@@ -29,7 +29,7 @@ public struct MissionDeleteFeature {
     public enum Action {
         case didTapConfirmButton
         case didTapCloseButton
-        case error(Error)
+        case didDeleteMission(Result<Void, Error>)
     }
     
     public var body: some ReducerOf<Self> {
@@ -42,15 +42,15 @@ public struct MissionDeleteFeature {
                 
             case .didTapConfirmButton:
                 return .run { [missionId = state.missionId] send in
-                    do {
-                        _ = try await missionService.deleteMissions(missionId)
-                        await self.dismiss()
-                    } catch {
-                        await send(.error(error))
-                    }
-                    
+                    await send(.didDeleteMission(
+                        Result { _ = try await missionService.deleteMissions(missionId) }
+                    ))
                 }
-            case let .error(error):
+            case .didDeleteMission(.success):
+                return .run { _ in
+                    await self.dismiss()
+                }
+            case .didDeleteMission(.failure):
                 return .none
             }
         }

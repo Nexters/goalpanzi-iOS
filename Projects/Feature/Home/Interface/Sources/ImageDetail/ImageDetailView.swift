@@ -51,10 +51,7 @@ public struct ImageDetailView: View {
                 }
                 .padding(.top, 14)
                 .padding(.horizontal, 24)
-                
-                
             }
-            
         }
     }
 }

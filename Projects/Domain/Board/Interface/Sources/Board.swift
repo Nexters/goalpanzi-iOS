@@ -116,19 +116,6 @@ public struct Board {
     }
     
     public func move(piece: Piece, to position: Position) -> Direction? {
-        
-        defer {
-//            let endIndex = totalBlockCount - 1
-//            let newPiece = Piece(
-//                id: piece.id,
-//                position: Position(index: max(endIndex, position.index + 1)),
-//                image: piece.image,
-//                name: piece.name
-//            )
-//            pieces.remove(piece)
-//            pieces.insert(newPiece)
-        }
-        
         let cycle = numberOfColumns * 2
         let phase1 = (0...(numberOfColumns - 1))
         let phase2 = (numberOfColumns...(cycle - 1))

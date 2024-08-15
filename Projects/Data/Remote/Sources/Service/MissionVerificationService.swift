@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SharedUtilInterface
 import DomainCompetitionInterface
 import CoreNetworkInterface
 import DataRemoteInterface
@@ -18,9 +19,7 @@ extension MissionVerificationService: DependencyKey {
         
         let jsonDecoder: JSONDecoder = {
             let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            decoder.dateDecodingStrategy = .formatted(.serverTimeFormatter)
             return decoder
         }()
         

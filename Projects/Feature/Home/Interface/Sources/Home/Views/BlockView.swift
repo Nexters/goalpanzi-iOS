@@ -54,7 +54,7 @@ struct BlockView: View {
                         .font(.pretendard(kind: .title_lg, type: .bold))
                         .foregroundStyle(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                     
-                } else if block.isLastBlock {
+                } else if block.isLastBlock, !block.isConquered {
                     Text("GOAL")
                         .font(.pretendard(kind: .title_lg, type: .bold))
                         .foregroundStyle(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)

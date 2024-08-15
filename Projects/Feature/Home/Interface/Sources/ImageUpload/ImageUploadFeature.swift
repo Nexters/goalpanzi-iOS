@@ -24,16 +24,11 @@ public struct ImageUploadFeature {
         public let player: Player
         public let updatedDate: Date
         public let selectedImage: UIImage
+        public var isLoading: Bool = false
         
         public var formatedDate: String {
-            dateFormatter.string(from: updatedDate)
+            DateFormatter.yearMonthDayFormatter.string(from: updatedDate)
         }
-        
-        private let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy.MM.dd"
-            return formatter
-        }()
         
         public init(missionId: Int, player: Player, updatedDate: Date = Date.now, selectedImage: UIImage) {
             self.missionId = missionId
@@ -46,28 +41,44 @@ public struct ImageUploadFeature {
     public enum Action {
         case didTapUploadButton
         case didTapCloseButton
-        case didFinishImageUpload
+        case didFinishImageUpload(Result<Void, Error>)
+        case didNotifyImageUploadFinished
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .didTapUploadButton:
+                state.isLoading = true
                 return .run { [
                     missionId = state.missionId, 
                     selectedImage = state.selectedImage,
                     player = state.player
                 ] send in
-                    if let data = selectedImage.jpegData(compressionQuality: 0.8) {
-                        _ = try await verificationService.postVerificationsMe(missionId, "\(player.name)", data)
-                    }
-                    await send(.didFinishImageUpload)
+                    await send(.didFinishImageUpload(
+                        Result {
+                            if let data = selectedImage.jpegData(compressionQuality: 0.8) {
+                                return try await verificationService.postVerificationsMe(missionId, "\(player.name)", data)
+                            }
+                        }
+                    ))
                 }
             case .didTapCloseButton:
                 return .run { _ in
                     await self.dismiss()
                 }
-            case .didFinishImageUpload:
+            case .didFinishImageUpload(.success):
+                state.isLoading = false
+                return .concatenate(
+                    .run { _ in
+                        await self.dismiss()
+                    },
+                    .send(.didNotifyImageUploadFinished)
+                )
+            case .didFinishImageUpload(.failure):
+                state.isLoading = false
+                return .none
+            case .didNotifyImageUploadFinished:
                 return .none
             }
         }

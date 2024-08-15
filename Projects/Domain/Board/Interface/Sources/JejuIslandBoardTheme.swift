@@ -140,8 +140,8 @@ public struct JejuRewardInfo: RewardInfo {
         }
     }
 
-    public init?(rawValue: RawValue, position: Position) {
-        guard let kind = Kind(rawValue: rawValue) else {
+    public init?(rawValue: RawValue?, position: Position) {
+        guard let rawValue, let kind = Kind(rawValue: rawValue) else {
             return nil
         }
         self.kind = kind

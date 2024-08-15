@@ -1,5 +1,5 @@
 //
-//  CertificationResultView.swift
+//  VerificationResultView.swift
 //  FeatureHomeInterface
 //
 //  Created by Haeseok Lee on 8/8/24.
@@ -10,12 +10,12 @@ import SharedUtil
 import SharedDesignSystem
 import ComposableArchitecture
 
-public struct CertificationResultView: View {
+public struct VerificationResultView: View {
     
-    @Bindable private var store: StoreOf<CertificationResultFeature>
+    @Bindable private var store: StoreOf<VerificationResultFeature>
     @State private var scale = 0.5
     
-    public init(store: StoreOf<CertificationResultFeature>) {
+    public init(store: StoreOf<VerificationResultFeature>) {
         self.store = store
     }
     

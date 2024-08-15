@@ -20,8 +20,6 @@ public struct FinishView: View {
     }
     
     public var body: some View {
-        
-        
         GeometryReader { reader in
             VStack {
                 ZStack(alignment: .top) {
@@ -69,9 +67,13 @@ public struct FinishView: View {
                                 .multilineTextAlignment(.center)
                                 .padding(.top, 4)
                         }
+                        .backgroundStyle(.white)
                     }
                     .ignoresSafeArea(.all)
+                    
+                    
                 }
+                
                 
                 Button(action: {
                     store.send(.didTapConfirmButton)
@@ -86,9 +88,7 @@ public struct FinishView: View {
                 }
                 .padding(.horizontal, 24)
             }
-            
         }
-        
         
         
     }

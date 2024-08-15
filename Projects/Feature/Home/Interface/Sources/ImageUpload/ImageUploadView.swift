@@ -51,6 +51,11 @@ public struct ImageUploadView: View {
                     .padding(.top, 14)
                     .padding(.horizontal, 24)
                 }
+                .overlay {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .isHidden(!store.isLoading, remove: true)
+                }
                 Button(action: {
                     store.send(.didTapUploadButton)
                 }) {

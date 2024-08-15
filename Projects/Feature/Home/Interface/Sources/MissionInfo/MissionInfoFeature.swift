@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OrderedCollections
 import ComposableArchitecture
 
 @Reducer
@@ -20,11 +21,11 @@ public struct MissionInfoFeature {
         
         public let totalBlockCount: Int
         
-        public var infos: [Info]
+        public var infos: OrderedDictionary<String, String>
         
         @Presents var destination: Destination.State?
         
-        public init(missionId: Int, totalBlockCount: Int, infos: [Info]) {
+        public init(missionId: Int, totalBlockCount: Int, infos: OrderedDictionary<String, String>) {
             self.missionId = missionId
             self.totalBlockCount = totalBlockCount
             self.infos = infos
@@ -64,15 +65,4 @@ public struct MissionInfoFeature {
     }
     
     public init() {}
-    
-    public struct Info: Identifiable {
-        public let id: String
-        public let title: String
-        public let description: String
-        public init(id: String, title: String, description: String) {
-            self.id = id
-            self.title = title
-            self.description = description
-        }
-    }
 }

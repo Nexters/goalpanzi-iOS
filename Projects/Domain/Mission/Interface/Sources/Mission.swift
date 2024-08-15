@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import SharedUtil
+import OrderedCollections
 
 public struct Mission: CustomStringConvertible {
     
@@ -41,14 +43,8 @@ public struct Mission: CustomStringConvertible {
         self.invitationCode = invitationCode
     }
     
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd"
-        return formatter
-    }()
-    
     public var missionPeriodDescription: String {
-        "\(dateFormatter.string(from: missionStartDate))~\(dateFormatter.string(from: missionEndDate))"
+        "\(DateFormatter.yearMonthDayFormatter.string(from: missionStartDate))~\(DateFormatter.yearMonthDayFormatter.string(from: missionEndDate))"
     }
     
     public var missionWeekDayDescription: String {
@@ -56,12 +52,12 @@ public struct Mission: CustomStringConvertible {
     }
     
     public var missionTimeDescription: String {
-        timeOfDay.toKorean + " \(timeOfDay.startTimeString)~\(timeOfDay.endTimeString)시"
+        [timeOfDay.toKorean, "\(timeOfDay.startTime)~\(timeOfDay.endTime)시"].joined(separator: " ")
     }
     
     public var checkIsMissionTime: Bool {
-        guard missionDays.contains(todayWeekday) else { return false }
-        switch (timeOfDay, isAM(date: Date.now)) {
+        guard missionDays.contains(WeekDay.today) else { return false }
+        switch (timeOfDay, Date.now.isAM) {
         case (.morning, true):
             return true
         case (.morning, false):
@@ -75,115 +71,12 @@ public struct Mission: CustomStringConvertible {
         }
     }
     
-    public var todayWeekday: WeekDay {
-        let calendar = Calendar.current
-        let today = Date()
-        let weekdayIndex = calendar.component(.weekday, from: today)
-        let weekdays = WeekDay.allCases
-        return weekdays[weekdayIndex - 1]
-    }
-    
-    public func isAM(date: Date) -> Bool {
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: date)
-        return hour < 12
-    }
-}
-
-public enum TimeOfDay: String {
-    case morning = "MORNING"
-    case afternoon = "AFTERNOON"
-    case everyday = "EVERYDAY"
-    
-    public init?(rawValue: String) {
-        switch rawValue {
-        case "MORNING":
-            self = .morning
-        case "AFTERNOON":
-            self = .afternoon
-        case "EVERYDAY":
-            self = .everyday
-        default:
-            return nil
-        }
-    }
-    
-    public var toKorean: String {
-        switch self {
-        case .morning:
-            return "오전"
-        case .afternoon:
-            return "오후"
-        case .everyday:
-            return "종일"
-        }
-    }
-    
-    public var startTimeString: String {
-        switch self {
-        case .morning, .everyday:
-            return "00시"
-        case .afternoon:
-            return "12시"
-        }
-    }
-    
-    public var endTimeString: String {
-        switch self {
-        case .morning:
-            return "12시"
-        case .afternoon, .everyday:
-            return "24시"
-        }
-    }
-}
-
-public enum WeekDay: String, CaseIterable {
-    case sunday = "SUNDAY"
-    case monday = "MONDAY"
-    case tuesday = "TUESDAY"
-    case wednesday = "WEDNESDAY"
-    case thursday = "THURSDAY"
-    case friday = "FRIDAY"
-    case saturday = "SATURDAY"
-    
-    public init?(rawValue: String) {
-        switch rawValue {
-        case "SUNDAY":
-            self = .sunday
-        case "MONDAY":
-            self = .monday
-        case "TUESDAY":
-            self = .tuesday
-        case "WEDNESDAY":
-            self = .wednesday
-        case "THURSDAY":
-            self = .thursday
-        case "FRIDAY":
-            self = .friday
-        case "SATURDAY":
-            self = .saturday
-        default:
-            return nil
-        }
-    }
-    
-    public var toKorean: String {
-        switch self {
-        case .sunday:
-            return "일"
-        case .monday:
-            return "월"
-        case .tuesday:
-            return "화"
-        case .wednesday:
-            return "수"
-        case .thursday:
-            return "목"
-        case .friday:
-            return "금"
-        case .saturday:
-            return "토"
-        }
+    public var toInfos: OrderedDictionary<String, String> {
+        [
+            "미션" : description,
+            "미션 기간": missionPeriodDescription,
+            "인증 요일": missionWeekDayDescription,
+            "인증 시간": missionTimeDescription
+        ]
     }
 }
