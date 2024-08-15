@@ -28,14 +28,27 @@ public struct EntranceView: View {
                     .edgesIgnoringSafeArea(.top)
                 
                 VStack(spacing: 0) {
-                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            // TODO: Setting으로 이동하기
+                        }) {
+                            Image(uiImage: SharedDesignSystemAsset.Images.setting.image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 21, height: 21)
+                        }
+                        .padding(.trailing, 20)
+                    }
+                    .padding(.top, 7)
+                    .padding(.bottom, 13)
                     
                     Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
                         .foregroundStyle(Color.mmGray1)
                         .font(.pretendard(kind: .heading_sm, type: .bold))
                         .multilineTextAlignment(.center)
                     
-                    Spacer(minLength: 52)
+                    Spacer()
                     
                     MMCapsuleTagView(
                         text: "LV1. 제주도",
@@ -121,7 +134,8 @@ public struct EntranceView: View {
                                 .resizable()
                                 .frame(width: 40, height: 40)
                         }
-                    }.padding(20)
+                    }
+                    .padding(20)
                 )
         }
     }
