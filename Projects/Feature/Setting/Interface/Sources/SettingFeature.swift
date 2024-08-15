@@ -41,6 +41,9 @@ public struct SettingFeature: Reducer {
         case navigateLogoutViewTapped
         case navigateProfileDeletionViewTapped
         
+        // MARK: Child Action
+        case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
+        
     }
         
     public var body: some ReducerOf<Self> {
@@ -63,7 +66,12 @@ public struct SettingFeature: Reducer {
             case .navigateProfileDeletionViewTapped:
                 state.destination = .profileDeletion(ProfileDeletionFeature.State())
                 return .none
+            case .logoutSucceed(.presented(.delegate(.didLogoutSucceed))):
+                // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
+                return .none
             case .destination(_):
+                return .none
+            default:
                 return .none
             }
         }

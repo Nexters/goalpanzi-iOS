@@ -18,7 +18,7 @@ public struct ProfileDeletionFeature: Reducer {
     }
     
     public enum Action {
-        case logoutButtonTapped
+        case deleteAccountButtonTapped
         case cancelButtonTapped
     }
     
@@ -28,7 +28,7 @@ public struct ProfileDeletionFeature: Reducer {
         Reduce<State, Action> { state, action in
             
             switch action {
-            case .logoutButtonTapped:
+            case .deleteAccountButtonTapped:
                 return .none
             case .cancelButtonTapped:
                 return .run { _ in

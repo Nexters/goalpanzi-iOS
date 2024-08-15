@@ -41,6 +41,7 @@ public struct LoginFeature: Reducer {
                 return .run { send in
                     do {
                         let response = try await authClient.signInWithApple(appleAuthService)
+                        // TODO: Domain 로직에서 수행해도 될듯?..
                         KeychainProvider.shared.save(response.accessToken, key: .accessToken)
                         KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
 

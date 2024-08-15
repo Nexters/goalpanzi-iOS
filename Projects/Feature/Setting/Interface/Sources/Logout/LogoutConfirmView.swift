@@ -7,6 +7,10 @@
 import SwiftUI
 
 import SharedDesignSystem
+import DomainAuth
+import DomainAuthInterface
+import DataRemote
+import DataRemoteInterface
 
 import ComposableArchitecture
 
@@ -32,7 +36,7 @@ public struct LogoutConfirmView: View {
                     },
                     primaryButtonTitle: "로그아웃",
                     primaryButtonAction: {
-//                        store.send(.confirmButtonTapped)
+                        store.send(.logoutButtonTapped)
                     },
                     secondaryButtonTitle: "취소") {
                         store.send(.cancelButtonTapped)
