@@ -16,17 +16,17 @@ public struct SettingFeature: Reducer {
     
     @Reducer(state: .equatable)
     public enum Destination {
-        case updateProfile
+        case updateProfile(UpdateProfileFeature)
         case termsOfUse
         case privacyPolicy
         case logout(LogoutConfirmFeature)
         case profileDeletion(ProfileDeletionFeature)
     }
     
-    
     @ObservableState
     public struct State: Equatable {
         @Presents var destination: Destination.State?
+        var isNavigationPresented = false
         
         public init() {}
     }
@@ -35,24 +35,35 @@ public struct SettingFeature: Reducer {
         case destination(PresentationAction<Destination.Action>)
         
         case backButtonTapped
-        case navigateUpdateProfileViewTapped
+        case navigateUpdateProfileViewTapped(isPresented: Bool)
         case navigateTermsOfUseViewTapped
         case navigatePrivacyPolicyViewTapped
         case navigateLogoutViewTapped
         case navigateProfileDeletionViewTapped
         
+        case setSheetIsPresentedDelayCompleted
+        
         // MARK: Child Action
         case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
         case deleteProfileSucceed(PresentationAction<ProfileDeletionFeature.Action>)
     }
-        
+    
+    @Dependency(\.continuousClock) var clock
+    
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
             
             switch action {
             case .backButtonTapped:
                 return .none
-            case .navigateUpdateProfileViewTapped:
+            case .navigateUpdateProfileViewTapped(isPresented: true):
+                state.isNavigationPresented = true
+                return .run { send in
+                    try await self.clock.sleep(for: .seconds(1))
+                    await send(.setSheetIsPresentedDelayCompleted)
+                }
+            case .navigateUpdateProfileViewTapped(isPresented: false):
+                state.isNavigationPresented = false
                 return .none
             case .navigateTermsOfUseViewTapped:
                 state.destination = .termsOfUse
@@ -72,6 +83,11 @@ public struct SettingFeature: Reducer {
             case .deleteProfileSucceed(.presented(.delegate(.didDeleteProfileSucceed))):
                 // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
                 return .none
+                
+            case .setSheetIsPresentedDelayCompleted:
+                state.destination = .updateProfile(UpdateProfileFeature.State())
+                return .none
+                
             case .destination(_):
                 return .none
             default:
