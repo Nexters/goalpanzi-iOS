@@ -14,7 +14,7 @@ public struct Competition {
     
     public var players: [Player]
     
-    public var certifications: [PlayerID: Certification]
+    public var verifications: [Vertification]
     
     public var state: State
     
@@ -24,16 +24,16 @@ public struct Competition {
     
     public init(
         players: [Player],
+        verifications: [Vertification],
         board: Board,
         info: [InfoKey: String] = [:],
         state: State
     ) {
         self.players = players
-        self.certifications = [:]
+        self.verifications = verifications
         self.board = board
         self.info = info
         self.state = state
-        self.certifications = createCertifications(by: players)
         self.board.update(pieces: createPieces(by: players))
     }
     
@@ -46,8 +46,8 @@ public struct Competition {
         return board.findPiece(by: me.pieceID)
     }
     
-    public func findCertification(by playerID: PlayerID) -> Certification? {
-        return certifications[playerID]
+    public func findVerification(by playerID: PlayerID) -> Vertification? {
+        return verifications.first(where: { $0.playerID == playerID })
     }
     
     public func representativePiece(by position: Position) -> Piece? {
@@ -60,8 +60,8 @@ public struct Competition {
     
     public mutating func sortPlayersByVerifiedAt() {
         players = players.sorted(by: { lhs, rhs in
-            guard let lhsResult = certifications[lhs.id]?.verifiedAt,
-                  let rhsResult = certifications[rhs.id]?.verifiedAt else { return false }
+            guard let lhsResult = findVerification(by: lhs.id)?.verifiedAt,
+                  let rhsResult = findVerification(by: rhs.id)?.verifiedAt else { return false }
             return lhsResult > rhsResult
         })
     }
@@ -70,12 +70,6 @@ public struct Competition {
         guard let meIndex = players.firstIndex(where: { $0.isMe }) else { return }
         let me = players.remove(at: meIndex)
         players.insert(me, at: .zero)
-    }
-    
-    public mutating func createCertifications(by players: [Player]) -> [PlayerID: Certification] {
-        Dictionary(uniqueKeysWithValues: players.map {
-            ($0.id, Certification(id: UUID().uuidString, playerID: $0.id))
-        })
     }
     
     public mutating func createPieces(by players: [Player]) -> [Position: [Piece]] {
@@ -92,13 +86,6 @@ public struct Competition {
                 }
             )]
         )
-    }
-    
-    public mutating func verify(playerID: PlayerID, imageURL: String, verifiedAt: Date?) {
-        certifications[playerID]?.update(imageURL: imageURL, verifiedAt: verifiedAt)
-        if let playerIndex = players.firstIndex(where: { $0.id == playerID }) {
-            players[playerIndex].update(isCertificated: certifications[playerID]?.isCertified ?? false)
-        }
     }
 }
 

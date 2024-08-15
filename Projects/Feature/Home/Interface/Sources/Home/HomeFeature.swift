@@ -124,7 +124,10 @@ public struct HomeFeature {
                 }
                 let competitionState = mission.competitionState(hasOtherPlayers: players.count > 1)
                 var competition = Competition(
-                    players: players,
+                    players: players, 
+                    verifications: verification.missionVerifications.map {
+                        Vertification(id: $0.nickname, playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
+                    },
                     board: Board(
                         theme: JejuIslandBoardTheme(),
                         events: board.missionBoards.map {
@@ -148,10 +151,6 @@ public struct HomeFeature {
                             competition.board.update(conqueredPosition: Position(index: boardInfo.number))
                         }
                     }
-                }
-                
-                verification.missionVerifications.forEach {
-                    competition.verify(playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
                 }
                 competition.sortPlayersByVerifiedAt()
                 competition.moveMeToFront()
@@ -195,7 +194,7 @@ public struct HomeFeature {
                 return .none
                 
             case let .didTapPlayer(player):
-                guard player.isCertificated, let certification = state.competition?.findCertification(by: player.id) else { return .none }
+                guard player.isCertificated, let certification = state.competition?.findVerification(by: player.id) else { return .none }
                 state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: certification.verifiedAt ?? Date.now, imageURL: certification.imageURL))
                 return .none
                 
@@ -254,7 +253,7 @@ public struct HomeFeature {
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
-                    return .send(.loadData(missionId: state.missionId ?? 0))
+                    return .none
                     
                 case .presented(.finish(.didTapConfirmButton)):
                     // 경쟁시작화면으로 이동
@@ -274,7 +273,7 @@ public struct HomeFeature {
                 state.competition?.board.update(piece: myPiece, to: newPosition)
                 state.competition?.board.update(conqueredPosition: newPosition)
                 state.movingPiece = nil
-                return .none
+                return .send(.loadData(missionId: state.missionId ?? 0))
                 
             case .path:
                 return .none

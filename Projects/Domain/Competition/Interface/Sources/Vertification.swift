@@ -1,5 +1,5 @@
 //
-//  Certification.swift
+//  Vertification.swift
 //  DomainCompetitionInterface
 //
 //  Created by Haeseok Lee on 8/1/24.
@@ -8,7 +8,7 @@
 import Foundation
 import DomainPlayerInterface
 
-public struct Certification {
+public struct Vertification {
     
     public let id: String
     
@@ -16,7 +16,7 @@ public struct Certification {
     
     public var imageURL: String?
     
-    public var isCertified: Bool {
+    public var isVerified: Bool {
         if imageURL?.isEmpty == true {
             return false
         }
