@@ -46,8 +46,7 @@ extension MissionVerificationService: DependencyKey {
                 do {
                     let endPoint = Endpoint<GetVerificationsMeResponseDTO>(
                         path: "api/missions/\(missionID)/verifications/me/\(number)",
-                        httpMethod: .get,
-                        queryParameters: EmptyRequest()
+                        httpMethod: .get
                     )
                     let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
                     return response.toDomain

@@ -34,7 +34,6 @@ public struct HomeFeature {
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
         
         @Presents var destination: Destination.State?
-        public var path = StackState<Path.State>()
         
         public init() {}
     }
@@ -43,15 +42,11 @@ public struct HomeFeature {
     public enum Destination {
         case missionInvitationInfo(InvitationInfoFeature)
         case missionDeleteAlert(MissionDeleteAlertFeature)
+        case missionInfo(MissionInfoFeature)
         case certificationResult(VerificationResultFeature)
         case imageUpload(ImageUploadFeature)
         case imageDetail(ImageDetailFeature)
         case finish(FinishFeature)
-    }
-    
-    @Reducer
-    public enum Path {
-        case missionInfo(MissionInfoFeature)
     }
     
     public enum Action: BindableAction {
@@ -68,7 +63,6 @@ public struct HomeFeature {
         case loadData(missionId: Int)
         case didLoadData(Competition.State)
         case destination(PresentationAction<Destination.Action>)
-        case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
         
         case didFetchMyMissionInfo(Result<MyMissionInfo, Error>)
@@ -186,7 +180,7 @@ public struct HomeFeature {
                 guard let missionId = state.missionId,
                       let mission = state.mission,
                       let totalBlockCount = state.competition?.board.totalBlockCount else { return .none }
-                state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, totalBlockCount: totalBlockCount, infos: mission.toInfos)))
+                state.destination = .missionInfo(MissionInfoFeature.State(missionId: missionId, totalBlockCount: totalBlockCount, infos: mission.toInfos))
                 return .none
                 
             case .didTapSettingButton:
@@ -275,9 +269,6 @@ public struct HomeFeature {
                 state.movingPiece = nil
                 return .send(.loadData(missionId: state.missionId ?? 0))
                 
-            case .path:
-                return .none
-                
             case .binding:
                 return .none
                 
@@ -299,7 +290,6 @@ public struct HomeFeature {
             }
         }
         .ifLet(\.$destination, action: \.destination)
-        .forEach(\.path, action: \.path)
     }
     
     public init() {}
