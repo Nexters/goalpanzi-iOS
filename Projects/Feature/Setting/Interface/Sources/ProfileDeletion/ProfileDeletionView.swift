@@ -35,7 +35,7 @@ public struct ProfileDeletionView: View {
                     },
                     primaryButtonTitle: "탈퇴하기",
                     primaryButtonAction: {
-//                        store.send(.confirmButtonTapped)
+                        store.send(.deleteProfileButtonTapped)
                     },
                     secondaryButtonTitle: "취소") {
                         store.send(.cancelButtonTapped)

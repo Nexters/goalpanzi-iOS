@@ -39,7 +39,7 @@ extension UserService: DependencyKey {
             deleteProfile: {
                 let endpoint = Endpoint<Empty>(
                     path: "api/member",
-                    httpMethod: .post
+                    httpMethod: .delete
                 )
                 
                 do {
