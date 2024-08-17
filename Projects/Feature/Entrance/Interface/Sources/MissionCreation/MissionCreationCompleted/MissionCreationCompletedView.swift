@@ -58,7 +58,6 @@ public struct MissionCreationCompletedView: View {
                 Spacer()
 
                 MMRoundedButton(isEnabled: .constant(true), title: "시작하기") {
-                    print("잉?.....")
                     store.send(.startButtonTapped)
                 }
                 .frame(height: 60)

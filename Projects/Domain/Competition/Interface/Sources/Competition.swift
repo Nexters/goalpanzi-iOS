@@ -107,19 +107,19 @@ public extension Competition {
 public extension Mission {
     
     func competitionState(hasOtherPlayers: Bool) -> Competition.State {
-        if missionEndDate <= Date.now {
+        if endDate <= Date.now {
             return .finished
         }
-        if missionStartDate <= Date.now, hasOtherPlayers == false {
+        if startDate <= Date.now, hasOtherPlayers == false {
             return .disabled
         }
-        if missionStartDate <= Date.now, hasOtherPlayers == true {
+        if startDate <= Date.now, hasOtherPlayers == true {
             return .started
         }
-        if missionStartDate > Date.now, hasOtherPlayers == false {
+        if startDate > Date.now, hasOtherPlayers == false {
             return .notStarted(hasOtherPlayer: false)
         }
-        if missionStartDate > Date.now, hasOtherPlayers == true {
+        if startDate > Date.now, hasOtherPlayers == true {
             return .notStarted(hasOtherPlayer: true)
         }
         return .disabled

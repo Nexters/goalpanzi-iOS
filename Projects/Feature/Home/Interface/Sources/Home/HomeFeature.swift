@@ -127,7 +127,7 @@ public struct HomeFeature {
                         events: board.missionBoards.map {
                             Event.reward(JejuRewardInfo(rawValue: $0.reward, position: Position(index: $0.number)))
                         },
-                        totalBlockCount: mission.boardCount,
+                        totalBlockCount: mission.verificationDays,
                         isDisabled: competitionState != .started
                     ),
                     info: [
@@ -309,7 +309,7 @@ public extension HomeFeature {
         case true:
             return .init(
                 isEnabled: false,
-                info: "미션 요일: \(mission.missionDays.map { $0.toKorean }.joined(separator: " "))",
+                info: "미션 요일: \(mission.verificationWeekDays.map { $0.toKorean }.joined(separator: " "))",
                 title: "오늘 미션 인증 완료!"
             )
         case false:

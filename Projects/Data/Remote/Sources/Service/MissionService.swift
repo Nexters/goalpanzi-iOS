@@ -27,7 +27,7 @@ extension MissionService: DependencyKey {
                 )
                 
                 do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
                     return response.toDomain
                 } catch {
                     throw NSError()
@@ -41,7 +41,7 @@ extension MissionService: DependencyKey {
                 )
                 
                 do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
                     return response.toDomain
                 } catch {
                     throw NSError()
@@ -100,11 +100,11 @@ extension GetMissionResponseDTO {
             missionId: missionId,
             hostMemberId: hostMemberId,
             description: description,
-            missionStartDate: missionStartDate,
-            missionEndDate: missionEndDate,
+            startDate: missionStartDate,
+            endDate: missionEndDate,
             timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
-            missionDays: missionDays.compactMap { WeekDay(rawValue: $0) },
-            boardCount: boardCount,
+            verificationWeekDays: missionDays.compactMap { WeekDay(rawValue: $0) },
+            verificationDays: boardCount,
             invitationCode: invitationCode
         )
     }
@@ -117,13 +117,15 @@ extension DeleteMissionResponseDTO {
             missionId: missionId,
             hostMemberId: hostMemberId,
             description: description,
-            missionStartDate: missionStartDate,
-            missionEndDate: missionEndDate,
+            startDate: missionStartDate,
+            endDate: missionEndDate,
             timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
-            missionDays: missionDays.compactMap { WeekDay(rawValue: $0) },
-            boardCount: boardCount,
+            verificationWeekDays: missionDays.compactMap { WeekDay(rawValue: $0) },
+            verificationDays: boardCount,
+            invitationCode: invitationCode
         )
     }
+}
     
 extension CreateMissionResponseDTO {
     
@@ -137,17 +139,17 @@ extension FetchMissionInfoResponseDTO {
         let timeOfDay = TimeOfDay(rawValue: self.timeOfDay) ?? .afternoon
         let startDate = self.missionStartDate.toDate(format: .longYearMonthDateTimeZone) ?? Date()
         let endDate = self.missionEndDate.toDate(format: .compactYearMonthDateTime) ?? Date()
-        let authenticationWeekDays = self.missionDays.map { Weekday(rawValue: $0) ?? .friday }
+        let verificationWeekDays = self.missionDays.map { WeekDay(rawValue: $0) ?? .friday }
         
         return .init(
-            missionId: missionId,
+            missionId: missionId, 
+            hostMemberId: hostMemberId,
             description: description,
             startDate: startDate,
             endDate: endDate,
             timeOfDay: timeOfDay,
-            authenticationWeekDays: authenticationWeekDays,
-            authenticationDays: boardCount,
->>>>>>> develop
+            verificationWeekDays: verificationWeekDays,
+            verificationDays: boardCount,
             invitationCode: invitationCode
         )
     }

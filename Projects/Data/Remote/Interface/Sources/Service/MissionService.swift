@@ -20,7 +20,7 @@ public struct MissionService: MissionServiceable {
         _ missionStartTime: Date,
         _ missionEndDate: Date,
         _ timeOfDay: TimeOfDay,
-        _ missionDays: [Weekday],
+        _ missionDays: [WeekDay],
         _ authenticationDays: Int
     ) async throws -> (MissionID, InvitationCode)
     
@@ -40,7 +40,7 @@ public struct MissionService: MissionServiceable {
             _ missionStartTime: Date,
             _ missionEndDate: Date,
             _ timeOfDay: TimeOfDay,
-            _ missionDays: [Weekday],
+            _ missionDays: [WeekDay],
             _ authenticationDays: Int
         ) async throws -> (MissionID, InvitationCode),
         

@@ -53,6 +53,8 @@ public struct MissionAuthTimeSettingFeature: Reducer {
             case .binding(\.selectedTimeOfDay):
                 state.isAllCompleted = true
                 return .none
+            case .binding:
+                return .none
             case .completeButtonTapped:
                 state.isCreationMissionLoading = true
                 state.missionCreationData.timeOfDay = state.selectedTimeOfDay ?? .morning
@@ -65,8 +67,8 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                             data.startDate,
                             data.endDate,
                             data.timeOfDay,
-                            data.authenticationWeekDays,
-                            data.authenticationDays
+                            data.verificationWeekDays,
+                            data.verificationDays
                         )}
                     ))
                 }
@@ -91,7 +93,9 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                 }
             case .startMission:
                 return .none
-            default:
+            case .missionCreationCompleted(.dismiss):
+                return .none
+            case .missionCreationCompleted(.presented(.startButtonTapped)):
                 return .none
             }
         }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum TimeOfDay: String {
+public enum TimeOfDay: String, Equatable, CaseIterable {
     case morning = "MORNING"
     case afternoon = "AFTERNOON"
     case everyday = "EVERYDAY"
