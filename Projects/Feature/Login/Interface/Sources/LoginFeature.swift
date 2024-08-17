@@ -27,8 +27,13 @@ public struct LoginFeature: Reducer {
     }
     
     public enum Action {
-        // MARK: User Action
         case appleLoginButtonTapped
+        case didFinishLogin(Result<SignInInfo, Error>)
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didFinishLogin(shouldCreateProfile: Bool)
     }
     
     @Dependency(AuthClient.self) var authClient
@@ -39,17 +44,20 @@ public struct LoginFeature: Reducer {
             switch action {
             case .appleLoginButtonTapped:
                 return .run { send in
-                    do {
-                        let response = try await authClient.signInWithApple(appleAuthService)
-                        // TODO: Domain 로직에서 수행해도 될듯?..
-                        KeychainProvider.shared.save(response.accessToken, key: .accessToken)
-                        KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
-
-                    } catch {
-                        print(error)
-                        print("애플 로그인 에러")
-                    }
+                    await send(.didFinishLogin(
+                        Result {
+                            try await authClient.signInWithApple(appleAuthService)
+                        }
+                    ))
                 }
+            case let .didFinishLogin(.success(response)):
+                KeychainProvider.shared.save(response.accessToken, key: .accessToken)
+                KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
+                return .send(.delegate(.didFinishLogin(shouldCreateProfile: !response.isProfileSet)))
+            case .didFinishLogin(.failure):
+                return .none
+            case .delegate:
+                return .none
             }
         }
     }

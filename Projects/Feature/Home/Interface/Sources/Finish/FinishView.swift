@@ -89,7 +89,6 @@ public struct FinishView: View {
                 .padding(.horizontal, 24)
             }
         }
-        
-        
+        .navigationBarBackButtonHidden()
     }
 }

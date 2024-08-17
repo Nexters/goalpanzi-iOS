@@ -36,15 +36,25 @@ public struct VerificationResultFeature {
     
     public enum Action {
         case didTapCloseButton
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didTapCloseButton
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .didTapCloseButton:
-                return .run { _ in
-                    await self.dismiss()
-                }
+                return .concatenate(
+                    .run { _ in
+                        await self.dismiss()
+                    },
+                    .send(.delegate(.didTapCloseButton))
+                )
+            case .delegate:
+                return .none
             }
         }
     }

@@ -42,7 +42,11 @@ public struct ImageUploadFeature {
         case didTapUploadButton
         case didTapCloseButton
         case didFinishImageUpload(Result<Void, Error>)
-        case didNotifyImageUploadFinished
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didFinishImageUpload
     }
     
     public var body: some ReducerOf<Self> {
@@ -73,12 +77,12 @@ public struct ImageUploadFeature {
                     .run { _ in
                         await self.dismiss()
                     },
-                    .send(.didNotifyImageUploadFinished)
+                    .send(.delegate(.didFinishImageUpload))
                 )
             case .didFinishImageUpload(.failure):
                 state.isLoading = false
                 return .none
-            case .didNotifyImageUploadFinished:
+            case .delegate:
                 return .none
             }
         }

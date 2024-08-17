@@ -6,6 +6,7 @@ import DomainUserInterface
 import DomainBoardInterface
 import DomainPlayerInterface
 import DomainCompetitionInterface
+import FeatureSettingInterface
 import SharedDesignSystem
 import SharedThirdPartyLib
 import DataRemoteInterface
@@ -34,6 +35,7 @@ public struct HomeFeature {
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
         
         @Presents var destination: Destination.State?
+        var path: StackState<Path.State> = .init()
         
         public init() {}
     }
@@ -42,10 +44,15 @@ public struct HomeFeature {
     public enum Destination {
         case missionInvitationInfo(InvitationInfoFeature)
         case missionDeleteAlert(MissionDeleteAlertFeature)
-        case missionInfo(MissionInfoFeature)
-        case certificationResult(VerificationResultFeature)
+        case verificationResult(VerificationResultFeature)
         case imageUpload(ImageUploadFeature)
         case imageDetail(ImageDetailFeature)
+    }
+    
+    @Reducer
+    public enum Path {
+        case setting(SettingFeature)
+        case missionInfo(MissionInfoFeature)
         case finish(FinishFeature)
     }
     
@@ -63,12 +70,20 @@ public struct HomeFeature {
         case loadData(missionId: Int)
         case didLoadData(Competition.State)
         case destination(PresentationAction<Destination.Action>)
+        case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
+        case delegate(Delegate)
         
         case didFetchMyMissionInfo(Result<MyMissionInfo, Error>)
         case didFetchVerificationAndMissionAndBoard(Result<(MissionVerification, Mission, MissionBoard), Error>)
         case didFetchVerificationInfo(Result<MissionVerification.VerificationInfo, Error>)
         case didFetchRank(Result<MissionRank, Error>)
+    }
+    
+    public enum Delegate {
+        case didFinishMission
+        case didLogout
+        case didDeleteProfile
     }
     
     public var body: some ReducerOf<Self> {
@@ -172,7 +187,7 @@ public struct HomeFeature {
             case let .didFetchRank(.success(rankInfo)):
                 state.isLoading = false
                 guard let missionId = state.missionId, let me = state.me else { return .none }
-                state.destination = .finish(FinishFeature.State(missionId: missionId, player: me, rank: rankInfo.rank))
+                state.path.append(.finish(FinishFeature.State(missionId: missionId, player: me, rank: rankInfo.rank)))
                 return .none
             
             case .didTapMissionInfoButton:
@@ -180,11 +195,11 @@ public struct HomeFeature {
                 guard let missionId = state.missionId,
                       let mission = state.mission,
                       let totalBlockCount = state.competition?.board.totalBlockCount else { return .none }
-                state.destination = .missionInfo(MissionInfoFeature.State(missionId: missionId, totalBlockCount: totalBlockCount, infos: mission.toInfos))
+                state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, totalBlockCount: totalBlockCount, infos: mission.toInfos)))
                 return .none
                 
             case .didTapSettingButton:
-                // 설정화면으로 이동
+                state.path.append(.setting(SettingFeature.State()))
                 return .none
                 
             case let .didTapPlayer(player):
@@ -235,31 +250,39 @@ public struct HomeFeature {
                 switch action {
                 case .dismiss:
                     return .none
-                case .presented(.imageUpload(.didNotifyImageUploadFinished)):
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload))):
                     guard let competition = state.competition, let myPiece = competition.myPiece else { return .none }
                     let newPosition = myPiece.position + 1
                     guard newPosition.index < competition.board.totalBlockCount else { return .none }
                     let event = competition.board.findEvent(by: newPosition)
-                    state.destination = .certificationResult(VerificationResultFeature.State(event: event))
+                    state.destination = .verificationResult(VerificationResultFeature.State(event: event))
                     return .none
                     
-                case .presented(.certificationResult(.didTapCloseButton)):
+                case .presented(.verificationResult(.delegate(.didTapCloseButton))):
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
                     return .none
                     
-                case .presented(.finish(.didTapConfirmButton)):
-                    // 경쟁시작화면으로 이동
-                    return .none
-                    
-                case .presented(.finish(.didTapSettingButton)):
-                    //설정화면으로 이동
-                    return .none
-                    
                 case .presented(_):
                     return .none
                 }
+                
+            case .path(.element(id: _, action: .setting(.delegate(.didLogout)))):
+                return .send(.delegate(.didLogout))
+                
+            case .path(.element(id: _, action: .setting(.delegate(.didDeleteProfile)))):
+                return .send(.delegate(.didDeleteProfile))
+                
+            case .path(.element(id: _, action: .finish(.delegate(.didTapConfirmButton)))):
+                return .send(.delegate(.didFinishMission))
+                
+            case .path(.element(id: _, action: .finish(.delegate(.didTapSettingButton)))):
+                state.path.append(.setting(SettingFeature.State()))
+                return .none
+                
+            case .path:
+                return .none
                 
             case let .didFinishMoving(myPiece):
                 guard let myPiece else { return .none }
@@ -268,6 +291,9 @@ public struct HomeFeature {
                 state.competition?.board.update(conqueredPosition: newPosition)
                 state.movingPiece = nil
                 return .send(.loadData(missionId: state.missionId ?? 0))
+                
+            case .delegate:
+                return .none
                 
             case .binding:
                 return .none
@@ -290,6 +316,7 @@ public struct HomeFeature {
             }
         }
         .ifLet(\.$destination, action: \.destination)
+        .forEach(\.path, action: \.path)
     }
     
     public init() {}

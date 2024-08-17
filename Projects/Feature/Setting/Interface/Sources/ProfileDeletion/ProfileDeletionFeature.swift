@@ -11,6 +11,7 @@ import DomainUser
 import DomainUserInterface
 import DataRemote
 import DataRemoteInterface
+import CoreKeychainInterface
 
 import ComposableArchitecture
 
@@ -55,6 +56,8 @@ public struct ProfileDeletionFeature: Reducer {
                   await self.dismiss()
                 }
             case .deleteAccountResponse(.success(_)):
+                KeychainProvider.shared.delete(.accessToken)
+                KeychainProvider.shared.delete(.refreshToken)
                 return .run { send in
                     await send(.delegate(.didDeleteProfileSucceed))
                 }
