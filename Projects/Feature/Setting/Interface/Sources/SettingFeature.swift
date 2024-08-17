@@ -17,6 +17,8 @@ import ComposableArchitecture
 @Reducer
 public struct SettingFeature: Reducer {
     
+    @Dependency(\.dismiss) var dismiss
+    
     public init() {}
     
     @Reducer(state: .equatable)
@@ -49,6 +51,12 @@ public struct SettingFeature: Reducer {
         // MARK: Child Action
         case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
         case deleteProfileSucceed(PresentationAction<ProfileDeletionFeature.Action>)
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didLogout
+        case didDeleteProfile
     }
     
     public var body: some ReducerOf<Self> {
@@ -56,7 +64,9 @@ public struct SettingFeature: Reducer {
             
             switch action {
             case .backButtonTapped:
-                return .none
+                return .run { _ in
+                    await self.dismiss()
+                }
             case .navigateUpdateProfileViewTapped:
                 state.destination = .updateProfile(UpdateProfileFeature.State())
                 return .none
@@ -73,12 +83,9 @@ public struct SettingFeature: Reducer {
                 state.destination = .profileDeletion(ProfileDeletionFeature.State())
                 return .none
             case .logoutSucceed(.presented(.delegate(.didLogoutSucceed))):
-                // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
-                return .none
+                return .send(.delegate(.didLogout))
             case .deleteProfileSucceed(.presented(.delegate(.didDeleteProfileSucceed))):
-                // TODO: 여기서 Home으로 알려서 바로 로그인 화면으로 옮기기!
-                return .none
-                
+                return .send(.delegate(.didDeleteProfile))
             case .destination(_):
                 return .none
             default:

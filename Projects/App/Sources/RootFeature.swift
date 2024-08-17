@@ -11,6 +11,7 @@ import FeatureLoginInterface
 import FeatureEntranceInterface
 import FeatureHomeInterface
 import FeaturePieceCreationInterface
+import FeatureSettingInterface
 import DomainPlayerInterface
 import DataRemote
 import DataRemoteInterface
@@ -25,7 +26,6 @@ struct RootFeature {
     @ObservableState
     struct State {
         @Presents var destination: RootDestination.State? = nil
-        var path: StackState<RootPath.State> = .init()
         
         init() {}
     }
@@ -38,10 +38,8 @@ struct RootFeature {
         case setRootToProfileCreation
         case observeTokenRefreshingFailure
         case didFailTokenRefreshing
-        case pushLogin
         case didFetchMissionInfo(Result<MyMissionInfo, Error>)
         case destination(PresentationAction<RootDestination.Action>)
-        case path(StackActionOf<RootPath>)
     }
     
     enum CancelID {
@@ -81,10 +79,6 @@ struct RootFeature {
                 state.destination = .profileCreation(PieceCreationFeature.State())
                 return .none
                 
-            case .pushLogin:
-                state.path.append(.login(LoginFeature.State()))
-                return .none
-                
             case let .didFetchMissionInfo(.success(missionInfo)):
                 if missionInfo.missions.isEmpty {
                     return .send(.didFailTokenRefreshing)
@@ -115,14 +109,25 @@ struct RootFeature {
             case .destination(.presented(.entrance(.delegate(.didCreateMission)))):
                 return .send(.setRootToHome)
                 
-            case .destination:
-                return .none
+            case .destination(.presented(.entrance(.delegate(.didLogout)))):
+                return .send(.setRootToLogin)
                 
-            case .path:
+            case .destination(.presented(.entrance(.delegate(.didDeleteProfile)))):
+                return .send(.setRootToLogin)
+                
+            case .destination(.presented(.home(.delegate(.didFinishMission)))):
+                return .send(.setRootToEntrance)
+                
+            case .destination(.presented(.home(.delegate(.didLogout)))):
+                return .send(.setRootToLogin)
+                
+            case .destination(.presented(.home(.delegate(.didDeleteProfile)))):
+                return .send(.setRootToLogin)
+                
+            case .destination:
                 return .none
             }
         }
         .ifLet(\.$destination, action: \.destination)
-        .forEach(\.path, action: \.path)
     }
 }

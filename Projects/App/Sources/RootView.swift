@@ -12,6 +12,7 @@ import FeatureLoginInterface
 import FeatureEntranceInterface
 import FeaturePieceCreationInterface
 import FeatureHomeInterface
+import FeatureSettingInterface
 import SharedDesignSystem
 
 struct RootView: View {
@@ -24,18 +25,7 @@ struct RootView: View {
     
     @ViewBuilder
     var body: some View {
-        Group {
-            NavigationStack(
-                path: $store.scope(state: \.path, action: \.path)
-            ) {
-                rootView
-            } destination: { store in
-                switch store.case {
-                case let .login(store):
-                    LoginView(store: store)
-                }
-            }
-        }
+        rootView
         .task {
             await store.send(.didLoad).finish()
         }

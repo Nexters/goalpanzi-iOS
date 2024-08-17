@@ -8,6 +8,7 @@
 import Foundation
 
 import ComposableArchitecture
+import FeatureSettingInterface
 
 @Reducer
 public struct EntranceFeature: Reducer {
@@ -23,6 +24,8 @@ public struct EntranceFeature: Reducer {
         
         // 🚨 초대코드 검증
         case missionInputInviationCode(MissionInvitationCodeFeature)
+        
+        case setting(SettingFeature)
     }
     
     @ObservableState
@@ -41,11 +44,14 @@ public struct EntranceFeature: Reducer {
 
         case createMissionButtonTapped
         case enterInvitationCodeButtonTapped
+        case didTapSettingButton
         case delegate(Delegate)
     }
     
     public enum Delegate {
         case didCreateMission
+        case didLogout
+        case didDeleteProfile
     }
     
     public var body: some ReducerOf<Self> {
@@ -57,18 +63,31 @@ public struct EntranceFeature: Reducer {
             case .enterInvitationCodeButtonTapped:
                 state.path.append(.missionInputInviationCode(MissionInvitationCodeFeature.State()))
                 return .none
+            case .didTapSettingButton:
+                state.path.append(.setting(SettingFeature.State()))
+                return .none
             case let .path(action):
                 switch action {
                 case .element(id: _, action: .missionContentSetting(.nextButtonTapped)):
                     state.path.append(.missionDurationSetting(MissionDurationSettingFeature.State(missionCreationData: state.$missionCreationData)))
                     return .none
+                    
                 case .element(id: _, action: .missionDurationSetting(.nextButtonTapped)):
                     state.path.append(.missionAuthTimeSetting(MissionAuthTimeSettingFeature.State(missionCreationData: state.$missionCreationData)))
                     return .none
+                    
                 case .element(id: _, action: .missionAuthTimeSetting(.startMission)):
                     return .send(.delegate(.didCreateMission))
+                    
                 case .element(id: _, action: .missionInputInviationCode(.startMission)):
                     return .send(.delegate(.didCreateMission))
+                    
+                case .element(id: _, action: .setting(.delegate(.didLogout))):
+                    return .send(.delegate(.didLogout))
+                    
+                case .element(id: _, action: .setting(.delegate(.didDeleteProfile))):
+                    return .send(.delegate(.didDeleteProfile))
+                    
                 default:
                     return .none
                 }

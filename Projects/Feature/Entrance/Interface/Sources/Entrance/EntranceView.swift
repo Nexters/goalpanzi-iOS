@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+import FeatureSettingInterface
 import DomainUserInterface
 import SharedDesignSystem
 
@@ -31,7 +32,7 @@ public struct EntranceView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            // TODO: Setting으로 이동하기
+                            store.send(.didTapSettingButton)
                         }) {
                             Image(uiImage: SharedDesignSystemAsset.Images.setting.image)
                                 .resizable()
@@ -102,6 +103,8 @@ public struct EntranceView: View {
                 MissionDurationSettingView(store: store)
             case let .missionInputInviationCode(store):
                 MissionInvitationCodeView(store: store)
+            case let .setting(store):
+                SettingView(store: store)
             }
         }
     }
