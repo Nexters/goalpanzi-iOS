@@ -66,12 +66,12 @@ public struct InvitationConfirmFeature: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .confirmButtonTapped:
-                return .run { send in
+                return .run { [inviationCode = state.invitationCode] send in
                     await send(.joinCompetitionResponse(
                         Result {
                             try await self.missionClient.joinCompetition(
                                 missionService,
-                                ""
+                                inviationCode
                             )
                         }
                     ))
@@ -86,7 +86,7 @@ public struct InvitationConfirmFeature: Reducer {
                     await send(.delegate(.didConfirmButtonTapped))
                 }
 
-            case let .joinCompetitionResponse(.failure(error)):
+            case .joinCompetitionResponse(.failure):
                 return .none
 
             default:

@@ -14,34 +14,34 @@ import ComposableArchitecture
 import Combine
 
 public struct MissionInvitationCodeView: View {
-
+    
     @Bindable public var store: StoreOf<MissionInvitationCodeFeature>
-
+    
     public init(store: StoreOf<MissionInvitationCodeFeature>) {
         self.store = store
     }
-
+    
     enum FocusTextField {
         case first
         case second
         case third
         case fourth
     }
-
+    
     @FocusState private var textFieldFocusState: FocusTextField?
     @State private var keyboardHeight: CGFloat = 0
-
+    
     public var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     Spacer()
                         .frame(height: 22)
-
+                    
                     VStack(alignment: .leading) {
                         invitationCodeHeaderView
                             .padding(.bottom, 56)
-
+                        
                         HStack {
                             // TODO: 공통되는 로직 Modifier로 빼기(LimitedTextLengthModifier - Binding이 제대로 안됨)
                             TextField("0", text: $store.firstInputCode)
@@ -68,9 +68,9 @@ public struct MissionInvitationCodeView: View {
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .first)
-
+                            
                             Spacer()
-
+                            
                             TextField("0", text: $store.secondInputCode)
                                 .disableAutoFunctions()
                                 .keyboardType(.alphabet)
@@ -95,13 +95,13 @@ public struct MissionInvitationCodeView: View {
                                             textFieldFocusState = .first
                                         }
                                         store.secondInputCode = String(inputText.prefix(1))
-
+                                        
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .second)
-
+                            
                             Spacer()
-
+                            
                             TextField("0", text: $store.thirdInputCode)
                                 .disableAutoFunctions()
                                 .keyboardType(.alphabet)
@@ -129,9 +129,9 @@ public struct MissionInvitationCodeView: View {
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .third)
-
+                            
                             Spacer()
-
+                            
                             TextField("0", text: $store.fourthInputCode)
                                 .disableAutoFunctions()
                                 .keyboardType(.alphabet)
@@ -156,7 +156,7 @@ public struct MissionInvitationCodeView: View {
                                 }
                                 .focused($textFieldFocusState, equals: .fourth)
                         }
-
+                        
                         if store.isInvalid {
                             Spacer()
                                 .frame(height: 12)
@@ -170,11 +170,12 @@ public struct MissionInvitationCodeView: View {
                     .padding(.top, 80)
                     .offset(y: keyboardHeight == 0 ? 0 : -60) // 키보드가 올라가면 적당한 높이만큼 위로 올리기.
                 }
-
+                
                 VStack {
                     Spacer()
                     
                     MMRoundedButton(isEnabled: $store.isAllTexFieldFilled, title: "확인") {
+                        textFieldFocusState = nil
                         store.send(.confirmButtonTapped)
                     }
                     .frame(height: 60)
@@ -182,8 +183,8 @@ public struct MissionInvitationCodeView: View {
                     .background(Color.white)
                     .offset(y: -keyboardHeight)
                 }
-
-
+                
+                
                 MMNavigationBar(
                     title: "초대코드 입력",
                     navigationAccessoryItem: AnyView(MMCapsuleTagView(
@@ -196,6 +197,7 @@ public struct MissionInvitationCodeView: View {
                     store.send(.backButtonTapped)
                 }
             }
+            
         }
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
@@ -204,11 +206,10 @@ public struct MissionInvitationCodeView: View {
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)
-        .fullScreenCover(
-            item: $store.scope(state: \.invitationConfirm, action: \.invitationConfirm)
-        ) { store in
-            InvitationConfirmView(store: store)
-                .presentationBackground(.clear)
+        .overlay {
+            if let store = store.scope(state: \.destination?.invitationConfirm, action: \.destination.invitationConfirm) {
+                InvitationConfirmView(store: store)
+            }
         }
     }
 }
@@ -222,7 +223,7 @@ extension MissionInvitationCodeView {
             return Color.mmGray1
         }
     }
-
+    
     private var backgroundColor: Color {
         if store.isAllEmpty {
             return Color.mmGray5
@@ -230,7 +231,7 @@ extension MissionInvitationCodeView {
             return Color.mmWhite
         }
     }
-
+    
     private var borderLineColor: Color {
         if store.isInvalid {
             return Color.mmRed
@@ -240,7 +241,7 @@ extension MissionInvitationCodeView {
             return Color.mmGray4
         }
     }
-
+    
     // TODO: 아래 attributed text로 하는 방법으로 바꾸기 (재사용가능하게)
     var invitationCodeHeaderView: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -253,11 +254,11 @@ extension MissionInvitationCodeView {
         }
         .font(.pretendard(kind: .title_xl, type: .light))
     }
-
+    
     // MARK: 키보드 올라가는 이벤트 체킹
     private func highlightedTextView(text: String, highlightTexts: [String]) -> some View {
         var attributedString = AttributedString(text)
-
+        
         for highlightText in highlightTexts {
             if let range = attributedString.range(of: highlightText) {
                 attributedString[range].foregroundColor = .mmOrange
@@ -266,18 +267,18 @@ extension MissionInvitationCodeView {
         }
         return Text(attributedString)
     }
-
+    
     private func addKeyboardObserver() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
             let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
             keyboardHeight = keyboardFrame.height
         }
-
+        
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
             keyboardHeight = 0
         }
     }
-
+    
     private func removeKeyboardObserver() {
         NotificationCenter.default.removeObserver(self)
     }

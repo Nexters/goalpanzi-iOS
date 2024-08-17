@@ -14,6 +14,7 @@ import ComposableArchitecture
 public struct ProfileDeletionView: View {
         
     @Bindable public var store: StoreOf<ProfileDeletionFeature>
+    @State private var scale = 0.5
 
     public init(store: StoreOf<ProfileDeletionFeature>) {
         self.store = store
@@ -42,6 +43,11 @@ public struct ProfileDeletionView: View {
                     .padding(.horizontal, 24)
                 Spacer()
             }
+            .scaleEffect(scale)
+            .animate(using: .spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
+                scale = 1.0
+            }
         }
+        .ignoresSafeArea(.all)
     }
 }

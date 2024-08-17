@@ -101,12 +101,21 @@ public struct SettingView: View {
                         )
                     }
                 }
-                
             }
         }
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
         .padding(.horizontal, 24)
+        .overlay {
+            if let store = store.scope(state: \.destination?.logout, action: \.destination.logout) {
+                LogoutConfirmView(store: store)
+            }
+        }
+        .overlay {
+            if let store = store.scope(state: \.destination?.profileDeletion, action: \.destination.profileDeletion) {
+                ProfileDeletionView(store: store)
+            }
+        }
         .navigationDestination(
             item: $store.scope(state: \.destination?.updateProfile, action: \.destination.updateProfile)
         ) { store in
@@ -122,20 +131,7 @@ public struct SettingView: View {
         ) { store in
             InformationView(type: .termsOfUse)
         }
-        .fullScreenCover(
-            item: $store.scope(state: \.destination?.logout, action: \.destination.logout)
-        ) { store in
-            LogoutConfirmView(store: store)
-                .presentationBackground(.clear)
-        }
-        .fullScreenCover(
-            item: $store.scope(state: \.destination?.profileDeletion, action: \.destination.profileDeletion)
-        ) { store in
-            ProfileDeletionView(store: store)
-                .presentationBackground(.clear)
-        }
     }
-    
 }
 
 struct SettingSectionView<Content: View>: View {
