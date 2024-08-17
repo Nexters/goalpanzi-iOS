@@ -63,9 +63,6 @@ public struct LoginView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: .infinity)
                     .layoutPriority(1)
-                
-                //                .aspectRatio(contentMode: .fit)
-                //                .frame(width: .infinity)
             }
         }
         .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
