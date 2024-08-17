@@ -23,6 +23,7 @@ public extension ModulePath {
 public extension ModulePath {
     enum Feature: String, CaseIterable {
         case Setting
+        case Home
         case PieceCreation
         case Entrance
         case Login

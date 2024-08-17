@@ -10,7 +10,8 @@ let project = Project.makeModule(
             factory: .init(
                 dependencies: [
                     .domain(interface: .Board),
-                    .domain(interface: .Player)
+                    .domain(interface: .Player),
+                    .domain(interface: .Mission),
                 ]
             )
         ),

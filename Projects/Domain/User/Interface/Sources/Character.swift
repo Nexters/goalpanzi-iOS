@@ -17,6 +17,25 @@ public enum Character: String, CaseIterable {
     case bird = "BIRD"
     case panda = "PANDA"
     case bear = "BEAR"
+    
+    public init?(rawValue: String) {
+        switch rawValue {
+        case "RABBIT":
+            self = .rabbit
+        case "CAT":
+            self = .cat
+        case "DOG":
+            self = .dog
+        case "BIRD":
+            self = .bird
+        case "PANDA":
+            self = .panda
+        case "BEAR":
+            self = .bear
+        default:
+            return nil
+        }
+    }
 
     public var koreanName: String {
         switch self {
@@ -37,6 +56,28 @@ public enum Character: String, CaseIterable {
         case .bird: SharedDesignSystemAsset.Images.basicRoundBird
         case .panda: SharedDesignSystemAsset.Images.basicRoundPanda
         case .bear: SharedDesignSystemAsset.Images.basicRoundBear
+        }
+    }
+    
+    public var roundBorderImage: SharedDesignSystemImages {
+        switch self {
+        case .rabbit: SharedDesignSystemAsset.Images.roundBorderRabbit
+        case .cat: SharedDesignSystemAsset.Images.roundBorderCat
+        case .dog: SharedDesignSystemAsset.Images.roundBorderPuppy
+        case .bird: SharedDesignSystemAsset.Images.roundBorderBird
+        case .panda: SharedDesignSystemAsset.Images.roundBorderPanda
+        case .bear: SharedDesignSystemAsset.Images.roundBorderBear
+        }
+    }
+    
+    public var roundHighlightedImage: SharedDesignSystemImages {
+        switch self {
+        case .rabbit: SharedDesignSystemAsset.Images.roundHighlightedRabbit
+        case .cat: SharedDesignSystemAsset.Images.roundHighlightedCat
+        case .dog: SharedDesignSystemAsset.Images.roundHighlightedPuppy
+        case .bird: SharedDesignSystemAsset.Images.roundHighlightedBird
+        case .panda: SharedDesignSystemAsset.Images.roundHighlightedPanda
+        case .bear: SharedDesignSystemAsset.Images.roundHighlightedBear
         }
     }
 

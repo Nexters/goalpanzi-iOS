@@ -11,16 +11,42 @@ import CoreNetworkInterface
 import DataRemoteInterface
 import DomainMissionInterface
 import SharedUtil
-
 import ComposableArchitecture
 import Alamofire
 
 extension MissionService: DependencyKey {
-
+    
     public static let liveValue: Self = {
         let interceptor = AuthInterceptor()
 
         return Self(
+            getMissions: { missionID in
+                let endPoint = Endpoint<GetMissionResponseDTO>(
+                    path: "api/missions/\(missionID)",
+                    httpMethod: .get
+                )
+                
+                do {
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                    return response.toDomain
+                } catch {
+                    throw NSError()
+                }
+            },
+            deleteMissions: { missionID in
+                let endPoint = Endpoint<DeleteMissionResponseDTO>(
+                    path: "api/missions/\(missionID)",
+                    httpMethod: .delete,
+                    queryParameters: EmptyRequest()
+                )
+                
+                do {
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                    return response.toDomain
+                } catch {
+                    throw NSError()
+                }
+            },
             createMission: { missionContent, missionStartTime, missionEndDate, timeOfDay, missionDays, authenticationDays in
                 
                 let missionStartTime = missionStartTime.formattedString(dateFormat: .longYearMonthDateTimeZone)
@@ -67,6 +93,40 @@ extension MissionService: DependencyKey {
     }()
 }
 
+extension GetMissionResponseDTO {
+    
+    var toDomain: Mission {
+        .init(
+            missionId: missionId,
+            hostMemberId: hostMemberId,
+            description: description,
+            startDate: missionStartDate,
+            endDate: missionEndDate,
+            timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
+            verificationWeekDays: missionDays.compactMap { WeekDay(rawValue: $0) },
+            verificationDays: boardCount,
+            invitationCode: invitationCode
+        )
+    }
+}
+
+extension DeleteMissionResponseDTO {
+    
+    var toDomain: Mission {
+        .init(
+            missionId: missionId,
+            hostMemberId: hostMemberId,
+            description: description,
+            startDate: missionStartDate,
+            endDate: missionEndDate,
+            timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
+            verificationWeekDays: missionDays.compactMap { WeekDay(rawValue: $0) },
+            verificationDays: boardCount,
+            invitationCode: invitationCode
+        )
+    }
+}
+    
 extension CreateMissionResponseDTO {
     
     var toDomain: (MissionID, InvitationCode) {
@@ -79,16 +139,17 @@ extension FetchMissionInfoResponseDTO {
         let timeOfDay = TimeOfDay(rawValue: self.timeOfDay) ?? .afternoon
         let startDate = self.missionStartDate.toDate(format: .longYearMonthDateTimeZone) ?? Date()
         let endDate = self.missionEndDate.toDate(format: .compactYearMonthDateTime) ?? Date()
-        let authenticationWeekDays = self.missionDays.map { Weekday(rawValue: $0) ?? .friday }
+        let verificationWeekDays = self.missionDays.map { WeekDay(rawValue: $0) ?? .friday }
         
         return .init(
-            missionId: missionId,
+            missionId: missionId, 
+            hostMemberId: hostMemberId,
             description: description,
             startDate: startDate,
             endDate: endDate,
             timeOfDay: timeOfDay,
-            authenticationWeekDays: authenticationWeekDays,
-            authenticationDays: boardCount,
+            verificationWeekDays: verificationWeekDays,
+            verificationDays: boardCount,
             invitationCode: invitationCode
         )
     }

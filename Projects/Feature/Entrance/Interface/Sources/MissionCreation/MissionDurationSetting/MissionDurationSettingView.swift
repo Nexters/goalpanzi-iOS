@@ -77,7 +77,7 @@ public struct MissionDurationSettingView: View {
                     .foregroundStyle(store.isSelectWeekDayEnabled ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
 
                 HStack {
-                    ForEach(Weekday.allCases, id: \.self) { day in
+                    ForEach(WeekDay.allCases, id: \.self) { day in
                         DaySelectionButton(
                             day: day.koreanName,
                             isSelected: store.selectedDays.contains(day),
