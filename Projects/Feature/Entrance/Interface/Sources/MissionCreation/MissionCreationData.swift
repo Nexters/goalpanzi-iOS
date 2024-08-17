@@ -17,6 +17,6 @@ public struct MissionCreationData: Equatable {
     var startDate: Date = Date()
     var endDate: Date = Date()
     var timeOfDay: TimeOfDay = .afternoon
-    var authenticationWeekDays: [Weekday]  = []
-    var authenticationDays: Int = 0
+    var verificationWeekDays: [WeekDay]  = []
+    var verificationDays: Int = 0
 }

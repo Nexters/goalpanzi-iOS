@@ -31,10 +31,10 @@ public struct InvitationConfirmFeature: Reducer {
 
         public init(mission: Mission) {
             self.mission = mission
-            self.authenticationDays = "\(mission.authenticationDays)"
+            self.authenticationDays = "\(mission.verificationDays)"
             self.missionTitle = mission.description
             self.missionDuration = mission.startDate.formattedString(dateFormat: .yearMonthDate) + "~" + mission.endDate.formattedString(dateFormat: .yearMonthDate)
-            self.missionWeekDay = mission.authenticationWeekDays.map { $0.koreanName }.joined(separator: "/")
+            self.missionWeekDay = mission.verificationWeekDays.map { $0.koreanName }.joined(separator: "/")
             self.missionTimeOfDay = mission.timeOfDay.description
             self.invitationCode = mission.invitationCode
         }

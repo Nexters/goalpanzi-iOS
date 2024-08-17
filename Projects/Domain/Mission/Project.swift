@@ -9,8 +9,7 @@ let project = Project.makeModule(
             interface: .Mission,
             factory: .init(
                 dependencies: [
-                    .core,
-                    .domain(interface: .Competition)
+                    .core
                 ]
             )
         ),

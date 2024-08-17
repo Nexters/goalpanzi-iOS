@@ -28,7 +28,7 @@ public struct MissionDurationSettingFeature: Reducer {
         var startMinimumDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
         var endMinimumDate = Date()
         
-        var selectedDays: Set<Weekday> = []
+        var selectedDays: Set<WeekDay> = []
         var authenticationDays: Int = 0
         
         @Shared var missionCreationData: MissionCreationData
@@ -64,8 +64,8 @@ public struct MissionDurationSettingFeature: Reducer {
             case .nextButtonTapped:
                 state.missionCreationData.startDate = state.missionStartDate ?? Date()
                 state.missionCreationData.endDate = state.missionEndDate ?? Date()
-                state.missionCreationData.authenticationDays = state.authenticationDays
-                state.missionCreationData.authenticationWeekDays = Array(state.selectedDays)
+                state.missionCreationData.verificationDays = state.authenticationDays
+                state.missionCreationData.verificationWeekDays = Array(state.selectedDays)
                 
                 return .none
             case .backButtonTapped:
@@ -97,20 +97,8 @@ extension MissionDurationSettingFeature {
         var authenticationDayCount = 0
 
         while currentDate <= endDate {
-            let weekday = calendar.component(.weekday, from: currentDate)
-            let weekdayEnum: Weekday
-
-            switch weekday {
-            case 1: weekdayEnum = .sunday
-            case 2: weekdayEnum = .monday
-            case 3: weekdayEnum = .tuesday
-            case 4: weekdayEnum = .wednesday
-            case 5: weekdayEnum = .thursday
-            case 6: weekdayEnum = .friday
-            case 7: weekdayEnum = .saturday
-            default: continue
-            }
-            if state.selectedDays.contains(weekdayEnum) {
+            guard let weekday = WeekDay(index: calendar.component(.weekday, from: currentDate)) else { continue }
+            if state.selectedDays.contains(weekday) {
                 authenticationDayCount += 1
             }
 

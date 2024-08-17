@@ -7,7 +7,11 @@ let project = Project.makeModule(
     targets: [    
         .domain(
             interface: .Board,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .shared
+                ]
+            )
         ),
         .domain(
             implements: .Board,
