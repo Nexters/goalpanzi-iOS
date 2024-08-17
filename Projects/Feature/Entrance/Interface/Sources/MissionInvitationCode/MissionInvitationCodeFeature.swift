@@ -18,10 +18,17 @@ import ComposableArchitecture
 public struct MissionInvitationCodeFeature: Reducer {
 
     public init() {}
+    
+    
+    @Reducer
+    public enum Destination {
+        case invitationConfirm(InvitationConfirmFeature)
+    }
+
 
     @ObservableState
-    public struct State: Equatable {
-        @Presents var invitationConfirm: InvitationConfirmFeature.State?
+    public struct State {
+        @Presents var destination: Destination.State?
 
         var firstInputCode: String = ""
         var secondInputCode: String = ""
@@ -45,7 +52,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         case fetchMissionResponse(Result<Mission, Error>)
         
         // MARK: Child Action
-        case invitationConfirm(PresentationAction<InvitationConfirmFeature.Action>)
+        case destination(PresentationAction<Destination.Action>)
     }
     
     @Dependency(MissionClient.self) var missionClient
@@ -81,10 +88,10 @@ public struct MissionInvitationCodeFeature: Reducer {
                 }
             
             case let .fetchMissionResponse(.success(response)):
-                state.invitationConfirm = InvitationConfirmFeature.State(mission: response)
+                state.destination = .invitationConfirm(InvitationConfirmFeature.State(mission: response))
                 return .none
                  
-            case let .fetchMissionResponse(.failure(error)):
+            case .fetchMissionResponse(.failure):
                 state.isInvalid = true
                 return .none
                 
@@ -92,10 +99,8 @@ public struct MissionInvitationCodeFeature: Reducer {
                 return .run { _ in
                   await self.dismiss()
                 }
-            case .invitationConfirm(.presented(.delegate(.didConfirmButtonTapped))):
-                return .run { send in
-                    await send(.startMission)
-                }
+            case .destination(.presented(.invitationConfirm(.delegate(.didConfirmButtonTapped)))):
+                return .none
             case .startMission:
                 return .none
                 
@@ -103,8 +108,6 @@ public struct MissionInvitationCodeFeature: Reducer {
                 return .none
             }
         }
-        .ifLet(\.$invitationConfirm, action: \.invitationConfirm) {
-         InvitationConfirmFeature()
-        }
+        .ifLet(\.$destination, action: \.destination)
     }
 }

@@ -17,6 +17,7 @@ import ComposableArchitecture
 public struct LogoutConfirmView: View {
         
     @Bindable public var store: StoreOf<LogoutConfirmFeature>
+    @State private var scale = 0.5
 
     public init(store: StoreOf<LogoutConfirmFeature>) {
         self.store = store
@@ -44,6 +45,11 @@ public struct LogoutConfirmView: View {
                     .padding(.horizontal, 24)
                 Spacer()
             }
+            .scaleEffect(scale)
+            .animate(using: .spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
+                scale = 1.0
+            }
         }
+        .ignoresSafeArea(.all)
     }
 }
