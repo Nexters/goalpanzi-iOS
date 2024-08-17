@@ -87,7 +87,7 @@ public struct UpdateProfileView: View {
                         .padding(.horizontal, 24)
                         .padding(.bottom, 36)
                     }
-                    .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+                    .frame(maxWidth: .infinity)
                     .offset(y: -keyboardHeight)
                 }
                 
