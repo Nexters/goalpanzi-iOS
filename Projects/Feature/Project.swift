@@ -10,6 +10,7 @@ let targets: [Target] = [
                 .feature(interface: .Home),
                 .feature(implements: .PieceCreation),
                 .feature(implements: .Entrance),
+                .feature(implements: .Setting),
                 .domain,
             ]
         )

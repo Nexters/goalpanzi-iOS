@@ -9,6 +9,7 @@ import Foundation
 
 import ComposableArchitecture
 import DomainAuthInterface
+import CoreKeychainInterface
 
 extension AuthClient: DependencyKey {
     public static let liveValue: Self = {
@@ -16,6 +17,9 @@ extension AuthClient: DependencyKey {
             signInWithApple: { appleAuthService in
                 let response = try await appleAuthService.signIn()
                 return response
+            },
+            logout: { appleAuthService in
+                return try await appleAuthService.logout()
             }
         )
     }()

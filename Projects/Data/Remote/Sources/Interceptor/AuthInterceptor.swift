@@ -15,7 +15,10 @@ import Alamofire
 final class AuthInterceptor: NetworkRequestInterceptor {
 
     override func reissueTokens(completion: @escaping (RetryResult) -> Void) {
-        guard let refreshToken = KeychainProvider.shared.read(.refreshToken) else { return }
+        guard let refreshToken = KeychainProvider.shared.read(.refreshToken) else {
+            completion(.doNotRetry)
+            return
+        }
 
         let endPoint = Endpoint<TokenReissueResponseDTO>(
             path: "api/auth/token:reissue", httpMethod: .post, bodyParameters: TokenReissueRequestDTO(refreshToken: refreshToken))
