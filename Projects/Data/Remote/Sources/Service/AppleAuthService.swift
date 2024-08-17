@@ -26,7 +26,7 @@ extension AppleAuthService: DependencyKey {
                     httpMethod: .post,
                     bodyParameters: SignInRequestDTO(identityToken: identityToken)
                 )
-                let response = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                let response = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: nil)
                 return response.toDomain
             }
         )

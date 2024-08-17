@@ -9,46 +9,46 @@ import Foundation
 import SharedUtil
 import OrderedCollections
 
-public struct Mission: CustomStringConvertible {
+public struct Mission: CustomStringConvertible, Equatable {
     
     public let missionId: Int
     public let hostMemberId: Int
     public let description: String
-    public let missionStartDate: Date
-    public let missionEndDate: Date
+    public let startDate: Date
+    public let endDate: Date
     public let timeOfDay: TimeOfDay
-    public let missionDays: [WeekDay]
-    public let boardCount: Int
+    public let verificationWeekDays: [WeekDay]
+    public let verificationDays: Int
     public let invitationCode: String
     
     public init(
         missionId: Int,
         hostMemberId: Int,
         description: String,
-        missionStartDate: Date,
-        missionEndDate: Date,
+        startDate: Date,
+        endDate: Date,
         timeOfDay: TimeOfDay,
-        missionDays: [WeekDay],
-        boardCount: Int,
+        verificationWeekDays: [WeekDay],
+        verificationDays: Int,
         invitationCode: String
     ) {
         self.missionId = missionId
         self.hostMemberId = hostMemberId
         self.description = description
-        self.missionStartDate = missionStartDate
-        self.missionEndDate = missionEndDate
+        self.startDate = startDate
+        self.endDate = endDate
         self.timeOfDay = timeOfDay
-        self.missionDays = missionDays
-        self.boardCount = boardCount
+        self.verificationWeekDays = verificationWeekDays
+        self.verificationDays = verificationDays
         self.invitationCode = invitationCode
     }
     
     public var missionPeriodDescription: String {
-        "\(DateFormatter.yearMonthDayFormatter.string(from: missionStartDate))~\(DateFormatter.yearMonthDayFormatter.string(from: missionEndDate))"
+        "\(DateFormatter.yearMonthDayFormatter.string(from: startDate))~\(DateFormatter.yearMonthDayFormatter.string(from: endDate))"
     }
     
     public var missionWeekDayDescription: String {
-        missionDays.map { $0.toKorean }.joined(separator: "/")
+        verificationWeekDays.map { $0.toKorean }.joined(separator: "/")
     }
     
     public var missionTimeDescription: String {
@@ -56,7 +56,7 @@ public struct Mission: CustomStringConvertible {
     }
     
     public var checkIsMissionTime: Bool {
-        guard missionDays.contains(WeekDay.today) else { return false }
+        guard verificationWeekDays.contains(WeekDay.today) else { return false }
         switch (timeOfDay, Date.now.isAM) {
         case (.morning, true):
             return true

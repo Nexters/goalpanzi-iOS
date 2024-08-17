@@ -21,7 +21,6 @@ public struct PieceCreationView: View {
 
     public init(store: StoreOf<PieceCreationFeature>) {
         self.store = store
-        SharedDesignSystemFontFamily.registerAllCustomFonts()
     }
 
     public var body: some View {

@@ -42,8 +42,10 @@ public struct LoginFeature: Reducer {
                     do {
                         let response = try await authClient.signInWithApple(appleAuthService)
                         KeychainProvider.shared.save(response.accessToken, key: .accessToken)
-                        KeychainProvider.shared.save(response.accessToken, key: .accessToken)
+                        KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
+
                     } catch {
+                        print(error)
                         print("애플 로그인 에러")
                     }
                 }

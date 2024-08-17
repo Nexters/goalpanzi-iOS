@@ -24,6 +24,7 @@ public extension ModulePath {
     enum Feature: String, CaseIterable {
         case Home
         case PieceCreation
+        case Entrance
         case Login
         public static let name: String = "Feature"
     }

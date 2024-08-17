@@ -1,9 +1,9 @@
 //
 //  TimeOfDay.swift
-//  DomainMissionInterface
+//  DomainMission
 //
-//  Created by Haeseok Lee on 8/15/24.
-//
+//  Created by 김용재 on 8/12/24.
+
 
 import Foundation
 
@@ -51,6 +51,14 @@ public enum TimeOfDay: String {
             return "12"
         case .afternoon, .everyday:
             return "24"
+        }
+    }
+    
+    public var description: String {
+        switch self {
+        case .morning: "오전 00~12시"
+        case .afternoon: "오후 12~00시"
+        case .everyday: "종일 00~00시"
         }
     }
 }

@@ -1,9 +1,8 @@
 //
 //  WeekDay.swift
-//  DomainMissionInterface
+//  DomainMission
 //
-//  Created by Haeseok Lee on 8/15/24.
-//
+//  Created by 김용재 on 8/12/24.
 
 import Foundation
 
@@ -59,5 +58,17 @@ public enum WeekDay: String, CaseIterable {
     public static var today: Self {
         let weekdayIndex = Calendar.current.component(.weekday, from: Date.now)
         return WeekDay.allCases[weekdayIndex - 1]
+    }
+
+    public var koreanName: String {
+        switch self {
+        case .monday: return "월"
+        case .tuesday: return "화"
+        case .wednesday: return "수"
+        case .thursday: return "목"
+        case .friday: return "금"
+        case .saturday: return "토"
+        case .sunday: return "일"
+        }
     }
 }

@@ -11,7 +11,6 @@ import DomainUserInterface
 import CoreNetworkInterface
 
 import ComposableArchitecture
-import Alamofire
 
 extension UserClient: DependencyKey {
     public static let liveValue: Self = {

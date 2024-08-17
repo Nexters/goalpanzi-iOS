@@ -46,7 +46,7 @@ let project = Project.makeModule(
                 bundleId: Project.Environment.bundlePrefix,
                 infoPlist: .extendingDefault(
                     with: [
-                        "BASE_URL": "http://223.130.130.31:8080/",
+                        "BASE_URL": "https://mission-mate.kro.kr/",
                         "CFBundleShortVersionString": "1.0",
                         "CFBundleVersion": "1",
                         "CFBundleName": "MissionMate",

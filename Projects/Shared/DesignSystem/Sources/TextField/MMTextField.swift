@@ -24,6 +24,7 @@ public struct MMTextField: View {
     public var body: some View {
         VStack(alignment: .leading) {
             TextField(placeholder, text: $text)
+                .disableAutoFunctions()
                 .font(.pretendard(kind: .body_lg, type: .medium))
                 .padding(.leading, 10)
                 .frame(height: 60)

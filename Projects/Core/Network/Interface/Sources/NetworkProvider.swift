@@ -37,6 +37,7 @@ public struct NetworkProvider: NetworkProviderType {
             }
         }
         #endif
+        
         return try await dataTask.value
     }
     
