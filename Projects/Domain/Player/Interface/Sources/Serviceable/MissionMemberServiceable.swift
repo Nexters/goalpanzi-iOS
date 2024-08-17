@@ -16,7 +16,7 @@ public protocol MissionMemberServiceable {
 
 public struct MyMissionInfo {
     
-    public struct Pofile {
+    public struct Profile {
         public let nickname: String
         public let characterType: String
         
@@ -35,11 +35,11 @@ public struct MyMissionInfo {
         }
     }
     
-    public let profile: Pofile
+    public let profile: Profile
     
     public let missions: [MissionInfo]
     
-    public init(profile: Pofile, missions: [MissionInfo]) {
+    public init(profile: Profile, missions: [MissionInfo]) {
         self.profile = profile
         self.missions = missions
     }
