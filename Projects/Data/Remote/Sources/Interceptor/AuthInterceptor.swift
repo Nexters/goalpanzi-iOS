@@ -24,7 +24,7 @@ final class AuthInterceptor: NetworkRequestInterceptor {
             path: "api/auth/token:reissue", httpMethod: .post, bodyParameters: TokenReissueRequestDTO(refreshToken: refreshToken))
         Task {
             do {
-                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: nil)
+                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: NetworkRequestInterceptor())
 
                 KeychainProvider.shared.save(response.accessToken, key: .accessToken)
                 KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
