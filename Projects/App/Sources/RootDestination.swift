@@ -8,9 +8,15 @@
 import Foundation
 import ComposableArchitecture
 import FeatureLoginInterface
+import FeaturePieceCreationInterface
+import FeatureHomeInterface
+import FeatureEntranceInterface
 
 
 @Reducer
 enum RootDestination {
     case login(LoginFeature)
+    case profileCreation(PieceCreationFeature)
+    case entrance(EntranceFeature)
+    case home(HomeFeature)
 }

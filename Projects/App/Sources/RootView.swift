@@ -9,6 +9,9 @@ import Foundation
 import SwiftUI
 import ComposableArchitecture
 import FeatureLoginInterface
+import FeatureEntranceInterface
+import FeaturePieceCreationInterface
+import FeatureHomeInterface
 import SharedDesignSystem
 
 struct RootView: View {
@@ -19,28 +22,50 @@ struct RootView: View {
         self.store = store
     }
     
+    @ViewBuilder
     var body: some View {
         Group {
-            switch store.state.destination {
-            case .login:
-                if let store = store.scope(state: \.destination?.login, action: \.destination.login) {
-                    NavigationStack(
-                        path: $store.scope(state: \.path, action: \.path)
-                    ) {
-                        LoginView(store: store)
-                    } destination: { store in
-                        switch store.case {
-                        case let .login(store):
-                            LoginView(store: store)
-                        }
-                    }
+            NavigationStack(
+                path: $store.scope(state: \.path, action: \.path)
+            ) {
+                rootView
+            } destination: { store in
+                switch store.case {
+                case let .login(store):
+                    LoginView(store: store)
                 }
-            case .none:
-                EmptyView()
             }
         }
         .task {
-            store.send(.didLoad)
+            await store.send(.didLoad).finish()
+        }
+    }
+    
+    @ViewBuilder
+    var rootView: some View {
+        switch store.state.destination {
+        case .login:
+            if let store = store.scope(state: \.destination?.login, action: \.destination.login) {
+                LoginView(store: store)
+            }
+            
+        case .profileCreation:
+            if let store = store.scope(state: \.destination?.profileCreation, action: \.destination.profileCreation) {
+                PieceCreationView(store: store)
+            }
+            
+        case .entrance:
+            if let store = store.scope(state: \.destination?.entrance, action: \.destination.entrance) {
+                EntranceView(store: store)
+            }
+            
+        case .home:
+            if let store = store.scope(state: \.destination?.home, action: \.destination.home) {
+                HomeView(store: store)
+            }
+            
+        case .none:
+            EmptyView()
         }
     }
 }

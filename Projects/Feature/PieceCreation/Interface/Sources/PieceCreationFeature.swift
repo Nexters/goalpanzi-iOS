@@ -39,6 +39,11 @@ public struct PieceCreationFeature: Reducer {
         case saveButtonTapped
         
         case createProfileResponse(Result<Void, Error>)
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didCreateProfile
     }
     
     @Dependency(UserClient.self) var userClient
@@ -67,8 +72,7 @@ public struct PieceCreationFeature: Reducer {
                     ))
                 }
             case .createProfileResponse(.success(_)):
-                print("프로필 생성 완료!")
-                return .none
+                return .send(.delegate(.didCreateProfile))
             case .createProfileResponse(.failure(let error)):
                 guard let error = error as? UserClientError else { return .none }
                 switch error {

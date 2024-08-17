@@ -9,7 +9,7 @@ import Foundation
 
 import CoreNetworkInterface
 import CoreKeychainInterface
-
+import SharedUtilInterface
 import Alamofire
 
 final class AuthInterceptor: NetworkRequestInterceptor {
@@ -31,8 +31,8 @@ final class AuthInterceptor: NetworkRequestInterceptor {
 
                 completion(.retry)
             } catch {
-                // TODO: 다시 로그인할 수 있도록 화면 이동
                 self.deleteAllTokens()
+                NotificationCenter.default.post(name: .didFailTokenRefreshing, object: nil, userInfo: nil)
                 completion(.doNotRetryWithError(error))
             }
         }

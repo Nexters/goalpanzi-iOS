@@ -88,9 +88,7 @@ public struct MissionAuthTimeSettingFeature: Reducer {
                   await self.dismiss()
                 }
             case .missionCreationCompleted(.presented(.delegate(.didStartButtonTapped))):
-                return .run { send in
-                    await send(.startMission)
-                }
+                return .send(.startMission)
             case .startMission:
                 return .none
             case .missionCreationCompleted(.dismiss):

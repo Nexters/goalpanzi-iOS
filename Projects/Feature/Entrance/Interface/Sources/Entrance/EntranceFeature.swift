@@ -41,6 +41,11 @@ public struct EntranceFeature: Reducer {
 
         case createMissionButtonTapped
         case enterInvitationCodeButtonTapped
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didCreateMission
     }
     
     public var body: some ReducerOf<Self> {
@@ -61,14 +66,14 @@ public struct EntranceFeature: Reducer {
                     state.path.append(.missionAuthTimeSetting(MissionAuthTimeSettingFeature.State(missionCreationData: state.$missionCreationData)))
                     return .none
                 case .element(id: _, action: .missionAuthTimeSetting(.startMission)):
-                    print(state.missionCreationData)
-                    return .none
+                    return .send(.delegate(.didCreateMission))
                 case .element(id: _, action: .missionInputInviationCode(.startMission)):
-                    print("Move to Board")
-                    return .none
+                    return .send(.delegate(.didCreateMission))
                 default:
                     return .none
                 }
+            case .delegate:
+                return .none
             }
         }
         .forEach(\.path, action: \.path)
