@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SharedUtilInterface
 import Alamofire
 
 public protocol NetworkProviderType {

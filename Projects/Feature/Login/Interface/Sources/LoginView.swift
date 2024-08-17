@@ -19,27 +19,55 @@ public struct LoginView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-
-            Rectangle()
-                .fill(Color.blue)
-                .frame(width: 342, height: 342)
-
-            Spacer()
-
-            VStack(spacing: 8) {
-                SocialLoginButton() {
-                    store.send(.appleLoginButtonTapped)
+        GeometryReader { geometry in
+            
+            VStack(spacing: 0) {
+                Spacer()
+                
+                Image(uiImage:SharedDesignSystemAsset.Images.missionmateLogo.image)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+                
+                Spacer()
+                    .frame(maxHeight: 48)
+                
+                Image(uiImage:SharedDesignSystemAsset.Images.loginMissionmateTitle.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: geometry.size.height * 0.13)
+                
+                Spacer()
+                    .frame(maxHeight: 30)
+                
+                VStack(spacing: 0) {
+                    
+                    Image(uiImage:SharedDesignSystemAsset.Images.basicRabbitWithoutShadow.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: geometry.size.height * 0.26)
+                    
+                    SocialLoginButton() {
+                        store.send(.appleLoginButtonTapped)
+                    }
+                    .padding(.top, -45)
+                    .padding(.bottom, 16)
+                    
+                    Text("소셜 계정으로 간편 기입하기")
+                        .font(.pretendard(size: 14, type: .light))
+                        .foregroundStyle(Color.mmWhite)
                 }
-                Text("소셜 계정으로 간편 기입하기")
-                    .font(.system(size: 12, weight: .regular)) // DesignSystem 결정되면 바꿀 예정
-                    .foregroundStyle(.gray)
+                .padding(.horizontal, 24)
+                
+                Image(uiImage:SharedDesignSystemAsset.Images.loginBackground.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: .infinity)
+                    .layoutPriority(1)
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 203)
         }
-        .background(SharedDesignSystemAsset.Colors.lightBlue.swiftUIColor)
+        .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+        .frame(width: .infinity)
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
@@ -60,13 +88,13 @@ struct SocialLoginButton: View {
                 }
                 
                 Text("Apple로 로그인")
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.black)
+                    .font(.pretendard(size: 16, type: .bold))
+                    .foregroundStyle(Color.mmBlack)
             }
         }
-        .padding(.vertical, 24)
         .padding(.horizontal, 12)
-        .frame(maxWidth: .infinity, maxHeight: 60)
+        .frame(maxWidth: .infinity)
+        .frame(height: 60)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 30))
     }
