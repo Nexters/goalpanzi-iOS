@@ -16,27 +16,19 @@ extension MissionService: DependencyKey {
     
     public static let liveValue: MissionService = {
         
-        let jsonDecoder: JSONDecoder = {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(.serverTimeFormatter)
-            return decoder
-        }()
-        
         let authIntercepter = AuthInterceptor()
         
         return Self(
             getMissions: { missionID in
                 let endPoint = Endpoint<GetMissionResponseDTO>(
                     path: "api/missions/\(missionID)",
-                    httpMethod: .get,
-                    queryParameters: EmptyRequest()
+                    httpMethod: .get
                 )
                 
                 do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
                     return response.toDomain
                 } catch {
-                    print(error)
                     throw NSError()
                 }
             },
@@ -48,7 +40,7 @@ extension MissionService: DependencyKey {
                 )
                 
                 do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
                     return response.toDomain
                 } catch {
                     throw NSError()

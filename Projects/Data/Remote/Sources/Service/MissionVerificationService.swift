@@ -17,12 +17,6 @@ extension MissionVerificationService: DependencyKey {
     
     public static let liveValue: MissionVerificationService = {
         
-        let jsonDecoder: JSONDecoder = {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(.serverTimeFormatter)
-            return decoder
-        }()
-        
         let authIntercepter = AuthInterceptor()
         
         return Self(
@@ -42,7 +36,7 @@ extension MissionVerificationService: DependencyKey {
                         queryParameters: GetVerificationsRequestDTO(date: ISO8601DateFormatter.string(from: date, timeZone: .current))
                     )
                     
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
                     return response.toDomain
                 } catch {
                     throw NSError()
@@ -55,7 +49,7 @@ extension MissionVerificationService: DependencyKey {
                         httpMethod: .get,
                         queryParameters: EmptyRequest()
                     )
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, decoder: jsonDecoder, interceptor: authIntercepter)
+                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
                     return response.toDomain
                 } catch {
                     throw NSError()

@@ -17,7 +17,7 @@ public protocol NetworkProviderType {
 
 public extension NetworkProviderType {
     
-    func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, decoder: JSONDecoder = .init(), interceptor: NetworkRequestInterceptor?) async throws -> T where N.Response == T {
+    func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, decoder: JSONDecoder = .jsonDecoder, interceptor: NetworkRequestInterceptor?) async throws -> T where N.Response == T {
         try await sendRequest(endpoint, decoder: decoder, interceptor: interceptor)
     }
     

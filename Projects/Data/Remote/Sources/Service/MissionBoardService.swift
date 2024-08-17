@@ -20,8 +20,7 @@ extension MissionBoardService: DependencyKey {
 
                 let endPoint = Endpoint<GetMissionBoardResponseDTO>(
                     path: "api/missions/\(missionID)/board",
-                    httpMethod: .get,
-                    queryParameters: EmptyRequest()
+                    httpMethod: .get
                 )
                 
                 do {
