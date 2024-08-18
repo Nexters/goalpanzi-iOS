@@ -49,7 +49,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         case backButtonTapped
         case startMission
         
-        case fetchMissionResponse(Result<Mission, Error>)
+        case checkJoinableMissionResponse(Result<Mission, Error>)
         
         // MARK: Child Action
         case destination(PresentationAction<Destination.Action>)
@@ -77,21 +77,21 @@ public struct MissionInvitationCodeFeature: Reducer {
             case .confirmButtonTapped:
                 let invitationCode = state.firstInputCode + state.secondInputCode + state.thirdInputCode + state.fourthInputCode
                 return .run { send in
-                    await send(.fetchMissionResponse(
+                    await send(.checkJoinableMissionResponse(
                         Result {
-                            try await self.missionClient.fetchMissionInfo(
+                            try await self.missionClient.checkJoinableMission(
                                 missionService,
                                 invitationCode
                             )
                         }
                     ))
                 }
-            
-            case let .fetchMissionResponse(.success(response)):
+            case let .checkJoinableMissionResponse(.success(response)):
                 state.destination = .invitationConfirm(InvitationConfirmFeature.State(mission: response))
                 return .none
                  
-            case .fetchMissionResponse(.failure):
+            case let .checkJoinableMissionResponse(.failure(error)):
+                print(error)
                 state.isInvalid = true
                 return .none
                 

@@ -24,13 +24,11 @@ public struct MissionService: MissionServiceable {
         _ authenticationDays: Int
     ) async throws -> (MissionID, InvitationCode)
     
-    public var fetchMissionInfo: @Sendable (
-        _ invitationCode: String
-    ) async throws -> Mission
+    public var fetchMissionInfo: @Sendable (_ invitationCode: String) async throws -> Mission
     
-    public var joinCompetition: @Sendable (
-        _ invitationCode: String
-    ) async throws -> Void
+    public var joinCompetition: @Sendable (_ invitationCode: String) async throws -> Void
+    
+    public var checkJoinableMission: @Sendable (_ invitationCode: String) async throws -> Mission
     
     public init(
         getMissions: @escaping @Sendable (Int) async throws -> Mission,
@@ -44,18 +42,15 @@ public struct MissionService: MissionServiceable {
             _ authenticationDays: Int
         ) async throws -> (MissionID, InvitationCode),
         
-        fetchMissionInfo: @escaping @Sendable (
-            _ invitationCode: String
-        ) async throws -> Mission,
-        
-        joinCompetition: @escaping @Sendable (
-            _ invitationCode: String
-        ) async throws -> Void
+        fetchMissionInfo: @escaping @Sendable (_ invitationCode: String) async throws -> Mission,
+        joinCompetition: @escaping @Sendable (_ invitationCode: String) async throws -> Void,
+        checkJoinableMission: @escaping @Sendable (_ invitationCode: String) async throws -> Mission
     ) {
         self.getMissions = getMissions
         self.deleteMissions = deleteMissions
         self.createMission = createMission
         self.fetchMissionInfo = fetchMissionInfo
         self.joinCompetition = joinCompetition
+        self.checkJoinableMission = checkJoinableMission
     }
 }

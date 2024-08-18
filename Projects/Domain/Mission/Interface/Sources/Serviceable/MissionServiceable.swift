@@ -22,12 +22,9 @@ public protocol MissionServiceable {
         _ authenticationDays: Int
     ) async throws -> (MissionID, InvitationCode) { get }
     
-    var fetchMissionInfo: @Sendable (
-        _ invitationCode: String
-    ) async throws -> Mission { get }
+    var fetchMissionInfo: @Sendable (_ invitationCode: String) async throws -> Mission { get }
     
-    var joinCompetition: @Sendable (
-        _ inviationCode: String
-    ) async throws -> Void { get }
+    var joinCompetition: @Sendable (_ inviationCode: String) async throws -> Void { get }
     
+    var checkJoinableMission: @Sendable (_ invitationCode: String) async throws -> Mission { get }
 }

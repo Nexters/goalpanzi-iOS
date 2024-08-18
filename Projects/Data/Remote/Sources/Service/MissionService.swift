@@ -88,6 +88,15 @@ extension MissionService: DependencyKey {
                 )
                 
                 _ = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+            },
+            
+            checkJoinableMission: { invitationCode in
+                let requestDTO = CheckJoinableMissionRequestDTO(invitationCode: invitationCode)
+                let endPoint = Endpoint<CheckJoinableMissionResponseDTO>(
+                    path: "api/mission:joinable", httpMethod: .get, queryParameters: requestDTO)
+                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                 
+                return response.toDomain
             }
         )
     }()
@@ -149,6 +158,22 @@ extension FetchMissionInfoResponseDTO {
             endDate: endDate,
             timeOfDay: timeOfDay,
             verificationWeekDays: verificationWeekDays,
+            verificationDays: boardCount,
+            invitationCode: invitationCode
+        )
+    }
+}
+
+extension CheckJoinableMissionResponseDTO {
+    var toDomain: Mission {
+        .init(
+            missionId: missionId,
+            hostMemberId: hostMemberId,
+            description: description,
+            startDate: missionStartDate,
+            endDate: missionEndDate,
+            timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
+            verificationWeekDays: missionDays.compactMap { WeekDay(rawValue: $0) },
             verificationDays: boardCount,
             invitationCode: invitationCode
         )
