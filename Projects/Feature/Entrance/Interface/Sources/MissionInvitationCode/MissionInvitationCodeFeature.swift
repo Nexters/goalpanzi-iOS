@@ -100,7 +100,7 @@ public struct MissionInvitationCodeFeature: Reducer {
                   await self.dismiss()
                 }
             case .destination(.presented(.invitationConfirm(.delegate(.didConfirmButtonTapped)))):
-                return .none
+                return .send(.startMission)
             case .startMission:
                 return .none
                 

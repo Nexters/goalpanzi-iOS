@@ -43,12 +43,16 @@ public struct Mission: CustomStringConvertible, Equatable {
         self.invitationCode = invitationCode
     }
     
+    public var sortedVerificationWeekDays: [WeekDay] {
+        verificationWeekDays.sorted(by: { $0.toIndex < $1.toIndex })
+    }
+    
     public var missionPeriodDescription: String {
         "\(DateFormatter.yearMonthDayFormatter.string(from: startDate))~\(DateFormatter.yearMonthDayFormatter.string(from: endDate))"
     }
     
     public var missionWeekDayDescription: String {
-        verificationWeekDays.map { $0.toKorean }.joined(separator: "/")
+        sortedVerificationWeekDays.map { $0.toKorean }.joined(separator: "/")
     }
     
     public var missionTimeDescription: String {

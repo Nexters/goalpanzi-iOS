@@ -56,13 +56,12 @@ public struct ImageUploadFeature {
                 state.isLoading = true
                 return .run { [
                     missionId = state.missionId, 
-                    selectedImage = state.selectedImage,
-                    player = state.player
+                    selectedImage = state.selectedImage
                 ] send in
                     await send(.didFinishImageUpload(
                         Result {
-                            if let data = selectedImage.jpegData(compressionQuality: 0.8) {
-                                return try await verificationService.postVerificationsMe(missionId, "\(player.name)", data)
+                            if let data = selectedImage.jpegData(compressionQuality: 0.5) {
+                                return try await verificationService.postVerificationsMe(missionId, data)
                             }
                         }
                     ))
@@ -74,10 +73,10 @@ public struct ImageUploadFeature {
             case .didFinishImageUpload(.success):
                 state.isLoading = false
                 return .concatenate(
+                    .send(.delegate(.didFinishImageUpload)),
                     .run { _ in
                         await self.dismiss()
-                    },
-                    .send(.delegate(.didFinishImageUpload))
+                    }
                 )
             case .didFinishImageUpload(.failure):
                 state.isLoading = false

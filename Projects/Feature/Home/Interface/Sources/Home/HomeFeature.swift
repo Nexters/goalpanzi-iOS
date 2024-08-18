@@ -65,7 +65,7 @@ public struct HomeFeature {
         case didTapMissionInfoGuideToolTip
         case didTapPlayer(player: Player)
         case didSelectImages([UIImage])
-        case didTapPiece(piece: Piece)
+        case didTapBlock(position: Position)
         case didFinishMoving(piece: Piece?)
         case loadData(missionId: Int)
         case didLoadData(Competition.State)
@@ -75,7 +75,7 @@ public struct HomeFeature {
         case delegate(Delegate)
         
         case didFetchMyMissionInfo(Result<MyMissionInfo, Error>)
-        case didFetchVerificationAndMissionAndBoard(Result<(MissionVerification, Mission, MissionBoard), Error>)
+        case didFetchVerificationAndMissionAndBoard(Result<(MissionVerification, Mission, MissionBoard, MissionRank), Error>)
         case didFetchVerificationInfo(Result<MissionVerification.VerificationInfo, Error>)
         case didFetchRank(Result<MissionRank, Error>)
     }
@@ -114,12 +114,13 @@ public struct HomeFeature {
                             async let mission = try missionService.getMissions(missionId)
                             async let board = try missionBoardService.getBoard(missionId)
                             async let verification = try missionVerificationService.getVerifications(missionId, Date.now)
-                            return try await (verification, mission, board)
+                            async let rank = try missionMemberService.getMissionMembersRank(missionId)
+                            return try await (verification, mission, board, rank)
                         }
                     ))
                 }
             
-            case let .didFetchVerificationAndMissionAndBoard(.success((verification, mission, board))):
+            case let .didFetchVerificationAndMissionAndBoard(.success((verification, mission, board, rank))):
                 state.isLoading = false
                 state.mission = mission
                 let players: [Player] = board.missionBoards.flatMap(\.missionBoardMembers).map {
@@ -132,11 +133,12 @@ public struct HomeFeature {
                     )
                 }
                 let competitionState = mission.competitionState(hasOtherPlayers: players.count > 1)
+                let verifications = verification.missionVerifications.map {
+                    Vertification(id: $0.nickname, playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
+                }
                 var competition = Competition(
-                    players: players, 
-                    verifications: verification.missionVerifications.map {
-                        Vertification(id: $0.nickname, playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
-                    },
+                    players: players,
+                    verifications: verifications,
                     board: Board(
                         theme: JejuIslandBoardTheme(),
                         events: board.missionBoards.map {
@@ -145,10 +147,7 @@ public struct HomeFeature {
                         totalBlockCount: mission.verificationDays,
                         isDisabled: competitionState != .started
                     ),
-                    info: [
-                        .title: "경쟁시작 8월 15일",
-                        .subtitle: "해당일에 자동으로 경쟁 시작합니다."
-                    ],
+                    info: mission.makeInfos(competitionState: competitionState, verificationCount: verifications.filter { $0.isVerified }.count, myRank: rank.rank),
                     state: competitionState
                 )
                 
@@ -156,7 +155,7 @@ public struct HomeFeature {
                     boardInfo.missionBoardMembers.forEach { member in
                         guard let piece = competition.board.findPiece(by: member.nickname) else { return }
                         competition.board.update(piece: piece, to: Position(index: boardInfo.number))
-                        if piece == competition.myPiece {
+                        if piece.id == competition.myPiece?.id {
                             competition.board.update(conqueredPosition: Position(index: boardInfo.number))
                         }
                     }
@@ -165,7 +164,7 @@ public struct HomeFeature {
                 competition.moveMeToFront()
                 
                 state.competition = competition
-                state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.me?.isCertificated == true, mission: mission)
+                state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
                 return .send(.didLoadData(competitionState))
                 
             case let .didLoadData(competitionState):
@@ -203,8 +202,8 @@ public struct HomeFeature {
                 return .none
                 
             case let .didTapPlayer(player):
-                guard player.isCertificated, let certification = state.competition?.findVerification(by: player.id) else { return .none }
-                state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: certification.verifiedAt ?? Date.now, imageURL: certification.imageURL))
+                guard let verification = state.competition?.findVerification(by: player.id), verification.isVerified else { return .none }
+                state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: verification.verifiedAt ?? Date.now, imageURL: verification.imageURL))
                 return .none
                 
             case let .didSelectImages(images):
@@ -212,12 +211,11 @@ public struct HomeFeature {
                 state.destination = .imageUpload(ImageUploadFeature.State(missionId: missionId, player: me, selectedImage: image))
                 return .none
                 
-            case let .didTapPiece(piece):
-                guard piece == state.competition?.myPiece else { return .none }
+            case let .didTapBlock(position):
                 state.isLoading = true
                 return .run { [mission = state.mission] send in
                     await send(.didFetchVerificationInfo(
-                        Result { try await missionVerificationService.getVerificationsMe(mission?.missionId ?? 0, piece.position.index) }
+                        Result { try await missionVerificationService.getVerificationsMe(mission?.missionId ?? 0, position.index) }
                     ))
                 }
                 
@@ -336,7 +334,7 @@ public extension HomeFeature {
         case true:
             return .init(
                 isEnabled: false,
-                info: "미션 요일: \(mission.verificationWeekDays.map { $0.toKorean }.joined(separator: " "))",
+                info: "미션 요일: \(mission.sortedVerificationWeekDays.map { $0.toKorean }.joined(separator: " "))",
                 title: "오늘 미션 인증 완료!"
             )
         case false:

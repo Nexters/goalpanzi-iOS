@@ -48,10 +48,10 @@ public struct VerificationResultFeature {
             switch action {
             case .didTapCloseButton:
                 return .concatenate(
+                    .send(.delegate(.didTapCloseButton)),
                     .run { _ in
                         await self.dismiss()
-                    },
-                    .send(.delegate(.didTapCloseButton))
+                    }
                 )
             case .delegate:
                 return .none

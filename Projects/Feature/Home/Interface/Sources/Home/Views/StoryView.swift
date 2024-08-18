@@ -16,7 +16,7 @@ struct StoryView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 15) {
                 ForEach(store.competition?.players ?? []) { player in
-                    PlayerView(player: player, store: store)
+                    PlayerView(player: player, verification: store.competition?.findVerification(by: player.id), store: store)
                 }
             }
             .padding(.top, 10)

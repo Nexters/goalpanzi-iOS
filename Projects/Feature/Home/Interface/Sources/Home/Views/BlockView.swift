@@ -14,6 +14,7 @@ import DomainPlayerInterface
 
 struct BlockView: View {
     
+    let store: StoreOf<HomeFeature>
     let block: Block?
     let event: DomainBoardInterface.Event?
     let representativePiece: Piece?
@@ -168,7 +169,9 @@ struct BlockView: View {
                 }
             }
         }
-        
+        .onTapGesture {
+            store.send(.didTapBlock(position: block?.position ?? .zero))
+        }
     }
     
     func calcNextPoint(reader: GeometryProxy, movingDirection direction: DomainBoardInterface.Direction?) -> CGPoint {

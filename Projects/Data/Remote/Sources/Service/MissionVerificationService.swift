@@ -20,9 +20,9 @@ extension MissionVerificationService: DependencyKey {
         let authIntercepter = AuthInterceptor()
         
         return Self(
-            postVerificationsMe: { missionID, imageName, imageJPEGData in
+            postVerificationsMe: { missionID, imageJPEGData in
                 do {
-                    let _ = try await NetworkProvider.shared.upload(url: "api/missions/\(missionID)/verifications/me", imageName: imageName, imageJPEGData: imageJPEGData, interceptor: authIntercepter)
+                    let result = try await NetworkProvider.shared.upload(url: "api/missions/\(missionID)/verifications/me", imageJPEGData: imageJPEGData, interceptor: authIntercepter)
                     return
                 } catch {
                     throw NSError()

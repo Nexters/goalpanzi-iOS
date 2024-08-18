@@ -13,7 +13,7 @@ public protocol NetworkProviderType {
     
     func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, decoder: JSONDecoder, interceptor: NetworkRequestInterceptor?) async throws -> T where N.Response == T
     
-    func upload(url: String, imageName: String, imageJPEGData: Data, interceptor: NetworkRequestInterceptor?) async throws -> Empty
+    func upload(url: String, imageJPEGData: Data, interceptor: NetworkRequestInterceptor?) async throws -> String
 }
 
 public extension NetworkProviderType {

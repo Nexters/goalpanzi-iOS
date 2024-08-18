@@ -46,6 +46,11 @@ public struct Competition {
         return board.findPiece(by: me.pieceID)
     }
     
+    public var isMeVerified: Bool {
+        guard let me else { return false }
+        return findVerification(by: me.id)?.isVerified == true
+    }
+    
     public func findVerification(by playerID: PlayerID) -> Vertification? {
         return verifications.first(where: { $0.playerID == playerID })
     }
@@ -123,5 +128,22 @@ public extension Mission {
             return .notStarted(hasOtherPlayer: true)
         }
         return .disabled
+    }
+    
+    func makeInfos(competitionState state: Competition.State, verificationCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
+        switch state {
+        case .notStarted, .disabled, .finished:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "경쟁시작 M월 d일"
+            return [
+                .title: formatter.string(from: startDate),
+                .subtitle: "해당일에 자동으로 경쟁이 시작돼요."
+            ]
+        case .started:
+            return [
+                .title: "오늘 \(verificationCount)명이 1칸 이동",
+                .subtitle: "나의 꾸준함 순위는? \(myRank)등"
+            ]
+        }
     }
 }
