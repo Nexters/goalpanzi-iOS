@@ -37,25 +37,21 @@ public struct MissionInfoFeature {
         case missionDelete(MissionDeleteFeature)
     }
     
-    
     public enum Action {
-        case didTapCloseButton
+        case didTapBackButton
         case didTapDeleteButton
-        case error(Error)
         case destination(PresentationAction<Destination.Action>)
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .didTapCloseButton:
+            case .didTapBackButton:
                 return .run { _ in
                     await self.dismiss()
                 }
             case .didTapDeleteButton:
                 state.destination = .missionDelete(MissionDeleteFeature.State(missionId: state.missionId))
-                return .none
-            case .error:
                 return .none
             case .destination:
                 return .none

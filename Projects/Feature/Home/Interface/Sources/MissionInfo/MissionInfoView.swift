@@ -98,7 +98,7 @@ public struct MissionInfoView: View {
     
     var backButton: some View {
         Button {
-            store.send(.didTapCloseButton)
+            store.send(.didTapBackButton)
         } label: {
             SharedDesignSystemAsset.Images.arrow.swiftUIImage
                 .resizable()

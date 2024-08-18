@@ -8,12 +8,15 @@
 import SwiftUI
 import SharedUtil
 import SharedDesignSystem
+import DomainCompetitionInterface
 import DomainPlayerInterface
 import ComposableArchitecture
 
 struct PlayerView: View {
     
     let player: Player
+    
+    let verification: Vertification?
     
     let store: StoreOf<HomeFeature>
     
@@ -24,7 +27,7 @@ struct PlayerView: View {
                 Button(action: {
                     store.send(.didTapPlayer(player: player))
                 }) {
-                    if player.isCertificated {
+                    if verification?.isVerified == true {
                         player.character.roundHighlightedImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)

@@ -41,16 +41,13 @@ public struct NetworkProvider: NetworkProviderType {
         return try await dataTask.value
     }
     
-    public func upload(url: String, imageName: String, imageJPEGData: Data, interceptor: NetworkRequestInterceptor? = nil) async throws -> Empty {
+    public func upload(url: String, imageJPEGData: Data, interceptor: NetworkRequestInterceptor? = nil) async throws -> String {
         guard let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as? String else {
             throw NSError()
         }
         return try await AF.upload(
             multipartFormData: { multipart in
-                multipart.append(imageJPEGData, withName: "photo", fileName: "\(imageName).jpg", mimeType: "image/jpeg")
-                if let value = "\(imageName).jpg".data(using: .utf8, allowLossyConversion: false) {
-                    multipart.append(value, withName: "imageFile")
-                }
+                multipart.append(imageJPEGData, withName: "imageFile", fileName: "imageFile.jpg", mimeType: "image/*")
             },
             to: baseURL + url,
             method: .post,
@@ -62,7 +59,7 @@ public struct NetworkProvider: NetworkProviderType {
                 print(progress)
             #endif
         }
-        .serializingDecodable(Empty.self, emptyResponseCodes: [200])
+        .serializingResponse(using: .string)
         .value
     }
 

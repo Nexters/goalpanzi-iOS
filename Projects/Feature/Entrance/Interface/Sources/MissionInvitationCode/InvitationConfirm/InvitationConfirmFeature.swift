@@ -34,7 +34,7 @@ public struct InvitationConfirmFeature: Reducer {
             self.authenticationDays = "\(mission.verificationDays)"
             self.missionTitle = mission.description
             self.missionDuration = mission.startDate.formattedString(dateFormat: .yearMonthDate) + "~" + mission.endDate.formattedString(dateFormat: .yearMonthDate)
-            self.missionWeekDay = mission.verificationWeekDays.map { $0.koreanName }.joined(separator: "/")
+            self.missionWeekDay = mission.sortedVerificationWeekDays.map { $0.koreanName }.joined(separator: "/")
             self.missionTimeOfDay = mission.timeOfDay.description
             self.invitationCode = mission.invitationCode
         }

@@ -33,6 +33,7 @@ struct BoardView: View {
                         let index = col + (row * numberOfColumns)
                         let position = Position(index: index)
                         BlockView(
+                            store: store,
                             block: store.competition?.board.findBlock(by: position),
                             event: store.competition?.board.findEvent(by: position),
                             representativePiece: store.competition?.representativePiece(by: position),

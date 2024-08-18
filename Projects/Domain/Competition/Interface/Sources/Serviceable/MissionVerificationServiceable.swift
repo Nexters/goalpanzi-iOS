@@ -9,7 +9,7 @@ import Foundation
 
 public protocol MissionVerificationServiceable {
     
-    var postVerificationsMe: @Sendable (_ missionID: Int, _ imageName: String, _ imageJPEGData: Data) async throws -> Void { get }
+    var postVerificationsMe: @Sendable (_ missionID: Int, _ imageJPEGData: Data) async throws -> Void { get }
     
     var getVerifications: @Sendable (_ missionID: Int, _ date: Date) async throws -> MissionVerification { get }
     
