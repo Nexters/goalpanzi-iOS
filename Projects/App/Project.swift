@@ -18,9 +18,8 @@ let targets: [Target] = [
                         "UIApplicationSupportsMultipleScenes": false,
                         "UISceneConfigurations": []
                     ],
-                    "NSAppTransportSecurity": [
-                        "NSAllowsArbitraryLoads": true
-                    ]
+                    "UIUserInterfaceStyle": "Light",
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
                 ]),
             entitlements: "MissionMate.entitlements",
             dependencies: [
