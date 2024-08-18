@@ -78,6 +78,8 @@ public struct UpdateProfileView: View {
                         
                         Spacer()
                         
+                        Spacer()
+                        
                         MMRoundedButton(isEnabled: $store.isAllCompleted, title: "저장하기") {
                             store.send(.saveButtonTapped)
                         }

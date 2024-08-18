@@ -56,7 +56,6 @@ public struct UpdateProfileFeature: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .onAppear:
-                return .none
                 return .run { send in
                     await send(.checkProfileResponse(
                         Result { try await self.userClient.checkProfile(userService) }
