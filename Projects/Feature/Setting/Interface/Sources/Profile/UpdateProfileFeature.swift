@@ -83,7 +83,6 @@ public struct UpdateProfileFeature: Reducer {
             case .checkProfileResponse(.failure(let error)):
                 print("🚨 에러 발생!! \(error)")
                 return .none
-                
             // MARK: 프로필 업데이트
             case .saveButtonTapped:
                 let nickName = state.nickName

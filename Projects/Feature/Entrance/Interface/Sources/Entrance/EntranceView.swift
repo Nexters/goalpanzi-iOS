@@ -14,13 +14,13 @@ import SharedDesignSystem
 import ComposableArchitecture
 
 public struct EntranceView: View {
-
+    
     @Bindable public var store: StoreOf<EntranceFeature>
-
+    
     public init(store: StoreOf<EntranceFeature>) {
         self.store = store
     }
-
+    
     public var body: some View {
         NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
             ZStack {
@@ -64,10 +64,13 @@ public struct EntranceView: View {
                         Image(uiImage: SharedDesignSystemAsset.Images.emptyJejuIslandBackground.image)
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 350, height: 228)
-                        // TODO: 추후에 Input으로 받을 예정
-                        Image(uiImage: Character.rabbit.basicImage.image)
-                            .resizable()
-                            .frame(width: 212, height: 212)
+                        if store.isCheckingProfile {
+                            ProgressView()
+                        } else {
+                            Image(uiImage: Character.rabbit.basicImage.image)
+                                .resizable()
+                                .frame(width: 212, height: 212)
+                        }
                     }
                     
                     Spacer()
@@ -107,8 +110,13 @@ public struct EntranceView: View {
                 SettingView(store: store)
             }
         }
+        .task {
+            await store
+                .send(.onAppear)
+                .finish()
+        }
     }
-
+    
     private func entranceSelectionButton(
         title: String,
         description: String,
@@ -138,7 +146,7 @@ public struct EntranceView: View {
                                 .frame(width: 40, height: 40)
                         }
                     }
-                    .padding(20)
+                .padding(20)
                 )
         }
     }
