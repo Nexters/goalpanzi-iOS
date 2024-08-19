@@ -147,7 +147,7 @@ public struct HomeFeature {
                         totalBlockCount: mission.verificationDays,
                         isDisabled: competitionState != .started
                     ),
-                    info: mission.makeInfos(competitionState: competitionState, verificationCount: verifications.filter { $0.isVerified }.count, myRank: rank.rank),
+                    info: mission.makeInfos(competitionState: competitionState, progressCount: board.progressCount, myRank: rank.rank),
                     state: competitionState
                 )
                 
@@ -330,18 +330,19 @@ public extension HomeFeature {
     }
     
     func makeCTAButtonState(isMeCertificated: Bool, mission: Mission) -> CTAButtonState {
+        let info = "\(mission.sortedVerificationWeekDays.map { $0.toKorean }.joined(separator: " ")) | \(mission.missionTimeDescription)"
         switch isMeCertificated {
         case true:
             return .init(
                 isEnabled: false,
-                info: "미션 요일: \(mission.sortedVerificationWeekDays.map { $0.toKorean }.joined(separator: " "))",
+                info: info,
                 title: "오늘 미션 인증 완료!"
             )
         case false:
             return .init(
                 isEnabled: mission.checkIsMissionTime,
-                info: "\(mission.timeOfDay.toKorean) 미션 인증은 \(mission.timeOfDay.endTime)시까지에요",
-                title: mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감"
+                info: info,
+                title: mission.checkIsMissionDay ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") : "오늘은 미션일이 아니에요"
             )
         }
     }

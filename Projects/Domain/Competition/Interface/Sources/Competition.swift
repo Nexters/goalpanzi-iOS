@@ -130,7 +130,7 @@ public extension Mission {
         return .disabled
     }
     
-    func makeInfos(competitionState state: Competition.State, verificationCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
+    func makeInfos(competitionState state: Competition.State, progressCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
         switch state {
         case .notStarted, .disabled, .finished:
             let formatter = DateFormatter()
@@ -140,8 +140,14 @@ public extension Mission {
                 .subtitle: "해당일에 자동으로 경쟁이 시작돼요."
             ]
         case .started:
+            if !checkIsMissionDay || !checkIsMissionTime {
+                return [
+                    .title: "꾸준하게 완수해봐요!",
+                    .subtitle: "나의 꾸준함 순위는? \(myRank)등"
+                ]
+            }
             return [
-                .title: "오늘 \(verificationCount)명이 1칸 이동",
+                .title: "오늘 \(progressCount)명이 1칸 이동",
                 .subtitle: "나의 꾸준함 순위는? \(myRank)등"
             ]
         }

@@ -59,6 +59,10 @@ public struct Mission: CustomStringConvertible, Equatable {
         [timeOfDay.toKorean, "\(timeOfDay.startTime)~\(timeOfDay.endTime)시"].joined(separator: " ")
     }
     
+    public var checkIsMissionDay: Bool {
+        verificationWeekDays.contains(WeekDay.today)
+    }
+    
     public var checkIsMissionTime: Bool {
         guard verificationWeekDays.contains(WeekDay.today) else { return false }
         switch (timeOfDay, Date.now.isAM) {
