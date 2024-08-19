@@ -127,7 +127,7 @@ public struct MissionInvitationCodeView: View {
                                         if (inputText.count == 0) {
                                             textFieldFocusState = .second
                                         }
-                                        store.secondInputCode = String(inputText.prefix(1))
+                                        store.thirdInputCode = String(inputText.prefix(1))
                                     }
                                 }
                                 .focused($textFieldFocusState, equals: .third)
