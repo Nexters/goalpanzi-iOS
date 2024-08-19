@@ -25,11 +25,13 @@ extension MissionMemberService: DependencyKey {
                     httpMethod: .get
                 )
                 
-                do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
             },
             getMissionMembersRank: { missionId in
@@ -39,11 +41,13 @@ extension MissionMemberService: DependencyKey {
                     queryParameters: GetMissionMemberRankRequestDTO(missionId: missionId)
                 )
                 
-                do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
             }
         )

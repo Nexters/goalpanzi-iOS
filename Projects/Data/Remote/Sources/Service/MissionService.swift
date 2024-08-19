@@ -26,12 +26,16 @@ extension MissionService: DependencyKey {
                     httpMethod: .get
                 )
                 
-                do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
+                
+                
             },
             deleteMissions: { missionID in
                 let endPoint = Endpoint<DeleteMissionResponseDTO>(
@@ -40,11 +44,13 @@ extension MissionService: DependencyKey {
                     queryParameters: EmptyRequest()
                 )
                 
-                do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
             },
             createMission: { missionContent, missionStartTime, missionEndDate, timeOfDay, missionDays, authenticationDays in
@@ -64,18 +70,28 @@ extension MissionService: DependencyKey {
                 let endPoint = Endpoint<CreateMissionResponseDTO>(
                     path: "api/missions", httpMethod: .post, bodyParameters: requestDTO)
                 
-                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
-
-                return response.toDomain
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                switch response {
+                case .success(let response):
+                    return response.toDomain
+                case .failure(let error):
+                    throw error
+                }
             },
             
             fetchMissionInfo: { invitationCode in
                 let requestDTO = FetchMissionInfoRequestDTO(invitationCode: invitationCode)
                 let endPoint = Endpoint<FetchMissionInfoResponseDTO>(
                     path: "api/missions", httpMethod: .get, queryParameters: requestDTO)
-                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
-                 
-                return response.toDomain
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                switch response {
+                case .success(let response):
+                    return response.toDomain
+                case .failure(let error):
+                    throw error
+                }
             },
             
             joinCompetition: { invitationCode in
@@ -87,16 +103,25 @@ extension MissionService: DependencyKey {
                     bodyParameters: requestDTO
                 )
                 
-                _ = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                if case .failure(let failure) = response {
+                    throw failure
+                }
             },
             
             checkJoinableMission: { invitationCode in
                 let requestDTO = CheckJoinableMissionRequestDTO(invitationCode: invitationCode)
                 let endPoint = Endpoint<CheckJoinableMissionResponseDTO>(
                     path: "api/mission:joinable", httpMethod: .get, queryParameters: requestDTO)
-                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
-                 
-                return response.toDomain
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                switch response {
+                case .success(let response):
+                    return response.toDomain
+                case .failure(let error):
+                    throw MissionClientError(rawValue: error.message) ?? NSError()
+                }
             }
         )
     }()

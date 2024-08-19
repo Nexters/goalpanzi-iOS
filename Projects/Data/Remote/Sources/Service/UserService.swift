@@ -29,10 +29,10 @@ extension UserService: DependencyKey {
                     bodyParameters: requestDTO
                 )
                 
-                do {
-                    let _ = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
-                } catch {
-                    throw UserClientError.duplicateNickName
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
+                
+                if case .failure(let failure) = response {
+                    throw failure
                 }
             },
             
@@ -42,10 +42,10 @@ extension UserService: DependencyKey {
                     httpMethod: .delete
                 )
                 
-                do {
-                    let _ = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
-                } catch {
-                    throw UserClientError.deleteProfileFailed
+                let response = await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                
+                if case .failure(let failure) = response {
+                    throw failure
                 }
             },
             
@@ -55,11 +55,13 @@ extension UserService: DependencyKey {
                     httpMethod: .get
                 )
                 
-                do {
-                    let response = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                let response = await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw UserClientError.checkProfileFailed
+                case .failure(let error):
+                    throw error
                 }
             }
         )

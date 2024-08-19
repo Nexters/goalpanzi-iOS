@@ -29,29 +29,33 @@ extension MissionVerificationService: DependencyKey {
                 }
             },
             getVerifications: { missionID, date in
-                do {
-                    let endPoint = Endpoint<GetVerificationsResponseDTO>(
-                        path: "api/missions/\(missionID)/verifications",
-                        httpMethod: .get,
-                        queryParameters: GetVerificationsRequestDTO(date: ISO8601DateFormatter.string(from: date, timeZone: .current))
-                    )
-                    
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                let endPoint = Endpoint<GetVerificationsResponseDTO>(
+                    path: "api/missions/\(missionID)/verifications",
+                    httpMethod: .get,
+                    queryParameters: GetVerificationsRequestDTO(date: ISO8601DateFormatter.string(from: date, timeZone: .current))
+                )
+                
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
             },
             getVerificationsMe: { missionID, number in
-                do {
-                    let endPoint = Endpoint<GetVerificationsMeResponseDTO>(
-                        path: "api/missions/\(missionID)/verifications/me/\(number)",
-                        httpMethod: .get
-                    )
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                let endPoint = Endpoint<GetVerificationsMeResponseDTO>(
+                    path: "api/missions/\(missionID)/verifications/me/\(number)",
+                    httpMethod: .get
+                )
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
             }
         )
