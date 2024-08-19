@@ -48,7 +48,8 @@ extension GetMissionBoardResponseDTO {
                         .init(nickname: $0.nickname, characterType: $0.characterType)
                     }
                 )
-            }
+            },
+            progressCount: progressCount
         )
     }
 }

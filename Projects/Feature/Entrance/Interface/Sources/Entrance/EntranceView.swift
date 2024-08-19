@@ -67,15 +67,16 @@ public struct EntranceView: View {
                         if store.isCheckingProfile {
                             ProgressView()
                         } else {
-                            Image(uiImage: Character.rabbit.basicImage.image)
+                            Image(uiImage: store.userProfileCharacter.basicImage.image)
                                 .resizable()
                                 .frame(width: 212, height: 212)
+                                .offset(y: 20)
                         }
                     }
                     
                     Spacer()
                     
-                    HStack(spacing: 23) {
+                    HStack(spacing: 0) {
                         entranceSelectionButton(
                             title: "미션보드\n생성하기",
                             description: "내 목표는 내가~",
@@ -83,6 +84,8 @@ public struct EntranceView: View {
                         ) {
                             store.send(.createMissionButtonTapped)
                         }
+                        
+                        Spacer()
                         
                         entranceSelectionButton(
                             title: "초대코드\n입력하기",
@@ -92,10 +95,12 @@ public struct EntranceView: View {
                             store.send(.enterInvitationCodeButtonTapped)
                         }
                     }
+                    .padding(.horizontal, 24)
                     Spacer()
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
+            .edgesIgnoringSafeArea(.horizontal)
         } destination: { store in
             switch store.case {
             case let .missionContentSetting(store):
@@ -108,6 +113,11 @@ public struct EntranceView: View {
                 MissionInvitationCodeView(store: store)
             case let .setting(store):
                 SettingView(store: store)
+            }
+        }
+        .overlay {
+            if let store = store.scope(state: \.pieceCreationCompleted, action: \.pieceCreationCompleted.presented) {
+                PieceCreationCompletedView(store: store)
             }
         }
         .task {

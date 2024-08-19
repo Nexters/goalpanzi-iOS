@@ -22,9 +22,9 @@ public struct PieceCreationCompletedFeature: Reducer {
         var nickName: String
         var character: Character
         
-        public init(nickName: String, character: Character) {
-            self.nickName = nickName
-            self.character = character
+        public init(userProfile: UserProfile) {
+            self.nickName = userProfile.nickname
+            self.character = userProfile.character
         }
     }
     
