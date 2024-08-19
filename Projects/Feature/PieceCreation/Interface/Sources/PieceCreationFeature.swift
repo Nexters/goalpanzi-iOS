@@ -74,16 +74,8 @@ public struct PieceCreationFeature: Reducer {
             case .createProfileResponse(.success(_)):
                 return .send(.delegate(.didCreateProfile))
             case .createProfileResponse(.failure(let error)):
-                guard let error = error as? UserClientError else { return .none }
-                switch error {
-                case .duplicateNickName:
-                    state.noticeMessage = "이미 존재하는 회원 닉네임입니다."
-                    state.isValidNickName = false
-                case .networkDisabled:
-                    print("Network 에러")
-                default:
-                    print("에러 발생")
-                }
+                state.noticeMessage = "이미 존재하는 회원 닉네임입니다."
+                state.isValidNickName = false
                 return .none
                 
             default:

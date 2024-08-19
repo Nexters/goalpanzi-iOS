@@ -29,6 +29,9 @@ extension MissionClient: DependencyKey {
             },
             joinCompetition: { missionService, invitationCode in
                 try await missionService.joinCompetition(invitationCode)
+            },
+            checkJoinableMission: { missionService, invitationCode in
+                try await missionService.checkJoinableMission(invitationCode)
             }
         )
     }()

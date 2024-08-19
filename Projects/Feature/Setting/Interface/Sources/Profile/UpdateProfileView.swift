@@ -16,6 +16,7 @@ public struct UpdateProfileView: View {
     
     @Bindable public var store: StoreOf<UpdateProfileFeature>
     @State private var keyboardHeight: CGFloat = 0
+    @State private var showToastMessage = false
     
     public init(store: StoreOf<UpdateProfileFeature>) {
         self.store = store
@@ -75,7 +76,6 @@ public struct UpdateProfileView: View {
                         )
                         .padding(.horizontal, 24)
                         
-                        
                         Spacer()
                         
                         Spacer()
@@ -91,28 +91,59 @@ public struct UpdateProfileView: View {
                     .offset(y: -keyboardHeight)
                 }
                 
-            }
-            
-            VStack(spacing: 0) {
-                MMNavigationBar {
-                    store.send(.backButtonTapped)
+                VStack(spacing: 0) {
+                    MMNavigationBar {
+                        store.send(.backButtonTapped)
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    if store.isCheckingProfile {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
                 }
-                .padding(.horizontal, 24)
                 
-                if store.isCheckingProfile {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
+                if showToastMessage {
+                    VStack {
+                        Spacer()
+                        HStack(alignment: .center, spacing: 10) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("닉네임이 저장되었어요")
+                                .font(.pretendard(size: 14, type: .medium))
+                                .foregroundColor(.white)
+                        }
+                        .frame(width: 203, height: 44)
+                        .background(Color.mmGray2)
+                        .cornerRadius(9)
+                        .padding(.bottom, keyboardHeight + 111)
+                    }
+                    .transition(.opacity)
+                    .zIndex(1)
                 }
             }
         }
         .navigationBarHidden(true)
-        
         .edgesIgnoringSafeArea(.bottom)
         .makeTapToHideKeyboard()
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)
+        .onChange(of: store.isUpdateSucceed, { _, isUpdateSucceed in
+            if isUpdateSucceed {
+                showToastMessage = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        showToastMessage = false
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        store.isUpdateSucceed = false
+                    }
+                }
+            }
+        })
         .task {
             await store
                 .send(.onAppear)
@@ -120,6 +151,7 @@ public struct UpdateProfileView: View {
         }
     }
 }
+
 
 extension UpdateProfileView {
     

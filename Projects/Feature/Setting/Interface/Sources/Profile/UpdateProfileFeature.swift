@@ -26,9 +26,11 @@ public struct UpdateProfileFeature: Reducer {
         var nickName: String = ""
         var noticeMessage: String? = "1~6자, 한글, 영문 또는 숫자를 입력하세요."
         var isValidNickName: Bool = true
-        var isAllCompleted: Bool = false
+        var isAllCompleted: Bool = false // 모든 Input이 알맞게 들어갔는 지 확인
+        var isUpdateSucceed: Bool = false
+        var isCheckingProfile: Bool = true // 앱 초기 진입 시 API 호출
         
-        var isCheckingProfile: Bool = true
+        public init() {}
     }
     
     public enum Action: BindableAction {
@@ -92,7 +94,7 @@ public struct UpdateProfileFeature: Reducer {
                     ))
                 }
             case .updateProfileResponse(.success(_)):
-                print("프로필 변경 완료!")
+                state.isUpdateSucceed = true
                 return .none
             case .updateProfileResponse(.failure(let error)):
                 guard let error = error as? UserClientError else { return .none }

@@ -23,14 +23,16 @@ final class AuthInterceptor: NetworkRequestInterceptor {
         let endPoint = Endpoint<TokenReissueResponseDTO>(
             path: "api/auth/token:reissue", httpMethod: .post, bodyParameters: TokenReissueRequestDTO(refreshToken: refreshToken))
         Task {
-            do {
-                let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: NetworkRequestInterceptor())
-
+            let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: NetworkRequestInterceptor())
+            
+            switch response {
+                
+            case .success(let response):
                 KeychainProvider.shared.save(response.accessToken, key: .accessToken)
                 KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
-
                 completion(.retry)
-            } catch {
+
+            case .failure(let error):
                 self.deleteAllTokens()
                 NotificationCenter.default.post(name: .didFailTokenRefreshing, object: nil, userInfo: nil)
                 completion(.doNotRetryWithError(error))

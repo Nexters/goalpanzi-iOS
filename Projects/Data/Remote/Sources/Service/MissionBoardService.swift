@@ -23,11 +23,13 @@ extension MissionBoardService: DependencyKey {
                     httpMethod: .get
                 )
                 
-                do {
-                    let response = try await NetworkProvider.shared.sendRequest(endPoint, interceptor: AuthInterceptor())
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: AuthInterceptor())
+                
+                switch response {
+                case .success(let response):
                     return response.toDomain
-                } catch {
-                    throw NSError()
+                case .failure(let error):
+                    throw error
                 }
             }
         )

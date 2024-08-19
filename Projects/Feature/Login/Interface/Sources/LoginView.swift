@@ -61,12 +61,10 @@ public struct LoginView: View {
                 Image(uiImage:SharedDesignSystemAsset.Images.loginBackground.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: .infinity)
                     .layoutPriority(1)
             }
         }
         .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
-        .frame(width: .infinity)
         .edgesIgnoringSafeArea(.all)
     }
 }

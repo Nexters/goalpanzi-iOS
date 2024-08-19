@@ -34,10 +34,13 @@ public struct MissionInvitationCodeFeature: Reducer {
         var secondInputCode: String = ""
         var thirdInputCode: String = ""
         var fourthInputCode: String = ""
-
-        var isInvalid: Bool = false
+        
+        var toastErrorMessage: String = ""
+        
+        var isUnavailableInvitation: Bool = false
+        var isInvalidInvitationCode: Bool = false
         var isAllEmpty: Bool = true
-        var isAllTexFieldFilled = false
+        var isAllTexFieldFilled: Bool = false
 
         public init() {}
     }
@@ -49,7 +52,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         case backButtonTapped
         case startMission
         
-        case fetchMissionResponse(Result<Mission, Error>)
+        case checkJoinableMissionResponse(Result<Mission, Error>)
         
         // MARK: Child Action
         case destination(PresentationAction<Destination.Action>)
@@ -69,7 +72,7 @@ public struct MissionInvitationCodeFeature: Reducer {
             case .binding(\.fourthInputCode):
                 if state.fourthInputCode != "" {
                     state.isAllTexFieldFilled = true
-                    state.isInvalid = false
+                    state.isInvalidInvitationCode = false
                 } else {
                     state.isAllTexFieldFilled = false
                 }
@@ -77,22 +80,22 @@ public struct MissionInvitationCodeFeature: Reducer {
             case .confirmButtonTapped:
                 let invitationCode = state.firstInputCode + state.secondInputCode + state.thirdInputCode + state.fourthInputCode
                 return .run { send in
-                    await send(.fetchMissionResponse(
+                    await send(.checkJoinableMissionResponse(
                         Result {
-                            try await self.missionClient.fetchMissionInfo(
+                            try await self.missionClient.checkJoinableMission(
                                 missionService,
                                 invitationCode
                             )
                         }
                     ))
                 }
-            
-            case let .fetchMissionResponse(.success(response)):
+            case let .checkJoinableMissionResponse(.success(response)):
                 state.destination = .invitationConfirm(InvitationConfirmFeature.State(mission: response))
                 return .none
                  
-            case .fetchMissionResponse(.failure):
-                state.isInvalid = true
+            case let .checkJoinableMissionResponse(.failure(error)):
+                guard let error = error as? MissionClientError else { return .none }
+                handleInvitationCode(with: error, state: &state)
                 return .none
                 
             case .backButtonTapped:
@@ -109,5 +112,20 @@ public struct MissionInvitationCodeFeature: Reducer {
             }
         }
         .ifLet(\.$destination, action: \.destination)
+    }
+}
+
+extension MissionInvitationCodeFeature {
+    private func handleInvitationCode(with error: MissionClientError, state: inout State) {
+        switch error {
+        case .notFoundMission:
+            state.isInvalidInvitationCode = true
+        case .exceedMaxPersonnel:
+            state.toastErrorMessage = "최대 인원으로 이미 가득차서 참여할 수 없어요"
+            state.isUnavailableInvitation = true
+        case .cannotJoinMission:
+            state.toastErrorMessage = "이미 시작된 경쟁이라 참여할 수 없어요"
+            state.isUnavailableInvitation = true
+        }
     }
 }

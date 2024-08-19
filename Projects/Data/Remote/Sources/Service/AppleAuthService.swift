@@ -26,8 +26,14 @@ extension AppleAuthService: DependencyKey {
                     httpMethod: .post,
                     bodyParameters: SignInRequestDTO(identityToken: identityToken)
                 )
-                let response = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: nil)
-                return response.toDomain
+                let response = await NetworkProvider.shared.sendRequest(endpoint, interceptor: nil)
+                
+                switch response {
+                case .success(let response):
+                    return response.toDomain
+                case .failure(let error):
+                    throw error
+                }
             },
             logout: {
                 let endpoint = Endpoint<Empty>(
@@ -35,10 +41,10 @@ extension AppleAuthService: DependencyKey {
                     httpMethod: .post
                 )
                 
-                do {
-                    let _ = try await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
-                } catch {
-                    throw AuthClientError.logoutFailed
+                let response = await NetworkProvider.shared.sendRequest(endpoint, interceptor: interceptor)
+                
+                if case .failure(let failure) = response {
+                    throw failure
                 }
             }
         )
