@@ -17,6 +17,8 @@ public struct MissionInvitationCodeView: View {
     
     @Bindable public var store: StoreOf<MissionInvitationCodeFeature>
     
+    @State private var showToastMessage = false
+    
     public init(store: StoreOf<MissionInvitationCodeFeature>) {
         self.store = store
     }
@@ -157,7 +159,7 @@ public struct MissionInvitationCodeView: View {
                                 .focused($textFieldFocusState, equals: .fourth)
                         }
                         
-                        if store.isInvalid {
+                        if store.isInvalidInvitationCode {
                             Spacer()
                                 .frame(height: 12)
                             Text("알맞지 않은 초대코드 입니다! 다시 확인해주세요.")
@@ -175,7 +177,6 @@ public struct MissionInvitationCodeView: View {
                     Spacer()
                     
                     MMRoundedButton(isEnabled: $store.isAllTexFieldFilled, title: "확인") {
-                        textFieldFocusState = nil
                         store.send(.confirmButtonTapped)
                     }
                     .frame(height: 60)
@@ -196,16 +197,49 @@ public struct MissionInvitationCodeView: View {
                 ) {
                     store.send(.backButtonTapped)
                 }
+                
+                // TODO: Toast Message Design System으로 빼기
+                if showToastMessage {
+                    VStack {
+                        Spacer()
+                        Text(store.toastErrorMessage)
+                            .font(.pretendard(size: 14, type: .medium))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(
+                                Color.mmGray2
+                                    .cornerRadius(9)
+                            )
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.bottom, keyboardHeight + 111)
+                    }
+                    .transition(.opacity)
+                    .zIndex(1)
+                }
             }
-            
         }
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
-        .makeTapToHideKeyboard()
         .padding(.horizontal, 24)
+        .makeTapToHideKeyboard()
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)
+        .onChange(of: store.isUnavailableInvitation, { _, isUnavailableInvitation in
+            if isUnavailableInvitation {
+                showToastMessage = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        showToastMessage = false
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        store.isUnavailableInvitation = false
+                    }
+                }
+            }
+        })
         .overlay {
             if let store = store.scope(state: \.destination?.invitationConfirm, action: \.destination.invitationConfirm) {
                 InvitationConfirmView(store: store)
@@ -233,7 +267,7 @@ extension MissionInvitationCodeView {
     }
     
     private var borderLineColor: Color {
-        if store.isInvalid {
+        if store.isInvalidInvitationCode {
             return Color.mmRed
         } else if store.isAllEmpty {
             return Color.mmWhite

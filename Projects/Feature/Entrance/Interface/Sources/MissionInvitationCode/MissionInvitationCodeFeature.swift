@@ -34,10 +34,13 @@ public struct MissionInvitationCodeFeature: Reducer {
         var secondInputCode: String = ""
         var thirdInputCode: String = ""
         var fourthInputCode: String = ""
-
-        var isInvalid: Bool = false
+        
+        var toastErrorMessage: String = ""
+        
+        var isUnavailableInvitation: Bool = false
+        var isInvalidInvitationCode: Bool = false
         var isAllEmpty: Bool = true
-        var isAllTexFieldFilled = false
+        var isAllTexFieldFilled: Bool = false
 
         public init() {}
     }
@@ -69,7 +72,7 @@ public struct MissionInvitationCodeFeature: Reducer {
             case .binding(\.fourthInputCode):
                 if state.fourthInputCode != "" {
                     state.isAllTexFieldFilled = true
-                    state.isInvalid = false
+                    state.isInvalidInvitationCode = false
                 } else {
                     state.isAllTexFieldFilled = false
                 }
@@ -91,8 +94,8 @@ public struct MissionInvitationCodeFeature: Reducer {
                 return .none
                  
             case let .checkJoinableMissionResponse(.failure(error)):
-                print(error)
-                state.isInvalid = true
+                guard let error = error as? MissionClientError else { return .none }
+                handleInvitationCode(with: error, state: &state)
                 return .none
                 
             case .backButtonTapped:
@@ -109,5 +112,20 @@ public struct MissionInvitationCodeFeature: Reducer {
             }
         }
         .ifLet(\.$destination, action: \.destination)
+    }
+}
+
+extension MissionInvitationCodeFeature {
+    private func handleInvitationCode(with error: MissionClientError, state: inout State) {
+        switch error {
+        case .notFoundMission:
+            state.isInvalidInvitationCode = true
+        case .exceedMaxPersonnel:
+            state.toastErrorMessage = "최대 인원으로 이미 가득차서 참여할 수 없어요"
+            state.isUnavailableInvitation = true
+        case .cannotJoinMission:
+            state.toastErrorMessage = "이미 시작된 경쟁이라 참여할 수 없어요"
+            state.isUnavailableInvitation = true
+        }
     }
 }

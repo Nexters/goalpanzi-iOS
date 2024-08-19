@@ -14,6 +14,26 @@ import ComposableArchitecture
 public typealias MissionID = Int
 public typealias InvitationCode = String
 
+public enum MissionClientError: Error {
+    
+    case notFoundMission
+    case exceedMaxPersonnel
+    case cannotJoinMission
+    
+    public init?(rawValue: String) {
+        switch rawValue {
+        case "NOT_FOUND_MISSION":
+            self = .notFoundMission
+        case "EXCEED_MAX_PERSONNEL":
+            self = .exceedMaxPersonnel
+        case "CAN_NOT_JOIN_MISSION":
+            self = .cannotJoinMission
+        default:
+            return nil
+        }
+    }
+}
+
 public struct MissionClient {
     
     public var createMission: @Sendable (
