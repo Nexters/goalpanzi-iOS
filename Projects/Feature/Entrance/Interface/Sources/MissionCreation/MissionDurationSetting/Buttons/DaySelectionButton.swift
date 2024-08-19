@@ -10,6 +10,7 @@ import SwiftUI
 import SharedDesignSystem
 
 struct DateSelectionButton: View {
+    let isStartDateSelection: Bool
     @Binding var date: Date?
     @Binding var minimumDate: Date
     @Binding var isEnabled: Bool
@@ -40,7 +41,7 @@ struct DateSelectionButton: View {
         Text(displayText)
             .padding()
             .frame(width: 159, height: 60, alignment: .leading)
-            .font(.pretendard(size: 16, type: .medium)) // TODO: 폰트 수정해야됨!~!~!~!
+            .font(.pretendard(size: 16, type: .medium))
             .foregroundStyle(textColor)
             .background(backgroundColor)
             .cornerRadius(12)
@@ -50,14 +51,24 @@ struct DateSelectionButton: View {
                     .overlay {
                         DatePicker(
                             selection: Binding(
-                                get: { self.date ?? Date() },
-                                set: { self.date = $0 }),
-                            in: minimumDate...,
-                            displayedComponents: .date) {}
+                                get: {
+                                    self.date ?? minimumDate
+                                },
+                                set: {
+                                    print($0)
+                                    self.date = $0
+                                }),
+                            in: dateRange,
+                            displayedComponents: .date
+                        ) {}
                             .labelsHidden()
                             .colorMultiply(.clear)
                     }
             )
             .disabled(!isEnabled)
+    }
+    
+    private var dateRange: ClosedRange<Date> {
+        return isStartDateSelection ? minimumDate-1...Date.distantFuture : minimumDate...(Calendar.current.date(byAdding: .month, value: 1, to: minimumDate) ?? Date())
     }
 }

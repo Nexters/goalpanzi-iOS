@@ -46,6 +46,7 @@ public struct MissionDurationSettingView: View {
 
             HStack {
                 DateSelectionButton(
+                    isStartDateSelection: true,
                     date: $store.missionStartDate,
                     minimumDate: .constant(store.startMinimumDate),
                     isEnabled: .constant(true),
@@ -53,12 +54,13 @@ public struct MissionDurationSettingView: View {
                 )
                 .onChange(of: store.missionStartDate, { oldValue, newValue in
                     store.isStartDateSelected = true
-                    store.endMinimumDate = Calendar.current.date(byAdding: .day, value: 2, to: store.missionStartDate ?? Date()) ?? Date()
+                    store.missionEndDate = nil
                 })
                 Text("~")
                 DateSelectionButton(
+                    isStartDateSelection: false,
                     date: $store.missionEndDate,
-                    minimumDate: $store.endMinimumDate,
+                    minimumDate: .constant(store.missionStartDate ?? Date()),
                     isEnabled: $store.isStartDateSelected,
                     placeHolder: "마감일"
                 )
