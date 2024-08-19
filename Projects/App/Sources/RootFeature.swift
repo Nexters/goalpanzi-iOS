@@ -25,6 +25,7 @@ struct RootFeature {
     
     @ObservableState
     struct State {
+        @Shared(.appStorage("isMissionCreated")) var isMissionCreated: Bool = false
         @Presents var destination: RootDestination.State? = nil
         
         init() {}
@@ -80,8 +81,8 @@ struct RootFeature {
                 return .none
                 
             case let .didFetchMissionInfo(.success(missionInfo)):
-                if missionInfo.missions.isEmpty {
-                    return .send(.didFailTokenRefreshing)
+                if missionInfo.missions.isEmpty, state.isMissionCreated == false {
+                    return .send(.setRootToEntrance)
                 }
                 return .send(.setRootToHome)
                 
@@ -94,6 +95,7 @@ struct RootFeature {
                 .cancellable(id: CancelID.notification)
                 
             case .didFailTokenRefreshing:
+                state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
             case let .destination(.presented(.login(.delegate(.didFinishLogin(shouldCreateProfile))))):
@@ -107,21 +109,27 @@ struct RootFeature {
                 return .none
                 
             case .destination(.presented(.entrance(.delegate(.didCreateMission)))):
+                state.isMissionCreated = true
                 return .send(.setRootToHome)
                 
             case .destination(.presented(.entrance(.delegate(.didLogout)))):
+                state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
             case .destination(.presented(.entrance(.delegate(.didDeleteProfile)))):
+                state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
             case .destination(.presented(.home(.delegate(.didFinishMission)))):
+                state.isMissionCreated = false
                 return .send(.setRootToEntrance)
                 
             case .destination(.presented(.home(.delegate(.didLogout)))):
+                state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
             case .destination(.presented(.home(.delegate(.didDeleteProfile)))):
+                state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
             case .destination:
