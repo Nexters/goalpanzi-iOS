@@ -150,7 +150,7 @@ public struct HomeFeature {
                         events: board.missionBoards.map {
                             Event.reward(JejuRewardInfo(rawValue: $0.reward, position: Position(index: $0.number)))
                         },
-                        totalBlockCount: mission.verificationDays,
+                        totalBlockCount: mission.verificationDays + 1,
                         isDisabled: competitionState != .started
                     ),
                     info: mission.makeInfos(competitionState: competitionState, progressCount: board.progressCount, myRank: rank.rank),
