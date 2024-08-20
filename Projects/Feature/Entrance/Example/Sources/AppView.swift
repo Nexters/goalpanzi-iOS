@@ -1,6 +1,7 @@
 import SwiftUI
 
 import FeatureEntranceInterface
+import DomainUserInterface
 import SharedDesignSystem
 
 import ComposableArchitecture
@@ -13,9 +14,11 @@ struct AppView: App {
     }
     var body: some Scene {
         WindowGroup {
-            EntranceView(store: .init(initialState: .init(), reducer: {
+            EntranceView(store: .init(initialState: .init(isFirstEntrance: true), reducer: {
                 EntranceFeature()
-            }))
+            }
+                                     )
+            )
         }
     }
 }

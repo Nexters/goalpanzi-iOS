@@ -54,6 +54,7 @@ public struct MMPopUpView<Content: View>: View {
             } else {
                 Text(title)
                     .font( .pretendard(kind: .title_xl, type: .bold))
+                    .foregroundStyle(Color.mmGray1)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity)
@@ -70,6 +71,7 @@ public struct MMPopUpView<Content: View>: View {
                     )
                 } else {
                     Text(subtitle)
+                        .foregroundStyle(Color.mmGray2)
                         .font(.pretendard(kind: .body_xl, type: .light))
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)

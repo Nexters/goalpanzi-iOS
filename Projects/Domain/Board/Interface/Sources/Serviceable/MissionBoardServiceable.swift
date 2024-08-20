@@ -37,8 +37,10 @@ public struct MissionBoard {
     }
     
     public let missionBoards: [BoardInfo]
+    public let progressCount: Int
     
-    public init(missionBoards: [BoardInfo]) {
+    public init(missionBoards: [BoardInfo], progressCount: Int) {
         self.missionBoards = missionBoards
+        self.progressCount = progressCount
     }
 }

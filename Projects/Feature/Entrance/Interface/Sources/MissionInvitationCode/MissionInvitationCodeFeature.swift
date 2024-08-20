@@ -20,6 +20,7 @@ public struct MissionInvitationCodeFeature: Reducer {
     public init() {}
     
     
+    // TODO: EntranceView와 같이 하나의 @Presents로 변경
     @Reducer
     public enum Destination {
         case invitationConfirm(InvitationConfirmFeature)

@@ -14,13 +14,13 @@ import SharedDesignSystem
 import ComposableArchitecture
 
 public struct EntranceView: View {
-
+    
     @Bindable public var store: StoreOf<EntranceFeature>
-
+    
     public init(store: StoreOf<EntranceFeature>) {
         self.store = store
     }
-
+    
     public var body: some View {
         NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
             ZStack {
@@ -64,15 +64,19 @@ public struct EntranceView: View {
                         Image(uiImage: SharedDesignSystemAsset.Images.emptyJejuIslandBackground.image)
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 350, height: 228)
-                        // TODO: 추후에 Input으로 받을 예정
-                        Image(uiImage: Character.rabbit.basicImage.image)
-                            .resizable()
-                            .frame(width: 212, height: 212)
+                        if store.isCheckingProfile {
+                            ProgressView()
+                        } else {
+                            Image(uiImage: store.userProfileCharacter.basicImage.image)
+                                .resizable()
+                                .frame(width: 212, height: 212)
+                                .offset(y: 20)
+                        }
                     }
                     
                     Spacer()
                     
-                    HStack(spacing: 23) {
+                    HStack(spacing: 0) {
                         entranceSelectionButton(
                             title: "미션보드\n생성하기",
                             description: "내 목표는 내가~",
@@ -80,6 +84,8 @@ public struct EntranceView: View {
                         ) {
                             store.send(.createMissionButtonTapped)
                         }
+                        
+                        Spacer()
                         
                         entranceSelectionButton(
                             title: "초대코드\n입력하기",
@@ -89,10 +95,12 @@ public struct EntranceView: View {
                             store.send(.enterInvitationCodeButtonTapped)
                         }
                     }
+                    .padding(.horizontal, 24)
                     Spacer()
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
+            .edgesIgnoringSafeArea(.horizontal)
         } destination: { store in
             switch store.case {
             case let .missionContentSetting(store):
@@ -107,8 +115,18 @@ public struct EntranceView: View {
                 SettingView(store: store)
             }
         }
+        .overlay {
+            if let store = store.scope(state: \.pieceCreationCompleted, action: \.pieceCreationCompleted.presented) {
+                PieceCreationCompletedView(store: store)
+            }
+        }
+        .task {
+            await store
+                .send(.onAppear)
+                .finish()
+        }
     }
-
+    
     private func entranceSelectionButton(
         title: String,
         description: String,
@@ -138,7 +156,7 @@ public struct EntranceView: View {
                                 .frame(width: 40, height: 40)
                         }
                     }
-                    .padding(20)
+                .padding(20)
                 )
         }
     }
