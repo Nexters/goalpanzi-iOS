@@ -20,7 +20,7 @@ struct CompetitionInfoView: View {
                 .foregroundStyle(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
             Text(store.competition?.info[.subtitle] ?? "")
                 .font(.pretendard(kind: .body_lg, type: .bold))
-                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor.opacity(0.5))
+                .foregroundColor(SharedDesignSystemAsset.Colors.gray2.swiftUIColor)
         }
         .padding(.top, 28)
         .padding(.bottom, 16)

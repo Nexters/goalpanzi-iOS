@@ -35,7 +35,6 @@ struct BlockView: View {
                 if block.isStartBlock {
                     block.theme.startImageAsset.swiftUIImage
                         .resizable()
-                        .opacity(block.isDisabled ? 0.5 : 1.0)
                         .aspectRatio(1.0, contentMode: .fit)
                     
                 } else if block.isConquered, !block.isDisabled {
@@ -46,7 +45,6 @@ struct BlockView: View {
                 } else {
                     block.theme.normalImageAsset(kind: block.kind, isHighlighted: block.position.index % 2 == 0).swiftUIImage
                         .resizable()
-                        .opacity(block.isDisabled ? 0.5 : 1.0)
                         .aspectRatio(1.0, contentMode: .fit)
                 }
                 
@@ -65,7 +63,6 @@ struct BlockView: View {
                     if block.isConquered, !block.isDisabled {
                         block.theme.eventImageAsset(kind: block.kind, event: event)?.swiftUIImage
                             .resizable()
-                            .opacity(block.isDisabled ? 0.5 : 1.0)
                             .aspectRatio(1.0, contentMode: .fit)
                     } else {
                         SharedDesignSystemAsset.Images.gift.swiftUIImage
