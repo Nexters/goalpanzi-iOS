@@ -60,6 +60,7 @@ public struct ProfileDeletionFeature: Reducer {
                 KeychainProvider.shared.delete(.refreshToken)
                 return .run { send in
                     await send(.delegate(.didDeleteProfileSucceed))
+                    await self.dismiss()
                 }
             case .deleteAccountResponse(.failure(let error)):
                 print(error)
