@@ -99,8 +99,14 @@ struct RootFeature {
                 return .send(.setRootToLogin)
                 
             case let .destination(.presented(.login(.delegate(.didFinishLogin(shouldCreateProfile))))):
-                guard shouldCreateProfile else { return .send(.setRootToEntrance(isFirstEntrance: false)) }
-                return .send(.setRootToProfileCreation)
+                if shouldCreateProfile {
+                    return .send(.setRootToProfileCreation)
+                }
+                return .run { send in
+                    await send(.didFetchMissionInfo(Result {
+                        try await missionMemberService.getMissionMembersMe()
+                    }))
+                }
                 
             case .destination(.presented(.profileCreation(.delegate(.didCreateProfile)))):
                 return .send(.setRootToEntrance(isFirstEntrance: true))
