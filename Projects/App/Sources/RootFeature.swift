@@ -112,23 +112,18 @@ struct RootFeature {
                 state.isMissionCreated = true
                 return .send(.setRootToHome)
                 
-            case .destination(.presented(.entrance(.delegate(.didLogout)))):
+            case .destination(.presented(.entrance(.delegate(.didLogout)))),
+                 .destination(.presented(.entrance(.delegate(.didDeleteProfile)))):
                 state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
-            case .destination(.presented(.entrance(.delegate(.didDeleteProfile)))):
-                state.isMissionCreated = false
-                return .send(.setRootToLogin)
-                
-            case .destination(.presented(.home(.delegate(.didFinishMission)))):
+            case .destination(.presented(.home(.delegate(.didFinishMission)))),
+                 .destination(.presented(.home(.delegate(.didDeleteMission)))):
                 state.isMissionCreated = false
                 return .send(.setRootToEntrance(isFirstEntrance: false))
                 
-            case .destination(.presented(.home(.delegate(.didLogout)))):
-                state.isMissionCreated = false
-                return .send(.setRootToLogin)
-                
-            case .destination(.presented(.home(.delegate(.didDeleteProfile)))):
+            case .destination(.presented(.home(.delegate(.didLogout)))),
+                 .destination(.presented(.home(.delegate(.didDeleteProfile)))):
                 state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 

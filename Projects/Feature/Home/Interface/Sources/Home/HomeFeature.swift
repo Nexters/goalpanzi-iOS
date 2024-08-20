@@ -33,6 +33,7 @@ public struct HomeFeature {
         
         @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
+        @Shared(.appStorage("isMissionCreated")) var isMissionCreated: Bool = false
         
         @Presents var destination: Destination.State?
         var path: StackState<Path.State> = .init()
@@ -67,6 +68,7 @@ public struct HomeFeature {
         case didSelectImages([UIImage])
         case didTapBlock(position: Position)
         case didFinishMoving(piece: Piece?)
+        case didFinishMission
         case loadData(missionId: Int)
         case didLoadData(Competition.State)
         case destination(PresentationAction<Destination.Action>)
@@ -84,6 +86,7 @@ public struct HomeFeature {
         case didFinishMission
         case didLogout
         case didDeleteProfile
+        case didDeleteMission
     }
     
     public var body: some ReducerOf<Self> {
@@ -104,8 +107,11 @@ public struct HomeFeature {
                     name: myMissionInfo.profile.nickname,
                     character: DomainUserInterface.Character(rawValue: myMissionInfo.profile.characterType) ?? .rabbit
                 )
-                state.missionId = myMissionInfo.missions.first?.missionId
-                return .send(.loadData(missionId: state.missionId ?? 0))
+                guard let missionId = myMissionInfo.missions.first?.missionId else {
+                    return .send(.delegate(.didFinishMission))
+                }
+                state.missionId = missionId
+                return .send(.loadData(missionId: missionId))
                 
             case let .loadData(missionId):
                 return .run { send in
@@ -174,13 +180,16 @@ public struct HomeFeature {
                     return .none
                     
                 case .finished:
-                    state.isLoading = true
-                    return .run { [missionId = state.missionId] send in
-                        await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))
-                    }
+                    return .send(.didFinishMission)
                     
                 default:
                     return .none
+                }
+                
+            case .didFinishMission:
+                state.isLoading = true
+                return .run { [missionId = state.missionId] send in
+                    await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))
                 }
                 
             case let .didFetchRank(.success(rankInfo)):
@@ -262,6 +271,9 @@ public struct HomeFeature {
                     state.competition?.board.remove(piece: myPiece)
                     return .none
                     
+                case .presented(.missionDeleteAlert(.delegate(.didDeleteMission))):
+                    return .send(.delegate(.didDeleteMission))
+                    
                 case .presented(_):
                     return .none
                 }
@@ -278,6 +290,9 @@ public struct HomeFeature {
             case .path(.element(id: _, action: .finish(.delegate(.didTapSettingButton)))):
                 state.path.append(.setting(SettingFeature.State()))
                 return .none
+                
+            case .path(.element(id: _, action: .missionInfo(.delegate(.didDeleteMission)))):
+                return .send(.delegate(.didDeleteMission))
                 
             case .path:
                 return .none

@@ -41,6 +41,11 @@ public struct MissionInfoFeature {
         case didTapBackButton
         case didTapDeleteButton
         case destination(PresentationAction<Destination.Action>)
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didDeleteMission
     }
     
     public var body: some ReducerOf<Self> {
@@ -53,7 +58,14 @@ public struct MissionInfoFeature {
             case .didTapDeleteButton:
                 state.destination = .missionDelete(MissionDeleteFeature.State(missionId: state.missionId))
                 return .none
+                
+            case .destination(.presented(.missionDelete(.delegate(.didDeleteMission)))):
+                return .send(.delegate(.didDeleteMission))
+                
             case .destination:
+                return .none
+                
+            case .delegate:
                 return .none
             }
         }
