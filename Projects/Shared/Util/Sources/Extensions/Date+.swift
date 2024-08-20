@@ -10,7 +10,7 @@ import Foundation
 public enum DateFormat: String {
     case compactYearMonthDateTime = "yyyyMMddHHmmss"
     case yearMonthDate = "yyyy.MM.dd"
-    case longYearMonthDateTimeZone = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    case longYearMonthDateTimeZone = "yyyy-MM-dd'T'HH:mm:ss"
 }
 
 extension DateFormat {
