@@ -20,7 +20,7 @@ import SharedUtilInterface
 
 @Reducer
 struct RootFeature {
-    
+
     @Dependency(MissionMemberService.self) var missionMemberService
     
     @ObservableState
@@ -34,7 +34,7 @@ struct RootFeature {
     enum Action {
         case didLoad
         case setRootToLogin
-        case setRootToEntrance
+        case setRootToEntrance(isFirstEntrance: Bool)
         case setRootToHome
         case setRootToProfileCreation
         case observeTokenRefreshingFailure
@@ -68,8 +68,8 @@ struct RootFeature {
                 state.destination = .login(LoginFeature.State())
                 return .none
                 
-            case .setRootToEntrance:
-                state.destination = .entrance(EntranceFeature.State())
+            case .setRootToEntrance(let isFirstEntrance):
+                state.destination = .entrance(EntranceFeature.State(isFirstEntrance: isFirstEntrance))
                 return .none
                 
             case .setRootToHome:
@@ -82,7 +82,7 @@ struct RootFeature {
                 
             case let .didFetchMissionInfo(.success(missionInfo)):
                 if missionInfo.missions.isEmpty, state.isMissionCreated == false {
-                    return .send(.setRootToEntrance)
+                    return .send(.setRootToEntrance(isFirstEntrance: false))
                 }
                 return .send(.setRootToHome)
                 
@@ -99,11 +99,11 @@ struct RootFeature {
                 return .send(.setRootToLogin)
                 
             case let .destination(.presented(.login(.delegate(.didFinishLogin(shouldCreateProfile))))):
-                guard shouldCreateProfile else { return .send(.setRootToEntrance) }
+                guard shouldCreateProfile else { return .send(.setRootToEntrance(isFirstEntrance: false)) }
                 return .send(.setRootToProfileCreation)
                 
             case .destination(.presented(.profileCreation(.delegate(.didCreateProfile)))):
-                return .send(.setRootToEntrance)
+                return .send(.setRootToEntrance(isFirstEntrance: true))
                 
             case .didFetchMissionInfo(.failure):
                 return .none
@@ -122,7 +122,7 @@ struct RootFeature {
                 
             case .destination(.presented(.home(.delegate(.didFinishMission)))):
                 state.isMissionCreated = false
-                return .send(.setRootToEntrance)
+                return .send(.setRootToEntrance(isFirstEntrance: false))
                 
             case .destination(.presented(.home(.delegate(.didLogout)))):
                 state.isMissionCreated = false
