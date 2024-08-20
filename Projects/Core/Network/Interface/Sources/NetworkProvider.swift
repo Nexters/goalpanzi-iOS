@@ -23,7 +23,7 @@ public struct NetworkProvider: NetworkProviderType {
 
                 let dataTask = AF.request(urlRequest, interceptor: interceptor)
                     .validate()
-                    .serializingDecodable(T.self, decoder: decoder, emptyResponseCodes: [200])
+                    .serializingDecodable(T.self, decoder: decoder, emptyResponseCodes: Set(200...299))
 
                 let response = await dataTask.response
                 

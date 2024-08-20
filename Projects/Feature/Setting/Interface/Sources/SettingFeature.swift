@@ -49,8 +49,6 @@ public struct SettingFeature: Reducer {
         case navigateProfileDeletionViewTapped
         
         // MARK: Child Action
-        case logoutSucceed(PresentationAction<LogoutConfirmFeature.Action>)
-        case deleteProfileSucceed(PresentationAction<ProfileDeletionFeature.Action>)
         case delegate(Delegate)
     }
     
@@ -82,12 +80,10 @@ public struct SettingFeature: Reducer {
             case .navigateProfileDeletionViewTapped:
                 state.destination = .profileDeletion(ProfileDeletionFeature.State())
                 return .none
-            case .logoutSucceed(.presented(.delegate(.didLogoutSucceed))):
+            case .destination(.presented(.logout(.delegate(.didLogoutSucceed)))):
                 return .send(.delegate(.didLogout))
-            case .deleteProfileSucceed(.presented(.delegate(.didDeleteProfileSucceed))):
+            case .destination(.presented(.profileDeletion(.delegate(.didDeleteProfileSucceed)))):
                 return .send(.delegate(.didDeleteProfile))
-            case .destination(_):
-                return .none
             default:
                 return .none
             }
