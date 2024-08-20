@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import SharedUtilInterface
 
 public struct ErrorResponse: Error, Decodable {
     let code: Int
