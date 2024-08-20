@@ -17,7 +17,7 @@ public struct NetworkProvider: NetworkProviderType {
     
     public static let shared: NetworkProviderType = NetworkProvider()
 
-    public func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, decoder: JSONDecoder = .init(), interceptor: NetworkRequestInterceptor? = nil) async -> Result<T, ErrorResponse> where N.Response == T {
+    public func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, decoder: JSONDecoder = .jsonDecoder, interceptor: NetworkRequestInterceptor? = nil) async -> Result<T, ErrorResponse> where N.Response == T {
         do {
                 let urlRequest: URLRequest = try endpoint.makeURLRequest()
 
