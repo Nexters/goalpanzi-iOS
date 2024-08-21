@@ -39,6 +39,7 @@ public struct MissionInfoFeature {
     
     public enum Action {
         case didTapBackButton
+        case didTapBackButtonDelayed
         case didTapDeleteButton
         case destination(PresentationAction<Destination.Action>)
         case delegate(Delegate)
@@ -48,10 +49,18 @@ public struct MissionInfoFeature {
         case didDeleteMission
     }
     
+    public enum CancelID {
+        case didTapBackButton
+    }
+    
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .didTapBackButton:
+                return .send(.didTapBackButtonDelayed)
+                    .debounce(id: CancelID.didTapBackButton, for: 0.2, scheduler: DispatchQueue.main.eraseToAnyScheduler())
+                
+            case .didTapBackButtonDelayed:
                 return .run { _ in
                     await self.dismiss()
                 }
