@@ -32,7 +32,7 @@ public struct InvitationConfirmView: View {
                     subtitle: "*기간 대비 인증 요일을 계산해\n 인증횟수(보드판 수)는 총 \(store.authenticationDays)개가\n 생성되었습니다.",
                     highlightedSubtitle: "인증횟수(보드판 수)는 총 \(store.authenticationDays)개",
                     content: {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 10) {
                             InfoRow(title: "미션", content: store.missionTitle)
                             Divider()
                             InfoRow(title: "미션 기간", content: store.missionDuration)
@@ -64,7 +64,7 @@ struct InfoRow: View {
     let content: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.pretendard(kind: .body_md, type: .light))
                 .foregroundColor(Color.mmGray3)
@@ -72,6 +72,5 @@ struct InfoRow: View {
                 .font(.pretendard(kind: .body_lg, type: .bold))
                 .foregroundColor(Color.mmGray1)
         }
-        .frame(height: 52)
     }
 }
