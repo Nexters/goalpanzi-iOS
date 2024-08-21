@@ -29,6 +29,7 @@ public struct MissionDurationSettingFeature: Reducer {
         var endMinimumDate = Date()
         
         var selectedDays: Set<WeekDay> = []
+        var availableWeekDays: Set<WeekDay> = []
         var authenticationDays: Int = 0
         
         @Shared var missionCreationData: MissionCreationData
@@ -49,12 +50,15 @@ public struct MissionDurationSettingFeature: Reducer {
             switch action {
             case .binding(\.missionStartDate):
                 updateAuthenticationDays(with: &state)
+                state.selectedDays.removeAll()
+                state.isSelectWeekDayEnabled = false
                 
                 return .none
             case .binding(\.missionEndDate):
                 guard state.missionEndDate != nil else { return .none }
                 updateAuthenticationDays(with: &state)
                 state.isSelectWeekDayEnabled = true
+                state.selectedDays.removeAll()
                 state.isAllCompleted = (state.selectedDays.isEmpty || state.authenticationDays == 0) ? false : true
                 
                 return .none
