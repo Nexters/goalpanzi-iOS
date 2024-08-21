@@ -66,7 +66,7 @@ public struct NetworkProvider: NetworkProviderType {
                 print(progress)
             #endif
         }
-        .serializingResponse(using: .string)
+        .serializingString(emptyResponseCodes: Set(200...299))
         .value
     }
 
