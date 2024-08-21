@@ -76,14 +76,14 @@ public struct MissionDurationSettingView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("인증 요일 (다중선택)")
                     .font(.pretendard(kind: .body_md, type: .bold))
-                    .foregroundStyle(store.isSelectWeekDayEnabled ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
+                    .foregroundStyle(!store.availableWeekDays.isEmpty ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
 
                 HStack {
-                    ForEach(WeekDay.allCases, id: \.self) { day in
+                    ForEach(WeekDay.allCasesInKoreanOrdered, id: \.self) { day in
                         DaySelectionButton(
-                            day: day.koreanName,
+                            day: day.toKorean,
                             isSelected: store.selectedDays.contains(day),
-                            isEnabled: store.missionEndDate != nil
+                            isEnabled: store.availableWeekDays.contains(day)
                         ) {
                             if store.selectedDays.contains(day) {
                                 store.selectedDays.remove(day)
@@ -97,7 +97,7 @@ public struct MissionDurationSettingView: View {
 
                 Text("선택한 요일에만 미션 인증할 수 있어요.(ex.월,수,금)")
                     .font(.pretendard(size: 14, type: .light))
-                    .foregroundStyle(store.isSelectWeekDayEnabled ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
+                    .foregroundStyle(!store.availableWeekDays.isEmpty ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
             }
 
             Spacer()

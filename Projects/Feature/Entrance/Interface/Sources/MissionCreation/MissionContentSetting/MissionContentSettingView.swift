@@ -51,7 +51,7 @@ public struct MissionContentSettingView: View {
                 VStack {
                     Spacer()
 
-                    MMRoundedButton(isEnabled: $store.isValidMission, title: "다음") {
+                    MMRoundedButton(isEnabled: $store.isAvailableToGoNext, title: "다음") {
                         store.send(.nextButtonTapped)
                     }
                     .frame(height: 60)

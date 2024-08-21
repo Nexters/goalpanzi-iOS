@@ -100,15 +100,11 @@ public enum WeekDay: String, CaseIterable {
         return WeekDay.allCases[weekdayIndex - 1]
     }
 
-    public var koreanName: String {
-        switch self {
-        case .monday: return "월"
-        case .tuesday: return "화"
-        case .wednesday: return "수"
-        case .thursday: return "목"
-        case .friday: return "금"
-        case .saturday: return "토"
-        case .sunday: return "일"
-        }
+    public static var allCasesInKoreanOrdered: [WeekDay] {
+        var weekDays = WeekDay.allCases
+        weekDays.remove(at: 0)
+        weekDays.append(.sunday)
+
+        return weekDays
     }
 }

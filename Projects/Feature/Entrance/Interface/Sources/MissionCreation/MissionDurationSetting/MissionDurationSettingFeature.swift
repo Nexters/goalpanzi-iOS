@@ -27,10 +27,11 @@ public struct MissionDurationSettingFeature: Reducer {
 
         var startMinimumDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
         var endMinimumDate = Date()
-        
+
         var selectedDays: Set<WeekDay> = []
+        var availableWeekDays: Set<WeekDay> = []
         var authenticationDays: Int = 0
-        
+
         @Shared var missionCreationData: MissionCreationData
     }
 
@@ -49,30 +50,34 @@ public struct MissionDurationSettingFeature: Reducer {
             switch action {
             case .binding(\.missionStartDate):
                 updateAuthenticationDays(with: &state)
-                
+                state.selectedDays.removeAll()
+                state.availableWeekDays.removeAll()
+
                 return .none
             case .binding(\.missionEndDate):
+                guard state.missionEndDate != nil else { return .none }
                 updateAuthenticationDays(with: &state)
-                state.isSelectWeekDayEnabled = true
+                state.availableWeekDays = self.calculateAvailableWeekDays(from: state)
+                state.selectedDays.removeAll()
                 state.isAllCompleted = (state.selectedDays.isEmpty || state.authenticationDays == 0) ? false : true
 
                 return .none
             case .daySelectionButtonTapped:
                 updateAuthenticationDays(with: &state)
                 state.isAllCompleted = (state.selectedDays.isEmpty || state.authenticationDays == 0) ? false : true
-                
+
                 return .none
             case .nextButtonTapped:
                 state.missionCreationData.startDate = state.missionStartDate ?? Date()
                 state.missionCreationData.endDate = state.missionEndDate ?? Date()
                 state.missionCreationData.verificationDays = state.authenticationDays
                 state.missionCreationData.verificationWeekDays = Array(state.selectedDays)
-                
+
                 return .none
             case .backButtonTapped:
-                
+
                 return .run { _ in
-                  await self.dismiss()
+                    await self.dismiss()
                 }
             default:
                 return .none
@@ -82,6 +87,29 @@ public struct MissionDurationSettingFeature: Reducer {
 }
 
 extension MissionDurationSettingFeature {
+
+    private func calculateAvailableWeekDays(from state: State) -> Set<WeekDay> {
+        let calendar = Calendar.current
+            guard let startDate = state.missionStartDate,
+                  let endDate = state.missionEndDate else {
+                return Set(WeekDay.allCases)
+            }
+
+            let components = calendar.dateComponents([.day], from: startDate, to: endDate)
+            guard let days = components.day, days <= 6 else { return Set(WeekDay.allCases) }
+
+            var availableWeekDays: Set<WeekDay> = []
+            var currentDate = startDate
+
+            while currentDate <= endDate {
+                guard let weekday = WeekDay(index: calendar.component(.weekday, from: currentDate)) else { return [] }
+                availableWeekDays.insert(weekday)
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { return [] }
+                currentDate = nextDate
+            }
+
+            return availableWeekDays
+    }
 
     private func updateAuthenticationDays(with state: inout State) {
         let days = calculateAuthenticationDays(from: state)
@@ -98,14 +126,12 @@ extension MissionDurationSettingFeature {
         var authenticationDayCount = 0
 
         while currentDate <= endDate {
-            guard let weekday = WeekDay(index: calendar.component(.weekday, from: currentDate)) else { continue }
+            let weekday = WeekDay(index: calendar.component(.weekday, from: currentDate)) ?? .friday
             if state.selectedDays.contains(weekday) {
                 authenticationDayCount += 1
             }
 
-            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else {
-                break
-            }
+            let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? Date()
             currentDate = nextDate
         }
 

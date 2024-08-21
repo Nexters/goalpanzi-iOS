@@ -11,6 +11,7 @@ import SharedDesignSystem
 
 struct DateSelectionButton: View {
     let isStartDateSelection: Bool
+    let calendar = Calendar.current
     @Binding var date: Date?
     @Binding var minimumDate: Date
     @Binding var isEnabled: Bool
@@ -55,8 +56,7 @@ struct DateSelectionButton: View {
                                     self.date ?? minimumDate
                                 },
                                 set: {
-                                    print($0)
-                                    self.date = $0
+                                    self.date = calendar.startOfDay(for: $0)
                                 }),
                             in: dateRange,
                             displayedComponents: .date
@@ -69,6 +69,6 @@ struct DateSelectionButton: View {
     }
     
     private var dateRange: ClosedRange<Date> {
-        return isStartDateSelection ? minimumDate-1...Date.distantFuture : minimumDate...(Calendar.current.date(byAdding: .month, value: 1, to: minimumDate) ?? Date())
+        return isStartDateSelection ? minimumDate-1...Date.distantFuture : minimumDate...(calendar.date(byAdding: .month, value: 1, to: minimumDate) ?? Date())
     }
 }
