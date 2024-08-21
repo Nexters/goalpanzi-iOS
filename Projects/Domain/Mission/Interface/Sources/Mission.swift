@@ -44,7 +44,7 @@ public struct Mission: CustomStringConvertible, Equatable {
     }
     
     public var sortedVerificationWeekDays: [WeekDay] {
-        verificationWeekDays.sorted(by: { $0.toIndex < $1.toIndex })
+        verificationWeekDays.sorted(by: { $0.toPriority < $1.toPriority })
     }
     
     public var missionPeriodDescription: String {
