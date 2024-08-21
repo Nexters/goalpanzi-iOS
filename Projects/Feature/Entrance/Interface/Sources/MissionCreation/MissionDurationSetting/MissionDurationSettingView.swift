@@ -81,9 +81,9 @@ public struct MissionDurationSettingView: View {
                 HStack {
                     ForEach(WeekDay.allCases, id: \.self) { day in
                         DaySelectionButton(
-                            day: day.koreanName,
+                            day: day.toKorean,
                             isSelected: store.selectedDays.contains(day),
-                            isEnabled: store.isSelectWeekDayEnabled
+                            isEnabled: store.availableWeekDays.contains(day)
                         ) {
                             if store.selectedDays.contains(day) {
                                 store.selectedDays.remove(day)
