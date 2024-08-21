@@ -23,6 +23,8 @@ public struct LoginFeature: Reducer {
     
     @ObservableState
     public struct State: Equatable {
+        
+        @Shared(.appStorage("myMemberId")) var myMemberId: Int? = nil
         public init() {}
     }
     
@@ -53,6 +55,7 @@ public struct LoginFeature: Reducer {
             case let .didFinishLogin(.success(response)):
                 KeychainProvider.shared.save(response.accessToken, key: .accessToken)
                 KeychainProvider.shared.save(response.refreshToken, key: .refreshToken)
+                state.myMemberId = response.memberId
                 return .send(.delegate(.didFinishLogin(shouldCreateProfile: !response.isProfileSet)))
             case .didFinishLogin(.failure):
                 return .none

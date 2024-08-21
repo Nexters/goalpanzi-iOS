@@ -36,11 +36,11 @@ struct CompetitionContentView: View {
                    .scaledToFill()
                    .edgesIgnoringSafeArea(.all)
             }
-            .scrollDisabled(store.competition?.board.isDisabled == true)
             
             if store.competition?.board.isDisabled == true {
                 NotStartedInfoView(me: store.competition?.me, competitionState: store.competition?.state ?? .disabled)
                     .padding(.top, 167)
+                    .allowsHitTesting(false)
             }
         }
     }

@@ -11,7 +11,7 @@ public protocol MissionServiceable {
     
     var getMissions: @Sendable (_ missionId: Int) async throws -> Mission { get }
     
-    var deleteMissions: @Sendable (_ missionId: Int) async throws -> Mission { get }
+    var deleteMissions: @Sendable (_ missionId: Int) async throws -> Void { get }
     
     var createMission: @Sendable (
         _ missionContent: String,

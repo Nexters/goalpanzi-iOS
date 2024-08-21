@@ -29,6 +29,11 @@ public struct MissionDeleteAlertFeature {
     public enum Action {
         case didTapConfirmButton
         case didDeleteMission(Result<Void, Error>)
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didDeleteMission
     }
     
     public var body: some ReducerOf<Self> {
@@ -41,11 +46,17 @@ public struct MissionDeleteAlertFeature {
                     ))
                 }
             case .didDeleteMission(.success):
-                return .run { _ in
-                    await self.dismiss()
-                }
+                return .concatenate(
+                    .send(.delegate(.didDeleteMission)),
+                    .run { _ in
+                        await self.dismiss()
+                    }
+                )
                 
             case .didDeleteMission(.failure):
+                return .none
+                
+            case .delegate:
                 return .none
             }
         }

@@ -13,7 +13,7 @@ public struct MissionService: MissionServiceable {
     
     public var getMissions: @Sendable (Int) async throws -> Mission
     
-    public var deleteMissions: @Sendable (Int) async throws -> Mission
+    public var deleteMissions: @Sendable (Int) async throws -> Void
     
     public var createMission: @Sendable (
         _ missionContent: String,
@@ -32,7 +32,7 @@ public struct MissionService: MissionServiceable {
     
     public init(
         getMissions: @escaping @Sendable (Int) async throws -> Mission,
-        deleteMissions: @escaping @Sendable (Int) async throws -> Mission,
+        deleteMissions: @escaping @Sendable (Int) async throws -> Void,
         createMission: @escaping @Sendable (
             _ missionContent: String,
             _ missionStartTime: Date,

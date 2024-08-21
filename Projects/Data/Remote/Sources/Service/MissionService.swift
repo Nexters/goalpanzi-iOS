@@ -38,17 +38,16 @@ extension MissionService: DependencyKey {
                 
             },
             deleteMissions: { missionID in
-                let endPoint = Endpoint<DeleteMissionResponseDTO>(
+                let endPoint = Endpoint<Empty>(
                     path: "api/missions/\(missionID)",
-                    httpMethod: .delete,
-                    queryParameters: EmptyRequest()
+                    httpMethod: .delete
                 )
                 
                 let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
                 
                 switch response {
-                case .success(let response):
-                    return response.toDomain
+                case .success:
+                    return
                 case .failure(let error):
                     throw error
                 }
@@ -128,23 +127,6 @@ extension MissionService: DependencyKey {
 }
 
 extension GetMissionResponseDTO {
-    
-    var toDomain: Mission {
-        .init(
-            missionId: missionId,
-            hostMemberId: hostMemberId,
-            description: description,
-            startDate: missionStartDate,
-            endDate: missionEndDate,
-            timeOfDay: TimeOfDay(rawValue: timeOfDay) ?? .everyday,
-            verificationWeekDays: missionDays.compactMap { WeekDay(rawValue: $0) },
-            verificationDays: boardCount,
-            invitationCode: invitationCode
-        )
-    }
-}
-
-extension DeleteMissionResponseDTO {
     
     var toDomain: Mission {
         .init(

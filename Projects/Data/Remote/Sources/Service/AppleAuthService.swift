@@ -54,6 +54,6 @@ extension AppleAuthService: DependencyKey {
 extension SignInResponseDTO {
     
     var toDomain: DomainAuthInterface.SignInInfo {
-        .init(accessToken: accessToken, refreshToken: refreshToken, isProfileSet: isProfileSet)
+        .init(accessToken: accessToken, refreshToken: refreshToken, isProfileSet: isProfileSet, memberId: memberId)
     }
 }

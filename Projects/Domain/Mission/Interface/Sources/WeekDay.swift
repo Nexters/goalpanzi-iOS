@@ -57,22 +57,22 @@ public enum WeekDay: String, CaseIterable {
         }
     }
     
-    public var toIndex: Int {
+    public var toPriority: Int {
         switch self {
-        case .sunday:
-            return 1
         case .monday:
-            return 2
+            return 100
         case .tuesday:
-            return 3
+            return 101
         case .wednesday:
-            return 4
+            return 102
         case .thursday:
-            return 5
+            return 103
         case .friday:
-            return 6
+            return 104
         case .saturday:
-            return 7
+            return 105
+        case .sunday:
+            return 106
         }
     }
     

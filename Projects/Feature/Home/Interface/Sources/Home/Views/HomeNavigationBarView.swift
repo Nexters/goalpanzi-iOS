@@ -49,7 +49,7 @@ struct HomeNavigationBarView: View {
                             .frame(width: 28, height: 28)
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                     }
-                    .isHidden(store.competition?.board.isDisabled == false)
+                    .isHidden(store.competition?.board.isDisabled == false || !store.isMeHost, remove: true)
                     .overlay {
                         SharedDesignSystemAsset.Images.invitationCodeGuideToolTip.swiftUIImage
                             .resizable()
@@ -60,7 +60,7 @@ struct HomeNavigationBarView: View {
                                 store.send(.didTapInvitationInfoToolTip)
                             }
                             .isHidden(
-                                store.isInvitationGuideToolTipShowed || store.competition?.state != .notStarted(hasOtherPlayer: false),
+                                store.isInvitationGuideToolTipShowed || store.competition?.state != .notStarted(hasOtherPlayer: false) || !store.isMeHost,
                                 remove: true
                             )
                     }
