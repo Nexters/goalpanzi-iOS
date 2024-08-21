@@ -19,14 +19,17 @@ public struct MissionInfoFeature {
         
         public let missionId: Int
         
+        public let isMeHost: Bool
+        
         public let totalBlockCount: Int
         
         public var infos: OrderedDictionary<String, String>
         
         @Presents var destination: Destination.State?
         
-        public init(missionId: Int, totalBlockCount: Int, infos: OrderedDictionary<String, String>) {
+        public init(missionId: Int, isMeHost: Bool, totalBlockCount: Int, infos: OrderedDictionary<String, String>) {
             self.missionId = missionId
+            self.isMeHost = isMeHost
             self.totalBlockCount = totalBlockCount
             self.infos = infos
         }

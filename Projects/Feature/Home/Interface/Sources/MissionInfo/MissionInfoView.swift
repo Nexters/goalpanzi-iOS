@@ -62,6 +62,7 @@ public struct MissionInfoView: View {
                                                 .font(.pretendard(kind: .body_lg, type: .light))
                                                 .foregroundStyle(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
                                         })
+                                        .isHidden(!store.isMeHost, remove: true)
                                     }
                                 }
                                 

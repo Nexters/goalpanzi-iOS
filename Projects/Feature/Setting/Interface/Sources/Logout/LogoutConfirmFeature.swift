@@ -22,6 +22,7 @@ public struct LogoutConfirmFeature: Reducer {
     
     @ObservableState
     public struct State: Equatable {
+        @Shared(.appStorage("myMemberId")) var myMemberId: Int? = nil
         public init() {}
     }
     
@@ -55,6 +56,7 @@ public struct LogoutConfirmFeature: Reducer {
             case .logoutResponse(.success(_)):
                 KeychainProvider.shared.delete(.accessToken)
                 KeychainProvider.shared.delete(.refreshToken)
+                state.myMemberId = nil
                 return .run { send in
                     await send(.delegate(.didLogoutSucceed))
                     await self.dismiss()

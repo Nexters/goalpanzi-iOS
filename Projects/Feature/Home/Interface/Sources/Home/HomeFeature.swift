@@ -30,10 +30,12 @@ public struct HomeFeature {
         public var selectedImages: [UIImage] = []
         public var ctaButtonState: CTAButtonState = .default
         public var isLoading: Bool = false
+        public var isMeHost: Bool { myMemberId == mission?.hostMemberId }
         
         @Shared(.appStorage("isInvitationGuideToolTipShowed")) var isInvitationGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isMissionInfoGuideToolTipShowed")) var isMissionInfoGuideToolTipShowed: Bool = false
         @Shared(.appStorage("isMissionCreated")) var isMissionCreated: Bool = false
+        @Shared(.appStorage("myMemberId")) var myMemberId: Int? = nil
         
         @Presents var destination: Destination.State?
         var path: StackState<Path.State> = .init()
@@ -203,7 +205,7 @@ public struct HomeFeature {
                 guard let missionId = state.missionId,
                       let mission = state.mission,
                       let totalBlockCount = state.competition?.board.totalBlockCount else { return .none }
-                state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, totalBlockCount: totalBlockCount, infos: mission.toInfos)))
+                state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, isMeHost: state.isMeHost, totalBlockCount: totalBlockCount, infos: mission.toInfos)))
                 return .none
                 
             case .didTapSettingButton:
