@@ -99,4 +99,12 @@ public enum WeekDay: String, CaseIterable {
         let weekdayIndex = Calendar.current.component(.weekday, from: Date.now)
         return WeekDay.allCases[weekdayIndex - 1]
     }
+
+    public static var allCasesInKoreanOrdered: [WeekDay] {
+        var weekDays = WeekDay.allCases
+        weekDays.remove(at: 0)
+        weekDays.append(.sunday)
+
+        return weekDays
+    }
 }
