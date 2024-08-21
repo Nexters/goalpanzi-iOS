@@ -19,13 +19,11 @@ public struct MissionInvitationCodeFeature: Reducer {
 
     public init() {}
     
-    
     // TODO: EntranceView와 같이 하나의 @Presents로 변경
     @Reducer
     public enum Destination {
         case invitationConfirm(InvitationConfirmFeature)
     }
-
 
     @ObservableState
     public struct State {
@@ -41,7 +39,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         var isUnavailableInvitation: Bool = false
         var isInvalidInvitationCode: Bool = false
         var isAllEmpty: Bool = true
-        var isAllTexFieldFilled: Bool = false
+        var isAllRequirementSatisfied: Bool = false
 
         public init() {}
     }
@@ -70,12 +68,13 @@ public struct MissionInvitationCodeFeature: Reducer {
             case .binding(\.firstInputCode):
                 state.isAllEmpty = (state.firstInputCode == "") ? true : false
                 return .none
+            case .binding(\.thirdInputCode):
+                state.isInvalidInvitationCode = false
+                state.isAllRequirementSatisfied = false
+                return .none
             case .binding(\.fourthInputCode):
-                if state.fourthInputCode != "" {
-                    state.isAllTexFieldFilled = true
-                    state.isInvalidInvitationCode = false
-                } else {
-                    state.isAllTexFieldFilled = false
+                if state.fourthInputCode != "" && state.isInvalidInvitationCode == false {
+                    state.isAllRequirementSatisfied = true
                 }
                 return .none
             case .confirmButtonTapped:
@@ -118,6 +117,7 @@ public struct MissionInvitationCodeFeature: Reducer {
 
 extension MissionInvitationCodeFeature {
     private func handleInvitationCode(with error: MissionClientError, state: inout State) {
+        state.isAllRequirementSatisfied = false
         switch error {
         case .notFoundMission:
             state.isInvalidInvitationCode = true

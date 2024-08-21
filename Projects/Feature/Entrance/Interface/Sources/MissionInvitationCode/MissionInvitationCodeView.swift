@@ -176,7 +176,8 @@ public struct MissionInvitationCodeView: View {
                 VStack {
                     Spacer()
                     
-                    MMRoundedButton(isEnabled: $store.isAllTexFieldFilled, title: "확인") {
+                    MMRoundedButton(isEnabled: $store.isAllRequirementSatisfied, title: "확인") {
+                        textFieldFocusState = nil
                         store.send(.confirmButtonTapped)
                     }
                     .frame(height: 60)
@@ -187,13 +188,7 @@ public struct MissionInvitationCodeView: View {
                 
                 
                 MMNavigationBar(
-                    title: "초대코드 입력",
-                    navigationAccessoryItem: AnyView(MMCapsuleTagView(
-                        text: "2/3",
-                        font: .pretendard(kind: .body_xl, type: .medium),
-                        horizontalPadding: 14,
-                        verticalPadding: 1
-                    ))
+                    title: "초대코드 입력"
                 ) {
                     store.send(.backButtonTapped)
                 }

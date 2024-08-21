@@ -91,6 +91,7 @@ public struct MMPopUpView<Content: View>: View {
 
             Button(action: primaryButtonAction) {
                 Text(primaryButtonTitle)
+                    .font(.pretendard(kind: .body_lg, type: .bold))
                     .frame(maxWidth: .infinity)
                     .frame(height: 60)
                     .background(Color.mmOrange)
@@ -102,6 +103,7 @@ public struct MMPopUpView<Content: View>: View {
                let secondaryAction = secondaryButtonAction {
                 Button(action: secondaryAction) {
                     Text(secondaryTitle)
+                        .font(.pretendard(kind: .body_lg, type: .bold))
                         .frame(maxWidth: .infinity)
                         .frame(height: 60)
                         .background(Color.mmWhite)
