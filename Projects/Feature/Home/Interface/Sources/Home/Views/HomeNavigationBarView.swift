@@ -49,7 +49,7 @@ struct HomeNavigationBarView: View {
                             .frame(width: 28, height: 28)
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                     }
-                    .isHidden(store.competition?.board.isDisabled == false)
+                    .isHidden(store.competition?.board.isDisabled == false || !store.isMeHost, remove: true)
                     .overlay {
                         SharedDesignSystemAsset.Images.invitationCodeGuideToolTip.swiftUIImage
                             .resizable()
