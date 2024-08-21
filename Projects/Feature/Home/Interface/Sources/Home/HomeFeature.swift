@@ -260,18 +260,13 @@ public struct HomeFeature {
                 case .dismiss:
                     return .none
                 case .presented(.imageUpload(.delegate(.didFinishImageUpload))):
-                    guard let competition = state.competition, let myPiece = competition.myPiece else { return .none }
-                    let newPosition = myPiece.position + 1
-                    guard newPosition.index < competition.board.totalBlockCount else { return .none }
-                    let event = competition.board.findEvent(by: newPosition)
-                    state.destination = .verificationResult(VerificationResultFeature.State(event: event))
-                    return .none
-                    
-                case .presented(.verificationResult(.delegate(.didTapCloseButton))):
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
                     return .none
+                    
+                case .presented(.verificationResult(.delegate(.didTapCloseButton))):
+                    return .send(.loadData(missionId: state.missionId ?? 0))
                     
                 case .presented(.missionDeleteAlert(.delegate(.didDeleteMission))):
                     return .send(.delegate(.didDeleteMission))
@@ -300,12 +295,14 @@ public struct HomeFeature {
                 return .none
                 
             case let .didFinishMoving(myPiece):
-                guard let myPiece else { return .none }
+                guard let competition = state.competition, let myPiece else { return .none }
                 let newPosition = myPiece.position + 1
+                guard newPosition.index < competition.board.totalBlockCount else { return .none }
                 state.competition?.board.update(piece: myPiece, to: newPosition)
                 state.competition?.board.update(conqueredPosition: newPosition)
                 state.movingPiece = nil
-                return .send(.loadData(missionId: state.missionId ?? 0))
+                state.destination = .verificationResult(VerificationResultFeature.State(event: competition.board.findEvent(by: newPosition)))
+                return .none
                 
             case .delegate:
                 return .none
