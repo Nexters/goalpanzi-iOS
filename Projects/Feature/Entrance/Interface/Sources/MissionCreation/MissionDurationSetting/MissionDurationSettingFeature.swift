@@ -102,10 +102,10 @@ extension MissionDurationSettingFeature {
             var currentDate = startDate
 
             while currentDate <= endDate {
-                if let weekday = WeekDay(index: calendar.component(.weekday, from: currentDate)) {
-                    availableWeekDays.insert(weekday)
-                }
-                currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
+                guard let weekday = WeekDay(index: calendar.component(.weekday, from: currentDate)) else { return [] }
+                availableWeekDays.insert(weekday)
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { return [] }
+                currentDate = nextDate
             }
 
             return availableWeekDays
