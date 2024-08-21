@@ -38,26 +38,28 @@ public struct MissionDeleteView: View {
                     }
                     .padding(.horizontal, 24)
                     
-                    Button(action: {
-                        store.send(.didTapConfirmButton)
-                    }) {
-                        Text("확인")
-                            .font(.pretendard(kind: .body_lg, type: .bold))
-                            .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
-                            .frame(height: 60)
-                            .frame(maxWidth: .infinity)
-                            .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
-                            .cornerRadius(30)
-                    }
-                    .padding(.horizontal, 24)
-                    Button(action: {
-                        store.send(.didTapCloseButton)
-                    }) {
-                        Text("닫기")
-                            .font(.pretendard(kind: .body_lg, type: .bold))
-                            .foregroundColor(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
-                            .frame(height: 60)
-                            .frame(maxWidth: .infinity)
+                    VStack(spacing: 10) {
+                        Button(action: {
+                            store.send(.didTapConfirmButton)
+                        }) {
+                            Text("확인")
+                                .font(.pretendard(kind: .body_lg, type: .bold))
+                                .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
+                                .frame(height: 60)
+                                .frame(maxWidth: .infinity)
+                                .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                                .cornerRadius(30)
+                        }
+                        .padding(.horizontal, 24)
+                        Button(action: {
+                            store.send(.didTapCloseButton)
+                        }) {
+                            Text("닫기")
+                                .font(.pretendard(kind: .body_lg, type: .bold))
+                                .foregroundColor(SharedDesignSystemAsset.Colors.gray3.swiftUIColor)
+                                .frame(height: 60)
+                                .frame(maxWidth: .infinity)
+                        }
                     }
                 }
                 .padding(.top, 40)
