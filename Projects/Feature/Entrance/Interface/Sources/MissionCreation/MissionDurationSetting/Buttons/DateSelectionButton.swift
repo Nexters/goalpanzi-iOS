@@ -43,5 +43,6 @@ struct DaySelectionButton: View {
                 .foregroundColor(foregroundColor)
                 .cornerRadius(20)
         }
+        .disabled(!isEnabled)
     }
 }

@@ -52,10 +52,11 @@ public struct MissionDurationSettingFeature: Reducer {
                 
                 return .none
             case .binding(\.missionEndDate):
+                guard state.missionEndDate != nil else { return .none }
                 updateAuthenticationDays(with: &state)
                 state.isSelectWeekDayEnabled = true
                 state.isAllCompleted = (state.selectedDays.isEmpty || state.authenticationDays == 0) ? false : true
-
+                
                 return .none
             case .daySelectionButtonTapped:
                 updateAuthenticationDays(with: &state)

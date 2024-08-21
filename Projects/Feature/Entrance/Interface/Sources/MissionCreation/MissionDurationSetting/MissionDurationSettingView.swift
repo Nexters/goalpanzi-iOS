@@ -83,7 +83,7 @@ public struct MissionDurationSettingView: View {
                         DaySelectionButton(
                             day: day.koreanName,
                             isSelected: store.selectedDays.contains(day),
-                            isEnabled: store.missionEndDate != nil
+                            isEnabled: store.isSelectWeekDayEnabled
                         ) {
                             if store.selectedDays.contains(day) {
                                 store.selectedDays.remove(day)

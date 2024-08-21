@@ -55,7 +55,6 @@ struct DateSelectionButton: View {
                                     self.date ?? minimumDate
                                 },
                                 set: {
-                                    print($0)
                                     self.date = $0
                                 }),
                             in: dateRange,
