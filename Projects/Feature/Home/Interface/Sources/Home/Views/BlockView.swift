@@ -24,28 +24,23 @@ struct BlockView: View {
     @Binding var shouldShowMovingPiece: Bool
     @Binding var movingDirection: DomainBoardInterface.Direction?
     
-    enum AnimationPhase: Double, CaseIterable {
-        case fadingIn = 0
-        case slide = 2
-    }
-    
     var body: some View {
         ZStack(alignment: .center) {
             if let block {
                 if block.isStartBlock {
                     block.theme.startImageAsset.swiftUIImage
                         .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
+                        .aspectRatio(1.0, contentMode: .fill)
                     
                 } else if block.isConquered, !block.isDisabled {
                     block.theme.conqueredImageAsset(kind: block.kind).swiftUIImage
                         .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
+                        .aspectRatio(1.0, contentMode: .fill)
                     
                 } else {
                     block.theme.normalImageAsset(kind: block.kind, isHighlighted: block.position.index % 2 == 0).swiftUIImage
                         .resizable()
-                        .aspectRatio(1.0, contentMode: .fit)
+                        .aspectRatio(1.0, contentMode: .fill)
                 }
                 
                 if block.isStartBlock {
@@ -63,7 +58,7 @@ struct BlockView: View {
                     if block.isConquered, !block.isDisabled {
                         block.theme.eventImageAsset(kind: block.kind, event: event)?.swiftUIImage
                             .resizable()
-                            .aspectRatio(1.0, contentMode: .fit)
+                            .aspectRatio(1.0, contentMode: .fill)
                     } else {
                         SharedDesignSystemAsset.Images.gift.swiftUIImage
                             .resizable()
