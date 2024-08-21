@@ -61,7 +61,7 @@ public struct MissionInfoFeature {
             switch action {
             case .didTapBackButton:
                 return .send(.didTapBackButtonDelayed)
-                    .debounce(id: CancelID.didTapBackButton, for: 0.2, scheduler: DispatchQueue.main.eraseToAnyScheduler())
+                    .debounce(id: CancelID.didTapBackButton, for: 0.3, scheduler: DispatchQueue.main.eraseToAnyScheduler())
                 
             case .didTapBackButtonDelayed:
                 return .run { _ in
