@@ -29,7 +29,7 @@ public struct MissionInvitationCodeView: View {
         case third
         case fourth
     }
-    
+    // TODO: State로 이동하기 -> TCA Tutorial 확인
     @FocusState private var textFieldFocusState: FocusTextField?
     @State private var keyboardHeight: CGFloat = 0
     
@@ -62,7 +62,6 @@ public struct MissionInvitationCodeView: View {
                                         .stroke(borderLineColor, lineWidth: 2)
                                 )
                                 .onChange(of: store.firstInputCode) { _, inputText in
-                                    
                                     if (inputText.count == 1) {
                                         textFieldFocusState = .second
                                     } else {
@@ -176,7 +175,8 @@ public struct MissionInvitationCodeView: View {
                 VStack {
                     Spacer()
                     
-                    MMRoundedButton(isEnabled: $store.isAllTexFieldFilled, title: "확인") {
+                    MMRoundedButton(isEnabled: $store.isAllRequirementSatisfied, title: "확인") {
+                        textFieldFocusState = nil
                         store.send(.confirmButtonTapped)
                     }
                     .frame(height: 60)
@@ -187,13 +187,7 @@ public struct MissionInvitationCodeView: View {
                 
                 
                 MMNavigationBar(
-                    title: "초대코드 입력",
-                    navigationAccessoryItem: AnyView(MMCapsuleTagView(
-                        text: "2/3",
-                        font: .pretendard(kind: .body_xl, type: .medium),
-                        horizontalPadding: 14,
-                        verticalPadding: 1
-                    ))
+                    title: "초대코드 입력"
                 ) {
                     store.send(.backButtonTapped)
                 }
