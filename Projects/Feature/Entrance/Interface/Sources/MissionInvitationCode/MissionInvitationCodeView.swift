@@ -29,7 +29,7 @@ public struct MissionInvitationCodeView: View {
         case third
         case fourth
     }
-    
+    // TODO: State로 이동하기 -> TCA Tutorial 확인
     @FocusState private var textFieldFocusState: FocusTextField?
     @State private var keyboardHeight: CGFloat = 0
     
@@ -62,7 +62,6 @@ public struct MissionInvitationCodeView: View {
                                         .stroke(borderLineColor, lineWidth: 2)
                                 )
                                 .onChange(of: store.firstInputCode) { _, inputText in
-                                    
                                     if (inputText.count == 1) {
                                         textFieldFocusState = .second
                                     } else {

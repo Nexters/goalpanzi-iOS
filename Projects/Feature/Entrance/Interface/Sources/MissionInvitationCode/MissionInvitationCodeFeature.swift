@@ -52,7 +52,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         case startMission
         
         case checkJoinableMissionResponse(Result<Mission, Error>)
-        
+
         // MARK: Child Action
         case destination(PresentationAction<Destination.Action>)
     }
@@ -66,7 +66,7 @@ public struct MissionInvitationCodeFeature: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .binding(\.firstInputCode):
-                state.isAllEmpty = (state.firstInputCode == "") ? true : false
+                state.isAllEmpty = false
                 return .none
             case .binding(\.thirdInputCode):
                 state.isInvalidInvitationCode = false
