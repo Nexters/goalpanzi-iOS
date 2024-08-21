@@ -169,6 +169,7 @@ struct BlockView: View {
         .onTapGesture {
             store.send(.didTapBlock(position: block?.position ?? .zero))
         }
+        .disabled(store.competition?.state != .started)
     }
     
     func calcNextPoint(reader: GeometryProxy, movingDirection direction: DomainBoardInterface.Direction?) -> CGPoint {
