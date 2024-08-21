@@ -8,6 +8,7 @@
 import SwiftUI
 import DomainPlayerInterface
 import FeatureHomeInterface
+import SharedDesignSystem
 
 //struct HomeContentView_Previews: PreviewProvider {
 //    static var previews: some View {
@@ -19,8 +20,8 @@ import FeatureHomeInterface
 
 struct HomeContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageDetailView(store: .init(initialState: ImageDetailFeature.State(player: .init(id: "", pieceID: "", name: "하이", character: .rabbit), verifiedAt: Date.now, imageURL: "https://dummyimage.com/900x700/663399/fff"), reducer: {
-            ImageDetailFeature()
+        ImageUploadView(store: .init(initialState: ImageUploadFeature.State(missionId: 0, player: .init(id: "", pieceID: "", name: "하이", character: .rabbit), selectedImage: SharedDesignSystemAsset.Images.basicCat.image), reducer: {
+            ImageUploadFeature()
         }))
     }
 }
