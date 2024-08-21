@@ -40,6 +40,7 @@ struct CompetitionContentView: View {
             if store.competition?.board.isDisabled == true {
                 NotStartedInfoView(me: store.competition?.me, competitionState: store.competition?.state ?? .disabled)
                     .padding(.top, 167)
+                    .allowsHitTesting(false)
             }
         }
     }
