@@ -74,6 +74,6 @@ struct DateSelectionButton: View {
     }
     
     private var dateRange: ClosedRange<Date> {
-        return isStartDateSelection ? minimumDate-1...Date.distantFuture : minimumDate...(calendar.date(byAdding: .month, value: 1, to: minimumDate) ?? Date())
+        return isStartDateSelection ? minimumDate-1...Date.distantFuture : minimumDate...(calendar.date(byAdding: .day, value: 30, to: minimumDate) ?? Date())
     }
 }
