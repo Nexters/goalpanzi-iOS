@@ -12,8 +12,9 @@ let targets: [Target] = [
                     "CFBundleShortVersionString": "1.0",
                     "CFBundleVersion": "1",
                     "CFBundleName": "MissionMate",
+                    "CFBundleDisplayName": "미션메이트",
                     "CFBundleIconName": "AppIcon",
-                    "UILaunchStoryboardName": "LaunchScreen.storyboard",
+                    "UILaunchStoryboardName": "LaunchScreen",
                     "UIApplicationSceneManifest": [
                         "UIApplicationSupportsMultipleScenes": false,
                         "UISceneConfigurations": []

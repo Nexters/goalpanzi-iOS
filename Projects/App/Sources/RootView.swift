@@ -56,6 +56,7 @@ struct RootView: View {
             
         case .none:
             EmptyView()
+                .backgroundStyle(Color.mmOrange)
         }
     }
 }
