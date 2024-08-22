@@ -56,7 +56,9 @@ public struct MissionDurationSettingView: View {
                     store.isStartDateSelected = true
                     store.missionEndDate = nil
                 })
+                
                 Text("~")
+                
                 DateSelectionButton(
                     isStartDateSelection: false,
                     date: $store.missionEndDate,

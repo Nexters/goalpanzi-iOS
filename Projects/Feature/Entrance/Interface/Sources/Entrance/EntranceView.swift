@@ -67,7 +67,7 @@ public struct EntranceView: View {
                         if store.isCheckingProfile {
                             ProgressView()
                         } else {
-                            Image(uiImage: store.userProfileCharacter.basicImage.image)
+                            Image(uiImage: store.userProfileCharacter.shadowImage.image)
                                 .resizable()
                                 .frame(width: 212, height: 212)
                                 .offset(y: 20)

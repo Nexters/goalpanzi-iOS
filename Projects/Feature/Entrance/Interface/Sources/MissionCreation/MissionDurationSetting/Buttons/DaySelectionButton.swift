@@ -27,7 +27,7 @@ struct DateSelectionButton: View {
     }
 
     private var textColor: Color {
-        isDateSelected ? .black : .mmGray3
+        isDateSelected ? .mmGray1 : .mmGray3
     }
 
     private var backgroundColor: Color {
@@ -39,9 +39,13 @@ struct DateSelectionButton: View {
     }
 
     var body: some View {
-        Text(displayText)
-            .padding()
-            .frame(width: 159, height: 60, alignment: .leading)
+        HStack {
+            Text(displayText)
+                .padding(.leading)
+            Spacer()
+        }
+            .frame(maxWidth: 159)
+            .frame(height: 60, alignment: .leading)
             .font(.pretendard(size: 16, type: .medium))
             .foregroundStyle(textColor)
             .background(backgroundColor)
@@ -62,6 +66,7 @@ struct DateSelectionButton: View {
                             displayedComponents: .date
                         ) {}
                             .labelsHidden()
+                            .scaleEffect(CGSize(width: 1.3, height: 1.3))
                             .colorMultiply(.clear)
                     }
             )
