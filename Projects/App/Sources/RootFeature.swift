@@ -112,6 +112,8 @@ struct RootFeature {
                 return .send(.setRootToEntrance(isFirstEntrance: true))
                 
             case .didFetchMissionInfo(.failure):
+                KeychainProvider.shared.delete(.accessToken)
+                KeychainProvider.shared.delete(.refreshToken)
                 return .none
                 
             case .destination(.presented(.entrance(.delegate(.didCreateMission)))):
