@@ -50,6 +50,7 @@ public struct MissionDurationSettingFeature: Reducer {
             switch action {
             case .binding(\.missionStartDate):
                 updateAuthenticationDays(with: &state)
+                state.authenticationDays = 0
                 state.selectedDays.removeAll()
                 state.availableWeekDays.removeAll()
 

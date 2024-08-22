@@ -70,6 +70,17 @@ public enum Character: String, CaseIterable {
         }
     }
     
+    public var shadowImage: SharedDesignSystemImages {
+        switch self {
+        case .rabbit: SharedDesignSystemAsset.Images.basicShadowRabbit
+        case .cat: SharedDesignSystemAsset.Images.basicShadowCat
+        case .dog: SharedDesignSystemAsset.Images.basicShadowPuppy
+        case .bird: SharedDesignSystemAsset.Images.basicShadowBird
+        case .panda: SharedDesignSystemAsset.Images.basicShadowPanda
+        case .bear: SharedDesignSystemAsset.Images.basicShadowBear
+        }
+    }
+    
     public var roundHighlightedImage: SharedDesignSystemImages {
         switch self {
         case .rabbit: SharedDesignSystemAsset.Images.roundHighlightedRabbit

@@ -39,7 +39,7 @@ public struct MissionDurationSettingView: View {
             authenticationDaysHeaderView
                 .padding(.bottom, 60)
 
-            Text("미션")
+            Text("미션 기간")
                 .foregroundStyle(Color.mmGray2)
                 .font(.pretendard(kind: .body_md, type: .bold))
                 .padding(.bottom, 8)
@@ -56,7 +56,9 @@ public struct MissionDurationSettingView: View {
                     store.isStartDateSelected = true
                     store.missionEndDate = nil
                 })
+                
                 Text("~")
+                
                 DateSelectionButton(
                     isStartDateSelection: false,
                     date: $store.missionEndDate,
@@ -65,7 +67,6 @@ public struct MissionDurationSettingView: View {
                     placeHolder: "마감일"
                 )
             }
-            .frame(maxWidth: .infinity)
             .padding(.bottom, 8)
 
             Text("내일부터 시작일로 지정할 수 있어요.")

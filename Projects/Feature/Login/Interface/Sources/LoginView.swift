@@ -52,7 +52,7 @@ public struct LoginView: View {
                     .padding(.top, -45)
                     .padding(.bottom, 16)
                     
-                    Text("소셜 계정으로 간편 기입하기")
+                    Text("소셜 계정으로 간편 가입하기")
                         .font(.pretendard(size: 14, type: .light))
                         .foregroundStyle(Color.mmWhite)
                 }

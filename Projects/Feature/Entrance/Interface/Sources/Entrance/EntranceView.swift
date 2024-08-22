@@ -67,7 +67,7 @@ public struct EntranceView: View {
                         if store.isCheckingProfile {
                             ProgressView()
                         } else {
-                            Image(uiImage: store.userProfileCharacter.basicImage.image)
+                            Image(uiImage: store.userProfileCharacter.shadowImage.image)
                                 .resizable()
                                 .frame(width: 212, height: 212)
                                 .offset(y: 20)
@@ -86,7 +86,8 @@ public struct EntranceView: View {
                         }
                         
                         Spacer()
-                        
+                            .frame(maxWidth: 23)
+
                         entranceSelectionButton(
                             title: "초대코드\n입력하기",
                             description: "초대받고 왔지~",
@@ -136,7 +137,7 @@ public struct EntranceView: View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.mmBlack.opacity(0.2), lineWidth: 1)
-                .frame(width: 162, height: 188)
+                .frame(height: 188)
                 .overlay(
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading, spacing: 4) {
