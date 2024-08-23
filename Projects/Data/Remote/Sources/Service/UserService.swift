@@ -32,7 +32,7 @@ extension UserService: DependencyKey {
                 let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
                 
                 if case .failure(let failure) = response {
-                    throw failure
+                    throw UserClientError.duplicateNickName
                 }
             },
             

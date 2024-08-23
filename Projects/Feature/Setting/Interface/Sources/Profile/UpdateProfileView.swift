@@ -36,7 +36,7 @@ public struct UpdateProfileView: View {
                         
                         Spacer()
                         
-                        Image(uiImage: store.selectedPiece.roundImage.image)
+                        Image(uiImage: store.selectedCharacter.roundImage.image)
                             .resizable()
                             .scaledToFit()
                             .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.26)
@@ -51,7 +51,7 @@ public struct UpdateProfileView: View {
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: geometry.size.width * 0.26, height: geometry.size.height * 0.11)
-                                            .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
+                                            .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
                                             .onTapGesture {
                                                 store.send(.pieceImageTapped(piece))
                                             }
@@ -60,7 +60,7 @@ public struct UpdateProfileView: View {
                                             .frame(width: geometry.size.width * 0.26, height: 24)
                                             .foregroundColor(.mmGray2)
                                             .background(Color.mmGray5)
-                                            .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
+                                            .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
                                             .cornerRadius(20)
                                     }
                                 }
