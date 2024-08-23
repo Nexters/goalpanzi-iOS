@@ -24,13 +24,12 @@ public struct UpdateProfileFeature: Reducer {
     public struct State: Equatable {
         var selectedCharacter: Character = .rabbit
         var nickName: String = ""
-        var initialnickName: String = ""
+        var initialNickName: String = ""
         var initialCharacter: Character = .rabbit
 
         var noticeMessage: String? = "1~6자, 한글, 영문 또는 숫자를 입력하세요."
         var isValidNickName: Bool = true
         var isAllCompleted: Bool = false // 모든 Input이 알맞게 들어갔는 지 확인
-        var isUpdateSucceed: Bool = false
         var isCheckingProfile: Bool = true // 앱 초기 진입 시 API 호출
 
         public init() {}
@@ -47,6 +46,12 @@ public struct UpdateProfileFeature: Reducer {
 
         case checkProfileResponse(Result<UserProfile, Error>)
         case updateProfileResponse(Result<Void, Error>)
+
+        public enum Delegate {
+            case didUpdateProfileSucceed
+        }
+
+        case delegate(Delegate)
     }
 
     @Dependency(\.dismiss) var dismiss
@@ -69,6 +74,7 @@ public struct UpdateProfileFeature: Reducer {
                 state.isValidNickName = self.validate(state.nickName)
                 state.isAllCompleted = self.isAvailableToSave(with: &state)
                 return .none
+
             case .pieceImageTapped(let character):
                 state.selectedCharacter = character
                 state.isAllCompleted = self.isAvailableToSave(with: &state)
@@ -84,7 +90,7 @@ public struct UpdateProfileFeature: Reducer {
                 state.nickName = userProfile.nickname
                 state.selectedCharacter = userProfile.character
                 state.initialCharacter = userProfile.character
-                state.initialnickName = userProfile.nickname
+                state.initialNickName = userProfile.nickname
                 state.isCheckingProfile = false
                 return .none
             case .checkProfileResponse(.failure(let error)):
@@ -100,8 +106,10 @@ public struct UpdateProfileFeature: Reducer {
                     ))
                 }
             case .updateProfileResponse(.success(_)):
-                state.isUpdateSucceed = true
-                return .none
+                return .run { send in
+                    await send(.delegate(.didUpdateProfileSucceed))
+                    await self.dismiss()
+                }
             case .updateProfileResponse(.failure(let error)):
                 guard let error = error as? UserClientError else { return .none }
                 switch error {
@@ -138,7 +146,8 @@ extension UpdateProfileFeature {
 
     private func isAvailableToSave(with state: inout State) -> Bool {
         let isCharacterEquals = state.initialCharacter == state.selectedCharacter
-        let isNicknameEquals = state.initialnickName == state.nickName
-        return state.isValidNickName && !state.nickName.isEmpty && !isNicknameEquals || state.isValidNickName && !state.nickName.isEmpty && !isCharacterEquals
+        let isNicknameEquals = state.initialNickName == state.nickName
+        let isAllEqual = isCharacterEquals && isNicknameEquals
+        return state.isValidNickName && !state.nickName.isEmpty && !isAllEqual
     }
 }

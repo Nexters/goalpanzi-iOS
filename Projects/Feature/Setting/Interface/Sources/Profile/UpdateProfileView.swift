@@ -103,25 +103,6 @@ public struct UpdateProfileView: View {
                         Spacer()
                     }
                 }
-                
-                if showToastMessage {
-                    VStack {
-                        Spacer()
-                        HStack(alignment: .center, spacing: 10) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                            Text("닉네임이 저장되었어요")
-                                .font(.pretendard(size: 14, type: .medium))
-                                .foregroundColor(.white)
-                        }
-                        .frame(width: 203, height: 44)
-                        .background(Color.mmGray2)
-                        .cornerRadius(9)
-                        .padding(.bottom, keyboardHeight + 111)
-                    }
-                    .transition(.opacity)
-                    .zIndex(1)
-                }
             }
         }
         .navigationBarHidden(true)
@@ -130,20 +111,6 @@ public struct UpdateProfileView: View {
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)
-        .onChange(of: store.isUpdateSucceed, { _, isUpdateSucceed in
-            if isUpdateSucceed {
-                showToastMessage = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation(.easeOut(duration: 0.5)) {
-                        showToastMessage = false
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        store.isUpdateSucceed = false
-                    }
-                }
-            }
-        })
         .task {
             await store
                 .send(.onAppear)
