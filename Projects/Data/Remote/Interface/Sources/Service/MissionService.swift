@@ -1,0 +1,56 @@
+//
+//  MissionService.swift
+//  DataRemote
+//
+//  Created by 김용재 on 8/12/24.
+//
+
+import Foundation
+
+import DomainMissionInterface
+
+public struct MissionService: MissionServiceable {
+    
+    public var getMissions: @Sendable (Int) async throws -> Mission
+    
+    public var deleteMissions: @Sendable (Int) async throws -> Void
+    
+    public var createMission: @Sendable (
+        _ missionContent: String,
+        _ missionStartTime: Date,
+        _ missionEndDate: Date,
+        _ timeOfDay: TimeOfDay,
+        _ missionDays: [WeekDay],
+        _ authenticationDays: Int
+    ) async throws -> (MissionID, InvitationCode)
+    
+    public var fetchMissionInfo: @Sendable (_ invitationCode: String) async throws -> Mission
+    
+    public var joinCompetition: @Sendable (_ invitationCode: String) async throws -> Void
+    
+    public var checkJoinableMission: @Sendable (_ invitationCode: String) async throws -> Mission
+    
+    public init(
+        getMissions: @escaping @Sendable (Int) async throws -> Mission,
+        deleteMissions: @escaping @Sendable (Int) async throws -> Void,
+        createMission: @escaping @Sendable (
+            _ missionContent: String,
+            _ missionStartTime: Date,
+            _ missionEndDate: Date,
+            _ timeOfDay: TimeOfDay,
+            _ missionDays: [WeekDay],
+            _ authenticationDays: Int
+        ) async throws -> (MissionID, InvitationCode),
+        
+        fetchMissionInfo: @escaping @Sendable (_ invitationCode: String) async throws -> Mission,
+        joinCompetition: @escaping @Sendable (_ invitationCode: String) async throws -> Void,
+        checkJoinableMission: @escaping @Sendable (_ invitationCode: String) async throws -> Mission
+    ) {
+        self.getMissions = getMissions
+        self.deleteMissions = deleteMissions
+        self.createMission = createMission
+        self.fetchMissionInfo = fetchMissionInfo
+        self.joinCompetition = joinCompetition
+        self.checkJoinableMission = checkJoinableMission
+    }
+}
