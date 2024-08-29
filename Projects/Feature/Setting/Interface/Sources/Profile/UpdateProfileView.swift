@@ -36,7 +36,7 @@ public struct UpdateProfileView: View {
                         
                         Spacer()
                         
-                        Image(uiImage: store.selectedPiece.roundImage.image)
+                        Image(uiImage: store.selectedCharacter.roundImage.image)
                             .resizable()
                             .scaledToFit()
                             .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.26)
@@ -51,7 +51,7 @@ public struct UpdateProfileView: View {
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: geometry.size.width * 0.26, height: geometry.size.height * 0.11)
-                                            .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
+                                            .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
                                             .onTapGesture {
                                                 store.send(.pieceImageTapped(piece))
                                             }
@@ -60,7 +60,7 @@ public struct UpdateProfileView: View {
                                             .frame(width: geometry.size.width * 0.26, height: 24)
                                             .foregroundColor(.mmGray2)
                                             .background(Color.mmGray5)
-                                            .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
+                                            .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
                                             .cornerRadius(20)
                                     }
                                 }
@@ -103,25 +103,6 @@ public struct UpdateProfileView: View {
                         Spacer()
                     }
                 }
-                
-                if showToastMessage {
-                    VStack {
-                        Spacer()
-                        HStack(alignment: .center, spacing: 10) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                            Text("닉네임이 저장되었어요")
-                                .font(.pretendard(size: 14, type: .medium))
-                                .foregroundColor(.white)
-                        }
-                        .frame(width: 203, height: 44)
-                        .background(Color.mmGray2)
-                        .cornerRadius(9)
-                        .padding(.bottom, keyboardHeight + 111)
-                    }
-                    .transition(.opacity)
-                    .zIndex(1)
-                }
             }
         }
         .navigationBarHidden(true)
@@ -130,20 +111,6 @@ public struct UpdateProfileView: View {
         .animation(.default, value: keyboardHeight)
         .onAppear(perform: addKeyboardObserver)
         .onDisappear(perform: removeKeyboardObserver)
-        .onChange(of: store.isUpdateSucceed, { _, isUpdateSucceed in
-            if isUpdateSucceed {
-                showToastMessage = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation(.easeOut(duration: 0.5)) {
-                        showToastMessage = false
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        store.isUpdateSucceed = false
-                    }
-                }
-            }
-        })
         .task {
             await store
                 .send(.onAppear)

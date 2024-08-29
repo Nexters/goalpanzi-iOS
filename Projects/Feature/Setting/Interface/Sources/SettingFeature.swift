@@ -33,6 +33,7 @@ public struct SettingFeature: Reducer {
     @ObservableState
     public struct State: Equatable {
         @Presents var destination: Destination.State?
+        var isUpdateSucceed: Bool = false
         var isNavigationPresented = false
         
         public init() {}
@@ -67,6 +68,7 @@ public struct SettingFeature: Reducer {
                 }
             case .navigateUpdateProfileViewTapped:
                 state.destination = .updateProfile(UpdateProfileFeature.State())
+                state.isUpdateSucceed = false
                 return .none
             case .navigateTermsOfUseViewTapped:
                 state.destination = .termsOfUse
@@ -79,6 +81,9 @@ public struct SettingFeature: Reducer {
                 return .none
             case .navigateProfileDeletionViewTapped:
                 state.destination = .profileDeletion(ProfileDeletionFeature.State())
+                return .none
+            case .destination(.presented(.updateProfile(.delegate(.didUpdateProfileSucceed)))):
+                state.isUpdateSucceed = true
                 return .none
             case .destination(.presented(.logout(.delegate(.didLogoutSucceed)))):
                 return .send(.delegate(.didLogout))
