@@ -17,11 +17,19 @@ struct CompetitionContentView: View {
 
     let store: StoreOf<HomeFeature>
     
+    @State private var isRefreshing: Bool = false
+    
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
                 ScrollViewReader { scrollProxy in
                     VStack(alignment: .leading, spacing: 4) {
+                        ProgressView()
+                            .controlSize(.regular)
+                            .progressViewStyle(.circular)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 30)
+                            .isHidden(!isRefreshing, remove: true)
                         CompetitionInfoView(store: store)
                         BoardView(proxy: proxy, scrollProxy: scrollProxy, store: store)
                     }
@@ -32,10 +40,23 @@ struct CompetitionContentView: View {
             }
             .background {
                 store.competition?.board.theme.backgroundImageAsset.swiftUIImage
-                   .resizable()
-                   .scaledToFill()
-                   .edgesIgnoringSafeArea(.all)
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
             }
+            .refreshable {
+                Task {
+                    isRefreshing = true
+                    await store.send(.didRefresh).finish()
+                    isRefreshing = false
+                }
+            }
+            
+            ProgressView()
+                .controlSize(.regular)
+                .progressViewStyle(.circular)
+                .frame(maxWidth: .infinity)
+                .isHidden(!store.isLoading || isRefreshing, remove: true)
             
             if store.competition?.board.isDisabled == true {
                 NotStartedInfoView(me: store.competition?.me, competitionState: store.competition?.state ?? .disabled)

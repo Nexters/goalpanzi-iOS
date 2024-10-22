@@ -41,13 +41,9 @@ public struct HomeView: View {
                 }
             }
             .task {
-                await store.send(.onAppear)
-                    .finish()
+                await store.send(.onAppear).finish()
             }
             .overlay {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .isHidden(!store.isLoading, remove: true)
                 
                 if let store = store.scope(state: \.destination?.missionDeleteAlert, action: \.destination.missionDeleteAlert) {
                     MissionDeleteAlertView(store: store)
