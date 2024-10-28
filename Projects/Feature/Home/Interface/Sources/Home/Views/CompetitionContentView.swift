@@ -14,22 +14,18 @@ import ComposableArchitecture
 struct CompetitionContentView: View {
     
     let proxy: GeometryProxy
-
     let store: StoreOf<HomeFeature>
     
     @State private var isRefreshing: Bool = false
+    @State private var refreshControlOpacity: CGFloat = 0
+    private let refreshMinOffset: CGFloat = 47
+    private let refreshMaxOffset: CGFloat = 214
     
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
                 ScrollViewReader { scrollProxy in
                     VStack(alignment: .leading, spacing: 4) {
-                        ProgressView()
-                            .controlSize(.regular)
-                            .progressViewStyle(.circular)
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 30)
-                            .isHidden(!isRefreshing, remove: true)
                         CompetitionInfoView(store: store)
                         BoardView(proxy: proxy, scrollProxy: scrollProxy, store: store)
                     }
@@ -38,6 +34,11 @@ struct CompetitionContentView: View {
                     .padding(.bottom, 142)
                 }
             }
+            .onScrollGeometryChange(for: CGFloat.self, of: { geometry in
+                geometry.contentOffset.y
+            }, action: { _, new in
+                refreshControlOpacity = (min(-new, refreshMaxOffset) - (refreshMinOffset)) / (refreshMaxOffset - refreshMinOffset)
+            })
             .background {
                 store.competition?.board.theme.backgroundImageAsset.swiftUIImage
                     .resizable()
@@ -50,6 +51,15 @@ struct CompetitionContentView: View {
                     await store.send(.didRefresh).finish()
                     isRefreshing = false
                 }
+            }
+            .overlay(alignment: .top) {
+                ProgressView()
+                    .controlSize(.regular)
+                    .progressViewStyle(.circular)
+                    .frame(maxWidth: .infinity)
+                    .opacity(refreshControlOpacity)
+                    .animation(.easeInOut, value: refreshControlOpacity)
+                    .padding(.top, 200)
             }
             
             ProgressView()
