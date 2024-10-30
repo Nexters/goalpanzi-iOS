@@ -102,6 +102,11 @@ public struct EntranceView: View {
             }
             .edgesIgnoringSafeArea(.bottom)
             .edgesIgnoringSafeArea(.horizontal)
+            .task {
+                await store
+                    .send(.onAppear)
+                    .finish()
+            }
         } destination: { store in
             switch store.case {
             case let .missionContentSetting(store):
@@ -120,11 +125,6 @@ public struct EntranceView: View {
             if let store = store.scope(state: \.pieceCreationCompleted, action: \.pieceCreationCompleted.presented) {
                 PieceCreationCompletedView(store: store)
             }
-        }
-        .task {
-            await store
-                .send(.onAppear)
-                .finish()
         }
     }
     
