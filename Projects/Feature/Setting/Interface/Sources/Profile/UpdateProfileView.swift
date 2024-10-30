@@ -72,6 +72,11 @@ public struct UpdateProfileView: View {
                                     }
                                 }
                                 .padding(.bottom, 38)
+                                .onAppear {
+                                    withAnimation {
+                                        proxy.scrollTo(store.initialCharacter, anchor: .center)
+                                    }
+                                }
                             }
                         }
                         

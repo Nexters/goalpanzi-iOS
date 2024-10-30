@@ -32,7 +32,6 @@ public struct UnsavedChangesAlertFeature: Reducer {
         }
 
         case delegate(Delegate)
-
     }
 
     @Dependency(\.dismiss) var dismiss
@@ -42,13 +41,11 @@ public struct UnsavedChangesAlertFeature: Reducer {
             print(action)
             switch action {
             case .exitButtonTapped:
-                print("모지?....!!!!")
                 return .run { send in
                     await send(.delegate(.exit))
                     await self.dismiss()
                 }
             case .cancelButtonTapped:
-                print("모지?....")
                 return .run { _ in
                   await self.dismiss()
                 }
