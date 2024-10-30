@@ -36,7 +36,7 @@ public struct UpdateProfileView: View {
 
                         Spacer()
 
-                        Image(uiImage: store.selectedCharacter.roundImage.image)
+                        Image(uiImage: store.selectedCharacter?.roundImage.image ?? store.initialCharacter.roundImage.image)
                             .resizable()
                             .scaledToFit()
                             .frame(width: geometry.size.width * 0.41)
@@ -122,6 +122,11 @@ public struct UpdateProfileView: View {
             await store
                 .send(.onAppear)
                 .finish()
+        }
+        .overlay {
+            if let store = store.scope(state: \.unsavedChanges, action: \.unsavedChanges.presented) {
+                UnsavedChangesAlertView(store: store)
+            }
         }
     }
 }
