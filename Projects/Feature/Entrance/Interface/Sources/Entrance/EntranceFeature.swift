@@ -88,6 +88,7 @@ public struct EntranceFeature: Reducer {
                 
                 if state.isFirstEntrance {
                     state.pieceCreationCompleted = PieceCreationCompletedFeature.State(userProfile: userProfile)
+                    state.isFirstEntrance = false
                 }
                 return .none
             case .checkProfileResponse(.failure(let error)):
