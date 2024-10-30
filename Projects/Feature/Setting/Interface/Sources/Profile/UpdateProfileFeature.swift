@@ -98,7 +98,7 @@ public struct UpdateProfileFeature: Reducer {
                 return .none
                 // MARK: 프로필 업데이트
             case .saveButtonTapped:
-                let nickName = state.nickName
+                let nickName = (state.nickName == state.initialNickName) ? nil : state.nickName
                 let piece = state.selectedCharacter
                 return .run { send in
                     await send(.updateProfileResponse(

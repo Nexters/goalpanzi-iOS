@@ -17,7 +17,7 @@ public enum UserClientError: Error {
 
 public struct UserClient {
 
-    public typealias Nickname = String
+    public typealias Nickname = String?
 
     public var createProfile: @Sendable (_ userService: UserServiceable, Nickname, Character) async throws -> Void
     public var deleteProfile: @Sendable (_ userService: UserServiceable) async throws -> Void
