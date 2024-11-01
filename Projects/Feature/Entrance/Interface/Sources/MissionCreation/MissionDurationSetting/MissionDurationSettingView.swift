@@ -16,102 +16,176 @@ import ComposableArchitecture
 public struct MissionDurationSettingView: View {
 
     @Bindable public var store: StoreOf<MissionDurationSettingFeature>
+    @State private var showStartCalendar: Bool = false
+    @State private var showEndCalendar: Bool = false
 
     public init(store: StoreOf<MissionDurationSettingFeature>) {
         self.store = store
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            MMNavigationBar(
-                title: "기간 및 요일 설정",
-                navigationAccessoryItem: AnyView(MMCapsuleTagView(
-                    text: "2/3",
-                    font: .pretendard(kind: .body_xl, type: .medium),
-                    horizontalPadding: 14,
-                    verticalPadding: 1
-                ))
-            ) {
-                store.send(.backButtonTapped)
-            }
-            .padding(.bottom, 22)
+        ZStack {
+            VStack(alignment: .leading, spacing: 0) {
+                MMNavigationBar(
+                    title: "기간 및 요일 설정",
+                    navigationAccessoryItem: AnyView(MMCapsuleTagView(
+                        text: "2/3",
+                        font: .pretendard(kind: .body_xl, type: .medium),
+                        horizontalPadding: 14,
+                        verticalPadding: 1
+                    ))
+                ) {
+                    store.send(.backButtonTapped)
+                }
+                .padding(.bottom, 22)
 
-            authenticationDaysHeaderView
-                .padding(.bottom, 60)
+                authenticationDaysHeaderView
+                    .padding(.bottom, 60)
 
-            Text("미션 기간")
-                .foregroundStyle(Color.mmGray2)
-                .font(.pretendard(kind: .body_md, type: .bold))
-                .padding(.bottom, 8)
-
-            HStack {
-                DateSelectionButton(
-                    isStartDateSelection: true,
-                    date: $store.missionStartDate,
-                    minimumDate: .constant(store.startMinimumDate),
-                    isEnabled: .constant(true),
-                    placeHolder: "시작일"
-                )
-                .onChange(of: store.missionStartDate, { oldValue, newValue in
-                    store.isStartDateSelected = true
-                    store.missionEndDate = nil
-                })
-                
-                Text("~")
-                
-                DateSelectionButton(
-                    isStartDateSelection: false,
-                    date: $store.missionEndDate,
-                    minimumDate: .constant(store.missionStartDate ?? Date()),
-                    isEnabled: $store.isStartDateSelected,
-                    placeHolder: "마감일"
-                )
-            }
-            .padding(.bottom, 8)
-
-            Text("내일부터 시작일로 지정할 수 있어요.")
-                .font(.pretendard(size: 14, type: .light))
-                .foregroundStyle(Color.mmGray3)
-                .padding(.bottom, 40)
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("인증 요일 (다중선택)")
+                Text("미션 기간")
+                    .foregroundStyle(Color.mmGray2)
                     .font(.pretendard(kind: .body_md, type: .bold))
-                    .foregroundStyle(!store.availableWeekDays.isEmpty ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
+                    .padding(.bottom, 8)
 
                 HStack {
-                    ForEach(WeekDay.allCasesInKoreanOrdered, id: \.self) { day in
-                        DaySelectionButton(
-                            day: day.toKorean,
-                            isSelected: store.selectedDays.contains(day),
-                            isEnabled: store.availableWeekDays.contains(day)
-                        ) {
-                            if store.selectedDays.contains(day) {
-                                store.selectedDays.remove(day)
-                            } else {
-                                store.selectedDays.insert(day)
-                            }
-                            store.send(.daySelectionButtonTapped)
-                        }
+                    DateSelectionButton(
+                        isStartDateSelection: true,
+                        date: $store.missionStartDate,
+                        isEnabled: .constant(true),
+                        placeHolder: "시작일"
+                    )
+                    .onTapGesture {
+                        showStartCalendar.toggle()
+                    }
+                    .onChange(of: store.missionStartDate, { oldValue, newValue in
+                        store.isStartDateSelected = true
+                        store.missionEndDate = nil
+                    })
+
+                    Text("~")
+
+                    DateSelectionButton(
+                        isStartDateSelection: false,
+                        date: $store.missionEndDate,
+                        isEnabled: $store.isStartDateSelected,
+                        placeHolder: "마감일"
+                    )
+                    .onTapGesture {
+                        showEndCalendar.toggle()
                     }
                 }
+                .padding(.bottom, 8)
 
-                Text("선택한 요일에만 미션 인증할 수 있어요.(ex.월,수,금)")
+                Text("내일부터 시작일로 지정할 수 있어요.")
                     .font(.pretendard(size: 14, type: .light))
-                    .foregroundStyle(!store.availableWeekDays.isEmpty ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
+                    .foregroundStyle(Color.mmGray3)
+                    .padding(.bottom, 40)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("인증 요일 (다중선택)")
+                        .font(.pretendard(kind: .body_md, type: .bold))
+                        .foregroundStyle(!store.availableWeekDays.isEmpty ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
+
+                    HStack {
+                        ForEach(WeekDay.allCasesInKoreanOrdered, id: \.self) { day in
+                            DaySelectionButton(
+                                day: day.toKorean,
+                                isSelected: store.selectedDays.contains(day),
+                                isEnabled: store.availableWeekDays.contains(day)
+                            ) {
+                                if store.selectedDays.contains(day) {
+                                    store.selectedDays.remove(day)
+                                } else {
+                                    store.selectedDays.insert(day)
+                                }
+                                store.send(.daySelectionButtonTapped)
+                            }
+                        }
+                    }
+
+                    Text("선택한 요일에만 미션 인증할 수 있어요.(ex.월,수,금)")
+                        .font(.pretendard(size: 14, type: .light))
+                        .foregroundStyle(!store.availableWeekDays.isEmpty ? Color.mmGray2 : Color.mmGray2.opacity(0.3))
+                }
+
+                Spacer()
+
+                MMRoundedButton(isEnabled: $store.isAllCompleted, title: "다음") {
+                    store.send(.nextButtonTapped)
+                }
+                .frame(height: 60)
+                .padding(.bottom, 36)
+            }
+            .navigationBarHidden(true)
+            .edgesIgnoringSafeArea(.bottom)
+            .padding(.horizontal, 24)
+
+            if showStartCalendar {
+                VStack(spacing: 0) {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showStartCalendar = false
+                        }) {
+                            Text("선택완료")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Color.blue)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 15)
+                    .padding(.bottom, 45)
+
+                    CalenderPopView(
+                        isStart: true,
+                        selectedDate: $store.missionStartDate,
+                        startDate: store.calendarStartDate
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: 300)
+                    .padding(.horizontal, 24)
+                }
+                .background(Color.white)
+                .cornerRadius(15)
+                .shadow(radius: 10)
             }
 
-            Spacer()
+            if showEndCalendar {
+                VStack(spacing: 0) {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showEndCalendar = false
+                        }) {
+                            Text("선택완료")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Color.blue)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 15)
+                    .padding(.bottom, 45)
 
-            MMRoundedButton(isEnabled: $store.isAllCompleted, title: "다음") {
-                store.send(.nextButtonTapped)
+                    CalenderPopView(
+                        isStart: false,
+                        selectedDate: $store.missionEndDate,
+                        startDate: store.missionStartDate ?? Date()
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: 300)
+                    .padding(.horizontal, 24)
+                }
+                .background(Color.white)
+                .cornerRadius(15)
+                .shadow(radius: 10)
             }
-            .frame(height: 60)
-            .padding(.bottom, 36)
         }
-        .navigationBarHidden(true)
-        .edgesIgnoringSafeArea(.bottom)
-        .padding(.horizontal, 24)
     }
 }
 

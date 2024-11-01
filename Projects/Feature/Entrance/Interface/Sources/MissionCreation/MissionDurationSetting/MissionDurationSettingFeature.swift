@@ -25,8 +25,8 @@ public struct MissionDurationSettingFeature: Reducer {
         var missionStartDate: Date? = nil
         var missionEndDate: Date? = nil
 
-        var startMinimumDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-        var endMinimumDate = Date()
+        // 캘린더(미션 시작) 선택 가능 시작일
+        let calendarStartDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: Date())) ?? Date()
 
         var selectedDays: Set<WeekDay> = []
         var availableWeekDays: Set<WeekDay> = []
@@ -35,7 +35,6 @@ public struct MissionDurationSettingFeature: Reducer {
         @Shared var missionCreationData: MissionCreationData
     }
 
-    @Dependency(\.dismiss) var dismiss
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
@@ -43,6 +42,8 @@ public struct MissionDurationSettingFeature: Reducer {
         case nextButtonTapped
         case backButtonTapped
     }
+
+    @Dependency(\.dismiss) var dismiss
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
