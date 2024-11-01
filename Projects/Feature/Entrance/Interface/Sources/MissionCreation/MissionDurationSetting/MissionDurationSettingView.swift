@@ -120,71 +120,25 @@ public struct MissionDurationSettingView: View {
             .edgesIgnoringSafeArea(.bottom)
             .padding(.horizontal, 24)
 
-            if showStartCalendar {
-                VStack(spacing: 0) {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            showStartCalendar = false
-                        }) {
-                            Text("선택완료")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(Color.blue)
-                                .cornerRadius(8)
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 15)
-                    .padding(.bottom, 45)
 
-                    CalenderPopView(
-                        isStart: true,
-                        selectedDate: $store.missionStartDate,
-                        startDate: store.calendarStartDate
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: 300)
-                    .padding(.horizontal, 24)
-                }
-                .background(Color.white)
-                .cornerRadius(15)
-                .shadow(radius: 10)
+            if showStartCalendar {
+                CalendarPopupView(
+                    isStart: true,
+                    isShowing: $showStartCalendar,
+                    selectedDate: $store.missionStartDate,
+                    startDate: store.calendarStartDate
+                )
             }
 
             if showEndCalendar {
-                VStack(spacing: 0) {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            showEndCalendar = false
-                        }) {
-                            Text("선택완료")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(Color.blue)
-                                .cornerRadius(8)
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 15)
-                    .padding(.bottom, 45)
-
-                    CalenderPopView(
-                        isStart: false,
-                        selectedDate: $store.missionEndDate,
-                        startDate: store.missionStartDate ?? Date()
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: 300)
-                    .padding(.horizontal, 24)
-                }
-                .background(Color.white)
-                .cornerRadius(15)
-                .shadow(radius: 10)
+                CalendarPopupView(
+                    isStart: false,
+                    isShowing: $showEndCalendar,
+                    selectedDate: $store.missionEndDate,
+                    startDate: store.missionStartDate ?? Date()
+                )
             }
+
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  CalenderPopView.swift
+//  CalenderView.swift
 //  FeatureEntrance
 //
 //  Created by Miro on 10/31/24.
@@ -13,7 +13,7 @@ import SharedUtil
 
 import HorizonCalendar
 
-struct CalenderPopView: View {
+struct CalenderView: View {
 
     @Binding var selectedDate: Date?
     let startDate: Date
