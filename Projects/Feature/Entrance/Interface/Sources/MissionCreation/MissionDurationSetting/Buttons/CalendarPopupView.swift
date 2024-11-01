@@ -8,40 +8,35 @@
 import SwiftUI
 
 struct CalendarPopupView: View {
-
     let isStart: Bool
     @Binding var isShowing: Bool
     @Binding var selectedDate: Date?
     let startDate: Date
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Button(action: {
-                    isShowing = false
-                }) {
-                    Text("선택완료")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 15)
-            .padding(.bottom, 45)
-
+        ZStack(alignment: .topTrailing) {
             CalenderView(
                 isStart: isStart,
                 selectedDate: $selectedDate,
                 startDate: startDate
             )
-            .frame(maxWidth: .infinity, maxHeight: 300)
+            .frame(maxWidth: .infinity, maxHeight: 450)
             .padding(.horizontal, 24)
+
+            Button(action: {
+                isShowing = false
+            }) {
+                Text("선택완료")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.blue)
+                    .cornerRadius(8)
+            }
+            .padding(.trailing, 24)
         }
+        .frame(maxWidth: .infinity, maxHeight: 500)
         .background(Color.white)
         .cornerRadius(15)
         .shadow(radius: 10)

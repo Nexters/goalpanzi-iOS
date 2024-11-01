@@ -43,6 +43,13 @@ struct CalenderView: View {
             monthsLayout: .horizontal(options: .init()),
             dataDependency: selectedDate
         )
+        .monthHeaders { month in
+            let year = String(month.components.year ?? 0)
+            let month = String(month.components.month ?? 0)
+            return Text("\(year)년 \(month)월")
+                .font(.title2)
+                .padding()
+        }
         .onDaySelection { [startDate, endDate] day in
             if let date = calendar.date(from: day.components) {
                 if date >= startDate && date <= endDate {
