@@ -30,7 +30,7 @@ struct CalenderPopView: View {
         if isStart {
             self.endDate = Calendar.current.date(byAdding: .year, value: 1, to: startDate) ?? Date()
         } else {
-            self.endDate = Calendar.current.date(byAdding: .day, value: 31, to: startDate) ?? Date()
+            self.endDate = Calendar.current.date(byAdding: .day, value: 30, to: startDate) ?? Date()
         }
     }
 
