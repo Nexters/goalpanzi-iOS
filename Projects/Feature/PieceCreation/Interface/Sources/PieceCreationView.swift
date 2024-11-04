@@ -37,29 +37,35 @@ public struct PieceCreationView: View {
                 Image(uiImage: store.selectedPiece.roundImage.image)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.26)
+                    .frame(width: geometry.size.width * 0.56)
                     .padding(.bottom, 18)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        Spacer().frame(width: 16)
-                        ForEach(Character.allCases, id: \.self) { piece in
-                            VStack {
-                                Image(uiImage: piece.basicImage.image)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: geometry.size.width * 0.26, height: geometry.size.height * 0.11)
-                                    .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
-                                    .onTapGesture {
-                                        store.send(.pieceImageTapped(piece))
-                                    }
-                                Text(piece.koreanName)
-                                    .font(.pretendard(kind: .body_md, type:.bold))
-                                    .frame(width: geometry.size.width * 0.26, height: 24)
-                                    .foregroundColor(.mmGray2)
-                                    .background(Color.mmGray5)
-                                    .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
-                                    .cornerRadius(20)
+                    ScrollViewReader { proxy in
+                        HStack(spacing: 8) {
+                            Spacer().frame(width: 16)
+                            ForEach(Character.allCases, id: \.self) { piece in
+                                VStack {
+                                    Image(uiImage: piece.basicImage.image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: geometry.size.width * 0.26, height: geometry.size.height * 0.11)
+                                        .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
+                                        .onTapGesture {
+                                            store.send(.pieceImageTapped(piece))
+                                            withAnimation {
+                                                proxy.scrollTo(piece, anchor: .center)
+                                            }
+                                        }
+                                        .id(piece)
+                                    Text(piece.koreanName)
+                                        .font(.pretendard(kind: .body_md, type:.bold))
+                                        .frame(width: geometry.size.width * 0.26, height: 24)
+                                        .foregroundColor(.mmGray2)
+                                        .background(Color.mmGray5)
+                                        .opacity(piece == store.selectedPiece ? 1.0 : 0.3)
+                                        .cornerRadius(20)
+                                }
                             }
                         }
                     }
