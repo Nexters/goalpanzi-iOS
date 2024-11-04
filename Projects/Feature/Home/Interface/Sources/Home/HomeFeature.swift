@@ -61,6 +61,7 @@ public struct HomeFeature {
     
     public enum Action: BindableAction {
         case onAppear
+        case didRefresh
         case didTapMissionInfoButton
         case didTapSettingButton
         case didTapInvitationInfoButton
@@ -95,10 +96,12 @@ public struct HomeFeature {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .onAppear:
+            case .onAppear, .didRefresh:
                 state.isLoading = true
                 return .run { send in
-                    await send(.didFetchMyMissionInfo( Result { try await missionMemberService.getMissionMembersMe() } ))
+                    await send(.didFetchMyMissionInfo(Result {
+                        try await missionMemberService.getMissionMembersMe()
+                    }))
                 }
                 
             case let .didFetchMyMissionInfo(.success(myMissionInfo)):
