@@ -137,7 +137,7 @@ public struct HomeFeature {
                 state.isLoading = false
                 state.mission = mission
                 
-                let missionStatus = state.missionStatus ?? .pending
+                let status = state.missionStatus?.toCompetitionStatus(hasOtherPlayer: !board.isEmpty)
                 var competition = Competition(
                     players: board.missionBoards.flatMap(\.missionBoardMembers).map {
                         Player(
@@ -162,13 +162,14 @@ public struct HomeFeature {
                             Event.reward(JejuRewardInfo(rawValue: $0.reward, position: Position(index: $0.number)))
                         },
                         totalBlockCount: mission.verificationDays + 1,
-                        isDisabled: missionStatus != .inProgress
+                        isDisabled: status != .started
                     ),
                     info: mission.makeInfos(
-                        missionStatus: missionStatus,
+                        status: status,
                         progressCount: board.progressCount,
                         myRank: rank.rank
-                    )
+                    ),
+                    status: status ?? .created(hasOtherPlayer: false)
                 )
                 
                 board.missionBoards.forEach { boardInfo in
@@ -185,12 +186,12 @@ public struct HomeFeature {
                 
                 state.competition = competition
                 state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
-                switch missionStatus {
+                switch status {
                 case .deleted:
                     state.destination = .missionDeleteAlert(MissionDeleteAlertFeature.State(missionId: state.missionId ?? 0))
                     return .none
                     
-                case .pendingCompletion:
+                case .pendingCompleted:
                     state.isLoading = true
                     return .run { [missionId = state.missionId] send in
                         await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))

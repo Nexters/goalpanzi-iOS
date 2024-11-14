@@ -23,7 +23,7 @@ struct PlayerView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 6) {
             ZStack(alignment: .top) {
-                let shouldDisabled = !player.isMe && (store.missionStatus == .ongoing || verification?.isVerified == false)
+                let shouldDisabled = !player.isMe && (store.competition?.status == .created(hasOtherPlayer: true) || verification?.isVerified == false)
                 Button(action: {
                     store.send(.didTapPlayer(player: player))
                 }) {
