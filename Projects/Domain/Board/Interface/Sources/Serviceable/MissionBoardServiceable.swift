@@ -38,6 +38,7 @@ public struct MissionBoard {
     
     public let missionBoards: [BoardInfo]
     public let progressCount: Int
+    public var isEmpty: Bool { missionBoards.flatMap(\.missionBoardMembers).isEmpty }
     
     public init(missionBoards: [BoardInfo], progressCount: Int) {
         self.missionBoards = missionBoards

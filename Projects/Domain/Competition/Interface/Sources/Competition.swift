@@ -22,6 +22,8 @@ public struct Competition {
     
     public var verifications: [Vertification]
     
+    public let status: Status
+    
     public var info: [InfoKey: String]
     
     public var board: Board
@@ -30,12 +32,14 @@ public struct Competition {
         players: [Player],
         verifications: [Vertification],
         board: Board,
-        info: [InfoKey: String] = [:]
+        info: [InfoKey: String] = [:],
+        status: Status
     ) {
         self.players = players
         self.verifications = verifications
         self.board = board
         self.info = info
+        self.status = status
         self.board.update(pieces: createPieces(by: players))
     }
     
@@ -88,20 +92,48 @@ public extension Competition {
         case title
         case subtitle
     }
+    
+    enum Status: Equatable {
+        case created(hasOtherPlayer: Bool)
+        case started
+        case deleted
+        case pendingCompleted
+        case completed
+    }
+}
+
+public extension MissionStatus {
+    
+    func toCompetitionStatus(hasOtherPlayer: Bool) -> Competition.Status {
+        switch self {
+        case .pending, .created:
+            return .created(hasOtherPlayer: hasOtherPlayer)
+        case .canceled:
+            return .deleted
+        case .ongoing, .inProgress:
+            return .started
+        case .deleted:
+            return .deleted
+        case .pendingCompletion:
+            return .pendingCompleted
+        case .completed:
+            return .completed
+        }
+    }
 }
 
 public extension Mission {
     
-    func makeInfos(missionStatus: MissionStatus, progressCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
-        switch missionStatus {
-        case .pending, .created, .canceled, .deleted:
+    func makeInfos(status: Competition.Status?, progressCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
+        switch status {
+        case .created, .deleted, nil:
             let formatter = DateFormatter()
             formatter.dateFormat = "경쟁시작 M월 d일"
             return [
                 .title: formatter.string(from: startDate),
                 .subtitle: "해당일에 자동으로 경쟁이 시작돼요."
             ]
-        case .ongoing, .inProgress, .pendingCompletion, .completed:
+        case .started, .pendingCompleted, .completed:
             if !checkIsMissionDay || !checkIsMissionTime {
                 return [
                     .title: "꾸준하게 완수해봐요!",
