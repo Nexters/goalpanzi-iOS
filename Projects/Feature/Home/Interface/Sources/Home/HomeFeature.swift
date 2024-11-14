@@ -180,8 +180,6 @@ public struct HomeFeature {
                         }
                     }
                 }
-                competition.sortPlayersByVerifiedAt()
-                competition.moveMeToFront()
                 
                 state.competition = competition
                 state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
