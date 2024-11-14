@@ -33,7 +33,7 @@ struct HomeNavigationBarView: View {
                             store.send(.didTapMissionInfoGuideToolTip)
                         }
                         .isHidden(
-                            store.isMissionInfoGuideToolTipShowed || store.competition?.state != .notStarted(hasOtherPlayer: true),
+                            store.isMissionInfoGuideToolTipShowed || store.missionStatus != .ongoing,
                             remove: true
                         )
                 }
@@ -60,7 +60,7 @@ struct HomeNavigationBarView: View {
                                 store.send(.didTapInvitationInfoToolTip)
                             }
                             .isHidden(
-                                store.isInvitationGuideToolTipShowed || store.competition?.state != .notStarted(hasOtherPlayer: false) || !store.isMeHost,
+                                store.isInvitationGuideToolTipShowed || store.missionStatus != .pending || !store.isMeHost,
                                 remove: true
                             )
                     }

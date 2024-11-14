@@ -24,6 +24,7 @@ public struct HomeFeature {
     public struct State {
         public var missionId: Int? = nil
         public var mission: Mission? = nil
+        public var missionStatus: MissionStatus? = nil
         public var me: Player? = nil
         public var competition: Competition? = nil
         public var movingPiece: Piece? = nil
@@ -71,9 +72,7 @@ public struct HomeFeature {
         case didSelectImages([UIImage])
         case didTapBlock(position: Position)
         case didFinishMoving(piece: Piece?)
-        case didFinishMission
         case loadData(missionId: Int)
-        case didLoadData(Competition.State)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
@@ -112,10 +111,13 @@ public struct HomeFeature {
                     name: myMissionInfo.profile.nickname,
                     character: DomainUserInterface.Character(rawValue: myMissionInfo.profile.characterType) ?? .rabbit
                 )
-                guard let missionId = myMissionInfo.missions.first?.missionId else {
+                guard let latestMission = myMissionInfo.missions.last else {
                     return .send(.delegate(.didFinishMission))
                 }
+                let missionId = latestMission.missionId
+                let missionStatus = latestMission.missionStatus
                 state.missionId = missionId
+                state.missionStatus = MissionStatus(rawValue: missionStatus)
                 return .send(.loadData(missionId: missionId))
                 
             case let .loadData(missionId):
@@ -134,32 +136,39 @@ public struct HomeFeature {
             case let .didFetchVerificationAndMissionAndBoard(.success((verification, mission, board, rank))):
                 state.isLoading = false
                 state.mission = mission
-                let players: [Player] = board.missionBoards.flatMap(\.missionBoardMembers).map {
-                    Player(
-                        id: $0.nickname,
-                        pieceID: $0.nickname,
-                        name: $0.nickname,
-                        character: Character(rawValue: $0.characterType) ?? .rabbit,
-                        isMe: state.me?.name == $0.nickname
-                    )
-                }
-                let competitionState = mission.competitionState(hasOtherPlayers: players.count > 1)
-                let verifications = verification.missionVerifications.map {
-                    Vertification(id: $0.nickname, playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
-                }
+                
+                let missionStatus = state.missionStatus ?? .pending
                 var competition = Competition(
-                    players: players,
-                    verifications: verifications,
+                    players: board.missionBoards.flatMap(\.missionBoardMembers).map {
+                        Player(
+                            id: $0.nickname,
+                            pieceID: $0.nickname,
+                            name: $0.nickname,
+                            character: Character(rawValue: $0.characterType) ?? .rabbit,
+                            isMe: state.me?.name == $0.nickname
+                        )
+                    },
+                    verifications: verification.missionVerifications.map {
+                        Vertification(
+                            id: $0.nickname,
+                            playerID: $0.nickname,
+                            imageURL: $0.imageUrl,
+                            verifiedAt: $0.verifiedAt
+                        )
+                    },
                     board: Board(
                         theme: JejuIslandBoardTheme(),
                         events: board.missionBoards.map {
                             Event.reward(JejuRewardInfo(rawValue: $0.reward, position: Position(index: $0.number)))
                         },
                         totalBlockCount: mission.verificationDays + 1,
-                        isDisabled: competitionState != .started
+                        isDisabled: missionStatus != .inProgress
                     ),
-                    info: mission.makeInfos(competitionState: competitionState, progressCount: board.progressCount, myRank: rank.rank),
-                    state: competitionState
+                    info: mission.makeInfos(
+                        missionStatus: missionStatus,
+                        progressCount: board.progressCount,
+                        myRank: rank.rank
+                    )
                 )
                 
                 board.missionBoards.forEach { boardInfo in
@@ -176,25 +185,19 @@ public struct HomeFeature {
                 
                 state.competition = competition
                 state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
-                return .send(.didLoadData(competitionState))
-                
-            case let .didLoadData(competitionState):
-                switch competitionState {
-                case .disabled:
+                switch missionStatus {
+                case .deleted:
                     state.destination = .missionDeleteAlert(MissionDeleteAlertFeature.State(missionId: state.missionId ?? 0))
                     return .none
                     
-                case .finished:
-                    return .send(.didFinishMission)
+                case .pendingCompletion:
+                    state.isLoading = true
+                    return .run { [missionId = state.missionId] send in
+                        await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))
+                    }
                     
                 default:
                     return .none
-                }
-                
-            case .didFinishMission:
-                state.isLoading = true
-                return .run { [missionId = state.missionId] send in
-                    await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))
                 }
                 
             case let .didFetchRank(.success(rankInfo)):
@@ -359,7 +362,9 @@ public extension HomeFeature {
             return .init(
                 isEnabled: mission.checkIsMissionTime,
                 info: info,
-                title: mission.checkIsMissionDay ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") : "오늘은 미션일이 아니에요"
+                title: mission.checkIsMissionDay 
+                    ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") 
+                    : "오늘은 미션일이 아니에요"
             )
         }
     }

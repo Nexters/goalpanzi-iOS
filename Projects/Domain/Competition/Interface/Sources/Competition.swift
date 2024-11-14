@@ -16,8 +16,6 @@ public struct Competition {
     
     public var verifications: [Vertification]
     
-    public var state: State
-    
     public var info: [InfoKey: String]
     
     public var board: Board
@@ -26,14 +24,12 @@ public struct Competition {
         players: [Player],
         verifications: [Vertification],
         board: Board,
-        info: [InfoKey: String] = [:],
-        state: State
+        info: [InfoKey: String] = [:]
     ) {
         self.players = players
         self.verifications = verifications
         self.board = board
         self.info = info
-        self.state = state
         self.board.update(pieces: createPieces(by: players))
     }
     
@@ -96,13 +92,6 @@ public struct Competition {
 
 public extension Competition {
     
-    enum State: Equatable {
-        case notStarted(hasOtherPlayer: Bool)
-        case started
-        case disabled
-        case finished
-    }
-    
     enum InfoKey {
         case title
         case subtitle
@@ -111,35 +100,16 @@ public extension Competition {
 
 public extension Mission {
     
-    func competitionState(hasOtherPlayers: Bool) -> Competition.State {
-        if endDate <= Date.now {
-            return .finished
-        }
-        if startDate <= Date.now, hasOtherPlayers == false {
-            return .disabled
-        }
-        if startDate <= Date.now, hasOtherPlayers == true {
-            return .started
-        }
-        if startDate > Date.now, hasOtherPlayers == false {
-            return .notStarted(hasOtherPlayer: false)
-        }
-        if startDate > Date.now, hasOtherPlayers == true {
-            return .notStarted(hasOtherPlayer: true)
-        }
-        return .disabled
-    }
-    
-    func makeInfos(competitionState state: Competition.State, progressCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
-        switch state {
-        case .notStarted, .disabled, .finished:
+    func makeInfos(missionStatus: MissionStatus, progressCount: Int, myRank: Int) -> [Competition.InfoKey: String] {
+        switch missionStatus {
+        case .pending, .created, .canceled, .deleted:
             let formatter = DateFormatter()
             formatter.dateFormat = "경쟁시작 M월 d일"
             return [
                 .title: formatter.string(from: startDate),
                 .subtitle: "해당일에 자동으로 경쟁이 시작돼요."
             ]
-        case .started:
+        case .ongoing, .inProgress, .pendingCompletion, .completed:
             if !checkIsMissionDay || !checkIsMissionTime {
                 return [
                     .title: "꾸준하게 완수해봐요!",
