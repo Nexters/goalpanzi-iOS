@@ -10,6 +10,7 @@ import SharedDesignSystem
 import ComposableArchitecture
 
 public struct ImageUploadView: View {
+    @Environment(\.safeAreaInsets) var safeAreaInsets: UIEdgeInsets
     
     let store: StoreOf<ImageUploadFeature>
     
@@ -20,7 +21,7 @@ public struct ImageUploadView: View {
     public var body: some View {
         ZStack(alignment: .bottom) {
             ZStack(alignment: .top) {
-                SharedDesignSystemAsset.Colors.white.swiftUIColor
+                Color.clear
                     .edgesIgnoringSafeArea(.all)
                     .overlay {
                         Image(uiImage: store.selectedImage)
@@ -67,6 +68,7 @@ public struct ImageUploadView: View {
                 .padding(.top, 14)
                 .padding(.horizontal, 24)
             }
+            .padding(.top, safeAreaInsets.top)
             Button(action: {
                 store.send(.didTapUploadButton)
             }) {
@@ -79,6 +81,8 @@ public struct ImageUploadView: View {
                     .cornerRadius(30)
             }
             .padding(.horizontal, 24)
+            .padding(.bottom, safeAreaInsets.bottom)
         }
+        .background(SharedDesignSystemAsset.Colors.white.swiftUIColor)
     }
 }
