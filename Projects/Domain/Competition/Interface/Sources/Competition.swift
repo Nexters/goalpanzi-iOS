@@ -14,6 +14,12 @@ public struct Competition {
     
     public var players: [Player]
     
+    public var sortedPlayersByVerification: [Player] {
+        verifications.compactMap { verfication in
+            players.first(where: { $0.id == verfication.playerID })
+        }
+    }
+    
     public var verifications: [Vertification]
     
     public let status: Status
@@ -61,20 +67,6 @@ public struct Competition {
             return myPiece
         }
         return result.first
-    }
-    
-    public mutating func sortPlayersByVerifiedAt() {
-        players = players.sorted(by: { lhs, rhs in
-            guard let lhsResult = findVerification(by: lhs.id)?.verifiedAt,
-                  let rhsResult = findVerification(by: rhs.id)?.verifiedAt else { return false }
-            return lhsResult > rhsResult
-        })
-    }
-    
-    public mutating func moveMeToFront() {
-        guard let meIndex = players.firstIndex(where: { $0.isMe }) else { return }
-        let me = players.remove(at: meIndex)
-        players.insert(me, at: .zero)
     }
     
     public mutating func createPieces(by players: [Player]) -> [Position: [Piece]] {
