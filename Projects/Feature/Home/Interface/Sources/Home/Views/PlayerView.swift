@@ -27,7 +27,7 @@ struct PlayerView: View {
                 Button(action: {
                     store.send(.didTapPlayer(player: player))
                 }) {
-                    if verification?.isVerified == true {
+                    if verification?.isVerified == true && verification?.isViewed == false {
                         player.character.roundHighlightedImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)

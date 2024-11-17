@@ -82,6 +82,7 @@ public struct HomeFeature {
         case didFetchData(Result<(MissionVerification, Mission, MissionBoard, MissionRank), Error>)
         case didFetchVerificationInfo(Result<MissionVerification.VerificationInfo, Error>)
         case didFetchRank(Result<MissionRank, Error>)
+        case didViewVerification(Result<Void, Error>)
     }
     
     public enum Delegate {
@@ -150,7 +151,7 @@ public struct HomeFeature {
                     },
                     verifications: verification.missionVerifications.map {
                         Vertification(
-                            id: $0.nickname,
+                            id: $0.missionVerificationId,
                             playerID: $0.nickname,
                             imageURL: $0.imageUrl,
                             verifiedAt: $0.verifiedAt
@@ -222,6 +223,16 @@ public struct HomeFeature {
             case let .didTapPlayer(player):
                 guard let verification = state.competition?.findVerification(by: player.id), verification.isVerified else { return .none }
                 state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: verification.verifiedAt ?? Date.now, imageURL: verification.imageURL))
+                guard let verificationId = verification.id else { return .none }
+                return .run { send in
+                    await send(.didViewVerification(
+                        Result {
+                            try await missionVerificationService.postVerificationsView(verificationId)
+                        }
+                    ))
+                }
+                
+            case .didViewVerification(.success):
                 return .none
                 
             case let .didSelectImages(images):
@@ -331,6 +342,9 @@ public struct HomeFeature {
                 
             case .didFetchVerificationInfo(.failure):
                 state.isLoading = false
+                return .none
+                
+            case .didViewVerification(.failure):
                 return .none
             }
         }
