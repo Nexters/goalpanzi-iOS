@@ -79,7 +79,7 @@ public struct HomeFeature {
         case delegate(Delegate)
         
         case didFetchMyMissionInfo(Result<MyMissionInfo, Error>)
-        case didFetchVerificationAndMissionAndBoard(Result<(MissionVerification, Mission, MissionBoard, MissionRank), Error>)
+        case didFetchData(Result<(MissionVerification, Mission, MissionBoard, MissionRank), Error>)
         case didFetchVerificationInfo(Result<MissionVerification.VerificationInfo, Error>)
         case didFetchRank(Result<MissionRank, Error>)
     }
@@ -122,7 +122,7 @@ public struct HomeFeature {
                 
             case let .loadData(missionId):
                 return .run { send in
-                    await send(.didFetchVerificationAndMissionAndBoard(
+                    await send(.didFetchData(
                         Result {
                             async let mission = try missionService.getMissions(missionId)
                             async let board = try missionBoardService.getBoard(missionId)
@@ -133,7 +133,7 @@ public struct HomeFeature {
                     ))
                 }
             
-            case let .didFetchVerificationAndMissionAndBoard(.success((verification, mission, board, rank))):
+            case let .didFetchData(.success((verification, mission, board, rank))):
                 state.isLoading = false
                 state.mission = mission
                 
@@ -319,7 +319,7 @@ public struct HomeFeature {
                 state.isLoading = false
                 return .none
                 
-            case .didFetchVerificationAndMissionAndBoard(.failure):
+            case .didFetchData(.failure):
                 state.isLoading = false
                 return .none
                 
