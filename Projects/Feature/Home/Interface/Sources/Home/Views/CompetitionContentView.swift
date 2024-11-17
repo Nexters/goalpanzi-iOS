@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DomainMissionInterface
 import DomainPlayerInterface
 import DomainCompetitionInterface
 import SharedDesignSystem
@@ -69,7 +70,7 @@ struct CompetitionContentView: View {
                 .isHidden(!store.isLoading || isRefreshing, remove: true)
             
             if store.competition?.board.isDisabled == true {
-                NotStartedInfoView(me: store.competition?.me, competitionState: store.competition?.state ?? .disabled)
+                NotStartedInfoView(me: store.competition?.me, status: store.competition?.status)
                     .padding(.top, 167)
                     .allowsHitTesting(false)
             }
@@ -81,7 +82,7 @@ private struct NotStartedInfoView: View {
     
     let me: Player?
     
-    let competitionState: Competition.State
+    let status: Competition.Status?
     
     var body: some View {
         ZStack {
@@ -90,12 +91,12 @@ private struct NotStartedInfoView: View {
                 .frame(width: 240, height: 240)
                 .offset(y: 51)
             
-            if competitionState == .notStarted(hasOtherPlayer: true) {
+            if status == .created(hasOtherPlayer: true) {
                 SharedDesignSystemAsset.Images.notStartedInfoToolTip.swiftUIImage
                     .resizable()
                     .frame(width: 276, height: 96)
                     .offset(y: -110)
-            } else if competitionState == .notStarted(hasOtherPlayer: false) {
+            } else if status == .created(hasOtherPlayer: false) {
                 SharedDesignSystemAsset.Images.notStartedWarningToolTip.swiftUIImage
                     .resizable()
                     .frame(width: 276, height: 96)

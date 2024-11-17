@@ -10,7 +10,7 @@ import DomainPlayerInterface
 
 public struct Vertification {
     
-    public let id: String
+    public let id: Int?
     
     public let playerID: PlayerID
     
@@ -23,10 +23,14 @@ public struct Vertification {
         return imageURL != nil || verifiedAt != nil
     }
     
+    public var isViewed: Bool {
+        verifiedAt != nil
+    }
+    
     public var verifiedAt: Date?
     
     public init(
-        id: String,
+        id: Int?,
         playerID: PlayerID,
         imageURL: String? = nil,
         verifiedAt: Date? = nil

@@ -17,6 +17,7 @@ struct GetMissionMembersMeResponseDTO: Decodable {
     struct Mission: Decodable {
         let missionId: Int
         let description: String
+        let missionStatus: String
     }
     
     let profile: Profile

@@ -21,13 +21,17 @@ public struct MissionVerification {
     public struct VerificationInfo {
         public let nickname: String
         public let characterType: String
+        public let missionVerificationId: Int?
         public let imageUrl: String
         public let verifiedAt: Date?
-        public init(nickname: String, characterType: String, imageUrl: String, verifiedAt: Date?) {
+        public let viewedAt: Date?
+        public init(nickname: String, characterType: String, missionVerificationId: Int?, imageUrl: String, verifiedAt: Date?, viewedAt: Date?) {
             self.nickname = nickname
             self.characterType = characterType
+            self.missionVerificationId = missionVerificationId
             self.imageUrl = imageUrl
             self.verifiedAt = verifiedAt
+            self.viewedAt = viewedAt
         }
     }
     

@@ -49,6 +49,19 @@ extension MissionMemberService: DependencyKey {
                 case .failure(let error):
                     throw error
                 }
+            },
+            completeMission: { missionId in
+                let endPoint = Endpoint<Empty>(
+                    path: "api/mission-members/complete",
+                    httpMethod: .post,
+                    bodyParameters: CompleteMissionRequestDTO(missionId: missionId)
+                )
+                
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                
+                if case .failure(let failure) = response {
+                    throw failure
+                }
             }
         )
     }()
@@ -67,7 +80,7 @@ extension GetMissionMembersMeResponseDTO {
         .init(
             profile: .init(nickname: profile.nickname, characterType: profile.characterType),
             missions: missions.map {
-                .init(missionId: $0.missionId, description: $0.description)
+                .init(missionId: $0.missionId, description: $0.description, missionStatus: $0.missionStatus)
             }
         )
     }
