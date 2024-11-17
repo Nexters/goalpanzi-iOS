@@ -226,6 +226,8 @@ public struct HomeFeature {
                 return .none
                 
             case let .didTapBlock(position):
+                guard let myPosition = state.competition?.myPiece?.position,
+                    checkIsTappable(position: position, with: myPosition) else { return .none }
                 state.isLoading = true
                 return .run { [mission = state.mission] send in
                     await send(.didFetchVerificationInfo(
@@ -335,6 +337,13 @@ public struct HomeFeature {
     }
     
     public init() {}
+}
+
+private extension HomeFeature {
+    
+    func checkIsTappable(position: Position, with myPosition: Position) -> Bool {
+        position.index != .zero && position.index <= myPosition.index
+    }
 }
 
 public extension HomeFeature {
