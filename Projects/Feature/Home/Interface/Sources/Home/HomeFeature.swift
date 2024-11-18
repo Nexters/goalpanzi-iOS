@@ -154,7 +154,8 @@ public struct HomeFeature {
                             id: $0.missionVerificationId,
                             playerID: $0.nickname,
                             imageURL: $0.imageUrl,
-                            verifiedAt: $0.verifiedAt
+                            verifiedAt: $0.verifiedAt,
+                            viewedAt: $0.viewedAt
                         )
                     },
                     board: Board(
@@ -221,7 +222,7 @@ public struct HomeFeature {
             case let .didTapPlayer(player):
                 guard let verification = state.competition?.findVerification(by: player.id), verification.isVerified else { return .none }
                 state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: verification.verifiedAt ?? Date.now, imageURL: verification.imageURL))
-                guard let verificationId = verification.id else { return .none }
+                guard !verification.isViewed, let verificationId = verification.id else { return .none }
                 return .run { send in
                     await send(.didViewVerification(
                         Result {
@@ -288,6 +289,9 @@ public struct HomeFeature {
                     
                 case .presented(.missionDeleteAlert(.delegate(.didDeleteMission))):
                     return .send(.delegate(.didDeleteMission))
+                    
+                case .presented(.imageDetail(.delegate(.didTapCloseButton))):
+                    return .send(.didRefresh)
                     
                 case .presented(_):
                     return .none

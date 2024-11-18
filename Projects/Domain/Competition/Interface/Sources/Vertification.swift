@@ -24,21 +24,25 @@ public struct Vertification {
     }
     
     public var isViewed: Bool {
-        verifiedAt != nil
+        viewedAt != nil
     }
     
     public var verifiedAt: Date?
+    
+    public var viewedAt: Date?
     
     public init(
         id: Int?,
         playerID: PlayerID,
         imageURL: String? = nil,
-        verifiedAt: Date? = nil
+        verifiedAt: Date? = nil,
+        viewedAt: Date? = nil
     ) {
         self.id = id
         self.playerID = playerID
         self.imageURL = imageURL
         self.verifiedAt = verifiedAt
+        self.viewedAt = viewedAt
     }
     
     public mutating func update(imageURL: String, verifiedAt: Date?) {
