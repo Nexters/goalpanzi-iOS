@@ -10,7 +10,7 @@ import Alamofire
 import SharedUtilInterface
 
 public struct ErrorResponse: Error, Decodable {
-    let code: Int
+    let status: Int
     public let message: String
 }
 
@@ -34,7 +34,7 @@ public struct NetworkProvider: NetworkProviderType {
                             let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: errorData)
                             return .failure(errorResponse)
                         } catch {
-                            let decodingError = ErrorResponse(code: httpResponse.statusCode, message: "Error Decoding occurred")
+                            let decodingError = ErrorResponse(status: httpResponse.statusCode, message: "Error Decoding occurred")
                             return .failure(decodingError)
                         }
                     }
@@ -43,7 +43,7 @@ public struct NetworkProvider: NetworkProviderType {
                 let value = try await dataTask.value
                 return .success(value)
             } catch {
-                let error = ErrorResponse(code: -1, message: error.localizedDescription)
+                let error = ErrorResponse(status: -1, message: error.localizedDescription)
                 return .failure(error)
             }
     }
