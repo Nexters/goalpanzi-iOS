@@ -8,7 +8,9 @@ import Feature
 
 @main
 struct MissionMateApp: App {
-    
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     init() {
         SharedDesignSystemFontFamily.registerAllCustomFonts()
     }

@@ -12,6 +12,9 @@ import PackageDescription
             "Alamofire": .framework,
             "Lottie": .framework,
             "HorizonCalendar": .framework,
+            "FirebaseMessaging": .staticFramework,
+            "FirebaseAnalytics": .staticFramework,
+            "FirebaseCrashlytics": .staticFramework
         ],
         baseSettings: .settings(configurations: [
             .debug(name: "dev"),
@@ -28,5 +31,6 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.9.1"),
         .package(url: "https://github.com/airbnb/lottie-ios", from: "4.5.0"),
         .package(url: "https://github.com/airbnb/HorizonCalendar", from: "2.0.0"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.5.0")
     ]
 )

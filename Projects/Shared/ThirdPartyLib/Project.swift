@@ -19,6 +19,9 @@ let project = Project.makeModule(
                     .external(name: "Alamofire"),
                     .external(name: "Lottie"),
                     .external(name: "HorizonCalendar"),
+                    .external(name: "FirebaseMessaging"),
+                    .external(name: "FirebaseAnalytics"),
+                    .external(name: "FirebaseCrashlytics")
                 ]
             )
         )
