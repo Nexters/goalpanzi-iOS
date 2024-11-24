@@ -278,10 +278,24 @@ public struct HomeFeature {
                 switch action {
                 case .dismiss:
                     return .none
-                case .presented(.imageUpload(.delegate(.didFinishImageUpload))):
+                    
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload(.success)))):
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
+                    return .none
+                    
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload(.failure)))):
+                    guard let mission = state.mission else { return .none }
+                    state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
+                    return .none
+                    
+                case .presented(.imageUpload(.delegate(.didStartImageUpload))):
+                    state.ctaButtonState = CTAButtonState(
+                        info: state.ctaButtonState.info,
+                        title: "",
+                        status: .loading
+                    )
                     return .none
                     
                 case .presented(.verificationResult(.delegate(.didTapCloseButton))):
@@ -369,10 +383,18 @@ private extension HomeFeature {
 public extension HomeFeature {
     
     struct CTAButtonState {
-        static let `default`: Self = .init(isEnabled: false, info: "", title: "")
-        let isEnabled: Bool
+        enum Status {
+            case enabled
+            case disabled
+            case loading
+            var isEnabled: Bool { self == .enabled }
+            var isDisabled: Bool { self == .disabled }
+            var isLoading: Bool { self == .loading }
+        }
+        static let `default`: Self = .init(info: "", title: "", status: .enabled)
         let info: String
         let title: String
+        let status: Status
     }
     
     func makeCTAButtonState(isMeCertificated: Bool, mission: Mission) -> CTAButtonState {
@@ -380,17 +402,17 @@ public extension HomeFeature {
         switch isMeCertificated {
         case true:
             return .init(
-                isEnabled: false,
                 info: info,
-                title: "오늘 미션 인증 완료!"
+                title: "오늘 미션 인증 완료!",
+                status: .disabled
             )
         case false:
             return .init(
-                isEnabled: mission.checkIsMissionTime,
                 info: info,
                 title: mission.checkIsMissionDay 
                     ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") 
-                    : "오늘은 미션일이 아니에요"
+                    : "오늘은 미션일이 아니에요",
+                status: mission.checkIsMissionTime ? .enabled : .disabled
             )
         }
     }

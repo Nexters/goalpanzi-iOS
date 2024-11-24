@@ -77,11 +77,16 @@ public struct ImageUploadView: View {
                     .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                     .frame(height: 60)
                     .frame(maxWidth: .infinity)
-                    .background(SharedDesignSystemAsset.Colors.orange.swiftUIColor)
+                    .background(
+                        store.state.isButtonDisabled
+                        ? SharedDesignSystemAsset.Colors.disabled.swiftUIColor
+                        : SharedDesignSystemAsset.Colors.orange.swiftUIColor
+                    )
                     .cornerRadius(30)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, safeAreaInsets.bottom)
+            .disabled(store.state.isButtonDisabled)
         }
         .background(SharedDesignSystemAsset.Colors.white.swiftUIColor)
     }
