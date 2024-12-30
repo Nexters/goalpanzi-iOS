@@ -32,10 +32,7 @@ struct HomeNavigationBarView: View {
                         .onTapGesture {
                             store.send(.didTapMissionInfoGuideToolTip)
                         }
-                        .isHidden(
-                            store.isMissionInfoGuideToolTipShowed || store.competition?.status != .created(hasOtherPlayer: true),
-                            remove: true
-                        )
+                        .isHidden(store.isMissionInfoGuideToolTipShowed, remove: true)
                 }
                 
                 Spacer()
@@ -49,18 +46,17 @@ struct HomeNavigationBarView: View {
                             .frame(width: 28, height: 28)
                             .foregroundColor(SharedDesignSystemAsset.Colors.gray1.swiftUIColor)
                     }
-                    .isHidden(store.competition?.board.isDisabled == false || !store.isMeHost, remove: true)
+                    .isHidden(!((store.competition?.status.isCreated) ?? false), remove: true)
                     .overlay {
                         SharedDesignSystemAsset.Images.invitationCodeGuideToolTip.swiftUIImage
                             .resizable()
                             .frame(width: 161, height: 72)
                             .offset(x: -42, y: 50)
-                            
                             .onTapGesture {
                                 store.send(.didTapInvitationInfoToolTip)
                             }
                             .isHidden(
-                                store.isInvitationGuideToolTipShowed || store.competition?.status != .created(hasOtherPlayer: false) || !store.isMeHost,
+                                store.isInvitationGuideToolTipShowed || !((store.competition?.status.isCreated) ?? false),
                                 remove: true
                             )
                     }
