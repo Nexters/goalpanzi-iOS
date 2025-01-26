@@ -35,15 +35,25 @@ public struct ImageDetailFeature {
     
     public enum Action {
         case didTapCloseButton
+        case delegate(Delegate)
+    }
+    
+    public enum Delegate {
+        case didTapCloseButton
     }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .didTapCloseButton:
-                return .run { _ in
-                    await self.dismiss()
-                }
+                return .concatenate(
+                    .send(.delegate(.didTapCloseButton)),
+                    .run { _ in
+                        await self.dismiss()
+                    }
+                )
+            case .delegate:
+                return .none
             }
         }
     }

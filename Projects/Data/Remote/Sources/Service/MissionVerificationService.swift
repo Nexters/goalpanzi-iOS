@@ -28,6 +28,20 @@ extension MissionVerificationService: DependencyKey {
                     throw NSError()
                 }
             },
+            postVerificationsView: { missionVerificationID in
+                let endPoint = Endpoint<Empty>(
+                    path: "api/missions/verifications/view",
+                    httpMethod: .post,
+                    bodyParameters: VerificationViewRequestDTO(missionVerificationId: missionVerificationID)
+                )
+                let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
+                switch response {
+                case .success:
+                    return
+                case .failure(let error):
+                    throw error
+                }
+            },
             getVerifications: { missionID, date in
                 let endPoint = Endpoint<GetVerificationsResponseDTO>(
                     path: "api/missions/\(missionID)/verifications",
@@ -70,8 +84,10 @@ extension GetVerificationsResponseDTO {
                 MissionVerification.VerificationInfo(
                     nickname: $0.nickname,
                     characterType: $0.characterType,
+                    missionVerificationId: $0.missionVerificationId,
                     imageUrl: $0.imageUrl,
-                    verifiedAt: $0.verifiedAt
+                    verifiedAt: $0.verifiedAt,
+                    viewedAt: $0.viewedAt
                 )
             }
         )
@@ -84,8 +100,10 @@ extension GetVerificationsMeResponseDTO {
         MissionVerification.VerificationInfo(
             nickname: nickname,
             characterType: characterType,
+            missionVerificationId: missionVerificationId,
             imageUrl: imageUrl,
-            verifiedAt: verifiedAt
+            verifiedAt: verifiedAt,
+            viewedAt: viewedAt
         )
     }
 }

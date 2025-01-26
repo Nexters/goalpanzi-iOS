@@ -22,7 +22,9 @@ public struct UpdateProfileFeature: Reducer {
 
     @ObservableState
     public struct State: Equatable {
-        var selectedCharacter: Character = .rabbit
+        @Presents var unsavedChanges: UnsavedChangesAlertFeature.State?
+
+        var selectedCharacter: Character? = nil
         var nickName: String = ""
         var initialNickName: String = ""
         var initialCharacter: Character = .rabbit
@@ -37,6 +39,7 @@ public struct UpdateProfileFeature: Reducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case unsavedChanges(PresentationAction<UnsavedChangesAlertFeature.Action>)
 
         case pieceImageTapped(Character)
         case saveButtonTapped
@@ -81,6 +84,15 @@ public struct UpdateProfileFeature: Reducer {
 
                 return .none
             case .backButtonTapped:
+                let hasInput = state.nickName != "" || state.selectedCharacter != nil
+                let hasChanges = state.nickName != state.initialNickName ||
+                                 state.selectedCharacter != state.initialCharacter
+
+                if hasInput && hasChanges {
+                    state.unsavedChanges = UnsavedChangesAlertFeature.State()
+                    return .none
+                }
+
                 return .run { _ in
                     await self.dismiss()
                 }
@@ -98,11 +110,11 @@ public struct UpdateProfileFeature: Reducer {
                 return .none
                 // MARK: 프로필 업데이트
             case .saveButtonTapped:
-                let nickName = state.nickName
+                let nickName = (state.nickName == state.initialNickName) ? nil : state.nickName
                 let piece = state.selectedCharacter
                 return .run { send in
                     await send(.updateProfileResponse(
-                        Result { try await self.userClient.createProfile(userService, nickName, piece) }
+                        Result { try await self.userClient.createProfile(userService, nickName, piece ?? .rabbit) }
                     ))
                 }
             case .updateProfileResponse(.success(_)):
@@ -123,9 +135,16 @@ public struct UpdateProfileFeature: Reducer {
                     print("에러 발생")
                 }
                 return .none
+            case .unsavedChanges(.presented(.delegate(.exit))):
+                return .run { _ in
+                    await self.dismiss()
+                }
             default:
                 return .none
             }
+        }
+        .ifLet(\.$unsavedChanges, action: \.unsavedChanges) {
+            UnsavedChangesAlertFeature()
         }
     }
 }

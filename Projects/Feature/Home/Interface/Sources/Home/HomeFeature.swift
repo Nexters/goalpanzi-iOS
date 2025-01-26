@@ -24,6 +24,7 @@ public struct HomeFeature {
     public struct State {
         public var missionId: Int? = nil
         public var mission: Mission? = nil
+        public var missionStatus: MissionStatus? = nil
         public var me: Player? = nil
         public var competition: Competition? = nil
         public var movingPiece: Piece? = nil
@@ -61,6 +62,7 @@ public struct HomeFeature {
     
     public enum Action: BindableAction {
         case onAppear
+        case didRefresh
         case didTapMissionInfoButton
         case didTapSettingButton
         case didTapInvitationInfoButton
@@ -70,18 +72,17 @@ public struct HomeFeature {
         case didSelectImages([UIImage])
         case didTapBlock(position: Position)
         case didFinishMoving(piece: Piece?)
-        case didFinishMission
         case loadData(missionId: Int)
-        case didLoadData(Competition.State)
         case destination(PresentationAction<Destination.Action>)
         case path(StackActionOf<Path>)
         case binding(BindingAction<State>)
         case delegate(Delegate)
         
         case didFetchMyMissionInfo(Result<MyMissionInfo, Error>)
-        case didFetchVerificationAndMissionAndBoard(Result<(MissionVerification, Mission, MissionBoard, MissionRank), Error>)
+        case didFetchData(Result<(MissionVerification, Mission, MissionBoard, MissionRank), Error>)
         case didFetchVerificationInfo(Result<MissionVerification.VerificationInfo, Error>)
         case didFetchRank(Result<MissionRank, Error>)
+        case didViewVerification(Result<Void, Error>)
     }
     
     public enum Delegate {
@@ -95,10 +96,12 @@ public struct HomeFeature {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .onAppear:
+            case .onAppear, .didRefresh:
                 state.isLoading = true
                 return .run { send in
-                    await send(.didFetchMyMissionInfo( Result { try await missionMemberService.getMissionMembersMe() } ))
+                    await send(.didFetchMyMissionInfo(Result {
+                        try await missionMemberService.getMissionMembersMe()
+                    }))
                 }
                 
             case let .didFetchMyMissionInfo(.success(myMissionInfo)):
@@ -109,15 +112,18 @@ public struct HomeFeature {
                     name: myMissionInfo.profile.nickname,
                     character: DomainUserInterface.Character(rawValue: myMissionInfo.profile.characterType) ?? .rabbit
                 )
-                guard let missionId = myMissionInfo.missions.first?.missionId else {
+                guard let latestMission = myMissionInfo.missions.last else {
                     return .send(.delegate(.didFinishMission))
                 }
+                let missionId = latestMission.missionId
+                let missionStatus = latestMission.missionStatus
                 state.missionId = missionId
+                state.missionStatus = MissionStatus(rawValue: missionStatus)
                 return .send(.loadData(missionId: missionId))
                 
             case let .loadData(missionId):
                 return .run { send in
-                    await send(.didFetchVerificationAndMissionAndBoard(
+                    await send(.didFetchData(
                         Result {
                             async let mission = try missionService.getMissions(missionId)
                             async let board = try missionBoardService.getBoard(missionId)
@@ -128,35 +134,44 @@ public struct HomeFeature {
                     ))
                 }
             
-            case let .didFetchVerificationAndMissionAndBoard(.success((verification, mission, board, rank))):
+            case let .didFetchData(.success((verification, mission, board, rank))):
                 state.isLoading = false
                 state.mission = mission
-                let players: [Player] = board.missionBoards.flatMap(\.missionBoardMembers).map {
-                    Player(
-                        id: $0.nickname,
-                        pieceID: $0.nickname,
-                        name: $0.nickname,
-                        character: Character(rawValue: $0.characterType) ?? .rabbit,
-                        isMe: state.me?.name == $0.nickname
-                    )
-                }
-                let competitionState = mission.competitionState(hasOtherPlayers: players.count > 1)
-                let verifications = verification.missionVerifications.map {
-                    Vertification(id: $0.nickname, playerID: $0.nickname, imageURL: $0.imageUrl, verifiedAt: $0.verifiedAt)
-                }
+                
+                let status = state.missionStatus?.toCompetitionStatus(hasOtherPlayer: !board.isEmpty)
                 var competition = Competition(
-                    players: players,
-                    verifications: verifications,
+                    players: board.missionBoards.flatMap(\.missionBoardMembers).map {
+                        Player(
+                            id: $0.nickname,
+                            pieceID: $0.nickname,
+                            name: $0.nickname,
+                            character: Character(rawValue: $0.characterType) ?? .rabbit,
+                            isMe: state.me?.name == $0.nickname
+                        )
+                    },
+                    verifications: verification.missionVerifications.map {
+                        Vertification(
+                            id: $0.missionVerificationId,
+                            playerID: $0.nickname,
+                            imageURL: $0.imageUrl,
+                            verifiedAt: $0.verifiedAt,
+                            viewedAt: $0.viewedAt
+                        )
+                    },
                     board: Board(
                         theme: JejuIslandBoardTheme(),
                         events: board.missionBoards.map {
                             Event.reward(JejuRewardInfo(rawValue: $0.reward, position: Position(index: $0.number)))
                         },
                         totalBlockCount: mission.verificationDays + 1,
-                        isDisabled: competitionState != .started
+                        isDisabled: status != .started
                     ),
-                    info: mission.makeInfos(competitionState: competitionState, progressCount: board.progressCount, myRank: rank.rank),
-                    state: competitionState
+                    info: mission.makeInfos(
+                        status: status,
+                        progressCount: board.progressCount,
+                        myRank: rank.rank
+                    ),
+                    status: status ?? .created(hasOtherPlayer: false)
                 )
                 
                 board.missionBoards.forEach { boardInfo in
@@ -168,30 +183,22 @@ public struct HomeFeature {
                         }
                     }
                 }
-                competition.sortPlayersByVerifiedAt()
-                competition.moveMeToFront()
                 
                 state.competition = competition
                 state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
-                return .send(.didLoadData(competitionState))
-                
-            case let .didLoadData(competitionState):
-                switch competitionState {
-                case .disabled:
+                switch status {
+                case .deleted:
                     state.destination = .missionDeleteAlert(MissionDeleteAlertFeature.State(missionId: state.missionId ?? 0))
                     return .none
                     
-                case .finished:
-                    return .send(.didFinishMission)
+                case .pendingCompleted:
+                    state.isLoading = true
+                    return .run { [missionId = state.missionId] send in
+                        await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))
+                    }
                     
                 default:
                     return .none
-                }
-                
-            case .didFinishMission:
-                state.isLoading = true
-                return .run { [missionId = state.missionId] send in
-                    await send(.didFetchRank( Result { try await missionMemberService.getMissionMembersRank(missionId ?? 0) } ))
                 }
                 
             case let .didFetchRank(.success(rankInfo)):
@@ -215,6 +222,16 @@ public struct HomeFeature {
             case let .didTapPlayer(player):
                 guard let verification = state.competition?.findVerification(by: player.id), verification.isVerified else { return .none }
                 state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: verification.verifiedAt ?? Date.now, imageURL: verification.imageURL))
+                guard !verification.isViewed, let verificationId = verification.id else { return .none }
+                return .run { send in
+                    await send(.didViewVerification(
+                        Result {
+                            try await missionVerificationService.postVerificationsView(verificationId)
+                        }
+                    ))
+                }
+                
+            case .didViewVerification(.success):
                 return .none
                 
             case let .didSelectImages(images):
@@ -223,6 +240,8 @@ public struct HomeFeature {
                 return .none
                 
             case let .didTapBlock(position):
+                guard let myPosition = state.competition?.myPiece?.position,
+                    checkIsTappable(position: position, with: myPosition) else { return .none }
                 state.isLoading = true
                 return .run { [mission = state.mission] send in
                     await send(.didFetchVerificationInfo(
@@ -259,10 +278,24 @@ public struct HomeFeature {
                 switch action {
                 case .dismiss:
                     return .none
-                case .presented(.imageUpload(.delegate(.didFinishImageUpload))):
+                    
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload(.success)))):
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
+                    return .none
+                    
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload(.failure)))):
+                    guard let mission = state.mission else { return .none }
+                    state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
+                    return .none
+                    
+                case .presented(.imageUpload(.delegate(.didStartImageUpload))):
+                    state.ctaButtonState = CTAButtonState(
+                        info: state.ctaButtonState.info,
+                        title: "",
+                        status: .loading
+                    )
                     return .none
                     
                 case .presented(.verificationResult(.delegate(.didTapCloseButton))):
@@ -270,6 +303,9 @@ public struct HomeFeature {
                     
                 case .presented(.missionDeleteAlert(.delegate(.didDeleteMission))):
                     return .send(.delegate(.didDeleteMission))
+                    
+                case .presented(.imageDetail(.delegate(.didTapCloseButton))):
+                    return .send(.didRefresh)
                     
                 case .presented(_):
                     return .none
@@ -314,7 +350,7 @@ public struct HomeFeature {
                 state.isLoading = false
                 return .none
                 
-            case .didFetchVerificationAndMissionAndBoard(.failure):
+            case .didFetchData(.failure):
                 state.isLoading = false
                 return .none
                 
@@ -325,6 +361,9 @@ public struct HomeFeature {
             case .didFetchVerificationInfo(.failure):
                 state.isLoading = false
                 return .none
+                
+            case .didViewVerification(.failure):
+                return .none
             }
         }
         .ifLet(\.$destination, action: \.destination)
@@ -334,13 +373,28 @@ public struct HomeFeature {
     public init() {}
 }
 
+private extension HomeFeature {
+    
+    func checkIsTappable(position: Position, with myPosition: Position) -> Bool {
+        position.index != .zero && position.index <= myPosition.index
+    }
+}
+
 public extension HomeFeature {
     
     struct CTAButtonState {
-        static let `default`: Self = .init(isEnabled: false, info: "", title: "")
-        let isEnabled: Bool
+        enum Status {
+            case enabled
+            case disabled
+            case loading
+            var isEnabled: Bool { self == .enabled }
+            var isDisabled: Bool { self == .disabled }
+            var isLoading: Bool { self == .loading }
+        }
+        static let `default`: Self = .init(info: "", title: "", status: .enabled)
         let info: String
         let title: String
+        let status: Status
     }
     
     func makeCTAButtonState(isMeCertificated: Bool, mission: Mission) -> CTAButtonState {
@@ -348,15 +402,17 @@ public extension HomeFeature {
         switch isMeCertificated {
         case true:
             return .init(
-                isEnabled: false,
                 info: info,
-                title: "오늘 미션 인증 완료!"
+                title: "오늘 미션 인증 완료!",
+                status: .disabled
             )
         case false:
             return .init(
-                isEnabled: mission.checkIsMissionTime,
                 info: info,
-                title: mission.checkIsMissionDay ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") : "오늘은 미션일이 아니에요"
+                title: mission.checkIsMissionDay 
+                    ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") 
+                    : "오늘은 미션일이 아니에요",
+                status: mission.checkIsMissionTime ? .enabled : .disabled
             )
         }
     }

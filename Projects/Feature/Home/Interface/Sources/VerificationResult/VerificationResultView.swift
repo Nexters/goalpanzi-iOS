@@ -8,6 +8,7 @@
 import SwiftUI
 import SharedUtil
 import SharedDesignSystem
+import Lottie
 import ComposableArchitecture
 
 public struct VerificationResultView: View {
@@ -72,6 +73,11 @@ public struct VerificationResultView: View {
             .scaleEffect(scale)
             .animate(using: .spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0)) {
                 scale = 1.0
+            }
+            .overlay {
+                LottieView(animation: .named("celebration"))
+                    .playing(loopMode: .playOnce)
+                    .allowsHitTesting(false)
             }
         }
     }

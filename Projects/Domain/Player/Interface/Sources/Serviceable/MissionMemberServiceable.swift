@@ -12,6 +12,8 @@ public protocol MissionMemberServiceable {
     var getMissionMembersMe: @Sendable () async throws -> MyMissionInfo { get }
     
     var getMissionMembersRank: @Sendable (_ missionId: Int) async throws -> MissionRank { get }
+    
+    var completeMission: @Sendable (_ missionId: Int) async throws -> Void { get }
 }
 
 public struct MyMissionInfo {
@@ -29,9 +31,11 @@ public struct MyMissionInfo {
     public struct MissionInfo {
         public let missionId: Int
         public let description: String
-        public init(missionId: Int, description: String) {
+        public let missionStatus: String
+        public init(missionId: Int, description: String, missionStatus: String) {
             self.missionId = missionId
             self.description = description
+            self.missionStatus = missionStatus
         }
     }
     

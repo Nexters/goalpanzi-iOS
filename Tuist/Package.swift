@@ -11,6 +11,7 @@ import PackageDescription
             "Kingfisher": .framework,
             "Alamofire": .framework,
             "Lottie": .framework,
+            "HorizonCalendar": .framework,
         ],
         baseSettings: .settings(configurations: [
             .debug(name: "dev"),
@@ -26,5 +27,6 @@ let package = Package(
         .package(url: "https://github.com/onevcat/Kingfisher", from: "7.12.0"),
         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.9.1"),
         .package(url: "https://github.com/airbnb/lottie-ios", from: "4.5.0"),
+        .package(url: "https://github.com/airbnb/HorizonCalendar", from: "2.0.0"),
     ]
 )

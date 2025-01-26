@@ -28,9 +28,9 @@ extension UserService: DependencyKey {
                     httpMethod: .patch,
                     bodyParameters: requestDTO
                 )
-                
+
                 let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: interceptor)
-                
+
                 if case .failure(let failure) = response {
                     throw UserClientError.duplicateNickName
                 }

@@ -23,12 +23,11 @@ struct PlayerView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 6) {
             ZStack(alignment: .top) {
-                let shouldDisabled = !player.isMe 
-                    && (store.competition?.state == .notStarted(hasOtherPlayer: true) || verification?.isVerified == false)
+                let shouldDisabled = !player.isMe && (store.competition?.status == .created(hasOtherPlayer: true) || verification?.isVerified == false)
                 Button(action: {
                     store.send(.didTapPlayer(player: player))
                 }) {
-                    if verification?.isVerified == true {
+                    if verification?.isVerified == true && verification?.isViewed == false {
                         player.character.roundHighlightedImage.swiftUIImage
                             .resizable()
                             .frame(width: 64, height: 64)

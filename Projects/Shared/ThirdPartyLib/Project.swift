@@ -18,6 +18,7 @@ let project = Project.makeModule(
                     .external(name: "Kingfisher"),
                     .external(name: "Alamofire"),
                     .external(name: "Lottie"),
+                    .external(name: "HorizonCalendar"),
                 ]
             )
         )

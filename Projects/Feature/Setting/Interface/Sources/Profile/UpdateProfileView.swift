@@ -29,43 +29,55 @@ public struct UpdateProfileView: View {
                     VStack(spacing: 0) {
                         Spacer()
                             .frame(height: 48)
-                        
+
                         Text("프로필 수정")
                             .font(.pretendard(kind: .heading_sm, type: .bold))
                             .foregroundColor(.mmGray1)
-                        
+
                         Spacer()
-                        
-                        Image(uiImage: store.selectedCharacter.roundImage.image)
+
+                        Image(uiImage: store.selectedCharacter?.roundImage.image ?? store.initialCharacter.roundImage.image)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.26)
-                            .padding(.bottom, 18)
-                        
+                            .frame(width: geometry.size.width * 0.41)
+
+                        Spacer()
+
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                Spacer().frame(width: 16)
-                                ForEach(Character.allCases, id: \.self) { piece in
-                                    VStack {
-                                        Image(uiImage: piece.basicImage.image)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: geometry.size.width * 0.26, height: geometry.size.height * 0.11)
-                                            .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
-                                            .onTapGesture {
-                                                store.send(.pieceImageTapped(piece))
-                                            }
-                                        Text(piece.koreanName)
-                                            .font(.pretendard(kind: .body_md, type:.bold))
-                                            .frame(width: geometry.size.width * 0.26, height: 24)
-                                            .foregroundColor(.mmGray2)
-                                            .background(Color.mmGray5)
-                                            .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
-                                            .cornerRadius(20)
+                            ScrollViewReader { proxy in
+                                HStack(spacing: 8) {
+                                    Spacer().frame(width: 16)
+                                    ForEach(Character.allCases, id: \.self) { piece in
+                                        VStack {
+                                            Image(uiImage: piece.basicImage.image)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: geometry.size.width * 0.26, height: geometry.size.height * 0.11)
+                                                .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
+                                                .onTapGesture {
+                                                    store.send(.pieceImageTapped(piece))
+                                                    withAnimation {
+                                                        proxy.scrollTo(piece, anchor: .center)
+                                                    }
+                                                }
+                                                .id(piece)
+                                            Text(piece.koreanName)
+                                                .font(.pretendard(kind: .body_md, type:.bold))
+                                                .frame(width: geometry.size.width * 0.26, height: 24)
+                                                .foregroundColor(.mmGray2)
+                                                .background(Color.mmGray5)
+                                                .opacity(piece == store.selectedCharacter ? 1.0 : 0.3)
+                                                .cornerRadius(20)
+                                        }
+                                    }
+                                }
+                                .padding(.bottom, 38)
+                                .onAppear {
+                                    withAnimation {
+                                        proxy.scrollTo(store.initialCharacter, anchor: .center)
                                     }
                                 }
                             }
-                            .padding(.bottom, 38)
                         }
                         
                         MMTextField(
@@ -115,6 +127,11 @@ public struct UpdateProfileView: View {
             await store
                 .send(.onAppear)
                 .finish()
+        }
+        .overlay {
+            if let store = store.scope(state: \.unsavedChanges, action: \.unsavedChanges.presented) {
+                UnsavedChangesAlertView(store: store)
+            }
         }
     }
 }

@@ -14,8 +14,8 @@ public enum Character: String, CaseIterable {
     case rabbit = "RABBIT"
     case cat = "CAT"
     case dog = "DOG"
-    case bird = "BIRD"
     case panda = "PANDA"
+    case bird = "BIRD"
     case bear = "BEAR"
     
     public init?(rawValue: String) {

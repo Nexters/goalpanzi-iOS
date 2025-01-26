@@ -10,6 +10,8 @@ import Foundation
 struct GetVerificationsMeResponseDTO: Decodable {
     let nickname: String
     let characterType: String
+    let missionVerificationId: Int?
     let imageUrl: String
     let verifiedAt: Date?
+    let viewedAt: Date?
 }
