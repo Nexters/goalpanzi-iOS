@@ -9,7 +9,7 @@ let targets: [Target] = [
             infoPlist: .extendingDefault(
                 with: [
                     "BASE_URL": "https://mission-mate.kro.kr/",
-                    "CFBundleShortVersionString": "1.0",
+                    "CFBundleShortVersionString": "1.2",
                     "CFBundleVersion": "1",
                     "CFBundleName": "MissionMate",
                     "CFBundleDisplayName": "미션메이트",
@@ -20,7 +20,8 @@ let targets: [Target] = [
                         "UISceneConfigurations": []
                     ],
                     "UIUserInterfaceStyle": "Light",
-                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+                    "ITSAppUsesNonExemptEncryption": false
                 ]),
             entitlements: "MissionMate.entitlements",
             dependencies: [
