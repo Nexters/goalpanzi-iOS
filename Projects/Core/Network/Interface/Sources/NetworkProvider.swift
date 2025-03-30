@@ -21,7 +21,7 @@ public struct NetworkProvider: NetworkProviderType {
     public func sendRequest<N: Networkable, T: Decodable>(_ endpoint: N, decoder: JSONDecoder = .jsonDecoder, interceptor: NetworkRequestInterceptor? = nil) async -> Result<T, ErrorResponse> where N.Response == T {
         do {
                 let urlRequest: URLRequest = try endpoint.makeURLRequest()
-
+            print("🚨 \(urlRequest)")
                 let dataTask = AF.request(urlRequest, interceptor: interceptor)
                     .validate()
                     .serializingDecodable(T.self, decoder: decoder, emptyResponseCodes: Set(200...299))

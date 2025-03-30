@@ -20,7 +20,8 @@ let targets: [Target] = [
                         "UISceneConfigurations": []
                     ],
                     "UIUserInterfaceStyle": "Light",
-                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+                    "FirebaseAppDelegateProxyEnabled": false
                 ]),
             entitlements: "MissionMate.entitlements",
             dependencies: [

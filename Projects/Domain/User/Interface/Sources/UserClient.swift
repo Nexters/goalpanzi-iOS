@@ -13,23 +13,28 @@ public enum UserClientError: Error {
     case deleteProfileFailed
     case networkDisabled
     case checkProfileFailed
+    case registerTokenFailed
 }
 
 public struct UserClient {
 
     public typealias Nickname = String?
+    public typealias DeviceToken = String
 
     public var createProfile: @Sendable (_ userService: UserServiceable, Nickname, Character) async throws -> Void
     public var deleteProfile: @Sendable (_ userService: UserServiceable) async throws -> Void
     public var checkProfile: @Sendable (_ userService: UserServiceable) async throws -> UserProfile
+    public var registerDeviceToken: @Sendable (_ userService: UserServiceable) async throws -> Void
 
     public init(
         createProfile: @escaping @Sendable (_ userService: UserServiceable, Nickname, Character) async throws -> Void,
         deleteProfile: @escaping @Sendable (_ userService: UserServiceable) async throws -> Void,
-        checkProfile: @escaping @Sendable (_ userService: UserServiceable) async throws -> UserProfile
+        checkProfile: @escaping @Sendable (_ userService: UserServiceable) async throws -> UserProfile,
+        registerDeviceToken: @escaping @Sendable (_ userService: UserServiceable) async throws -> Void
     ) {
         self.createProfile = createProfile
         self.deleteProfile = deleteProfile
         self.checkProfile = checkProfile
+        self.registerDeviceToken = registerDeviceToken
     }
 }
