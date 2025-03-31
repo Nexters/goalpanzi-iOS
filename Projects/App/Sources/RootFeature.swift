@@ -59,7 +59,6 @@ struct RootFeature {
             case .didLoad:
                 return .concatenate(
                     .run { send in
-                        print("🚨 \(KeychainProvider.shared.read(.accessToken))")
                         guard KeychainProvider.shared.read(.accessToken) != nil else {
                             await send(.setRootToLogin)
                             return

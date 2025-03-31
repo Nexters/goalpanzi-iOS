@@ -28,6 +28,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         application.registerForRemoteNotifications()
 
+        print("🫛 \(KeychainProvider.shared.read(.accessToken))")
+
         Messaging.messaging().delegate = self
 
         return true
@@ -41,11 +43,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
-        print("💕 에러발생!!")
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("🚨 Good!!")
         completionHandler(.newData)
     }
 }
@@ -67,7 +67,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse) async {
-        print("🚨 DidReceive")
       let userInfo = response.notification.request.content.userInfo
       print(userInfo)
     }

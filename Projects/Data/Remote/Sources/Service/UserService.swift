@@ -67,12 +67,9 @@ extension UserService: DependencyKey {
                 }
             },
             registerDeviceToken: {
-                print("🚨🚨🚨🚨🚨")
                 do {
                     let token = try await Messaging.messaging().token()
                     let deviceToken = KeychainProvider.shared.read(.deviceToken) ?? ""
-//                    print("💕 token: \(token)")
-//                    print("💕 device Token: \(KeychainProvider.shared.read(.deviceToken))")
                     let requestDTO = RegisterDeviceTokenRequestDTO(deviceToken: token, deviceIdentifier: deviceToken)
                     let endpoint = Endpoint<Empty>(
                         path: "api/device/device-token",
