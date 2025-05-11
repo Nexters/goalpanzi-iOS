@@ -9,9 +9,7 @@ import Foundation
 import ComposableArchitecture
 import FeatureLoginInterface
 import FeatureEntranceInterface
-import FeatureHomeInterface
 import FeaturePieceCreationInterface
-import FeatureSettingInterface
 import DomainPlayerInterface
 import DataRemote
 import DataRemoteInterface
@@ -35,7 +33,7 @@ struct RootFeature {
         case didLoad
         case setRootToLogin
         case setRootToEntrance(isFirstEntrance: Bool)
-        case setRootToHome
+        case setRootToMain
         case setRootToProfileCreation
         case observeTokenRefreshingFailure
         case didFailTokenRefreshing
@@ -72,8 +70,8 @@ struct RootFeature {
                 state.destination = .entrance(EntranceFeature.State(isFirstEntrance: isFirstEntrance))
                 return .none
                 
-            case .setRootToHome:
-                state.destination = .home(HomeFeature.State())
+            case .setRootToMain:
+                state.destination = .main(MainFeature.State())
                 return .none
                 
             case .setRootToProfileCreation:
@@ -84,7 +82,7 @@ struct RootFeature {
                 if missionInfo.missions.isEmpty, state.isMissionCreated == false {
                     return .send(.setRootToEntrance(isFirstEntrance: false))
                 }
-                return .send(.setRootToHome)
+                return .send(.setRootToMain)
                 
             case .observeTokenRefreshingFailure:
                 return .run { send in
@@ -118,20 +116,18 @@ struct RootFeature {
                 
             case .destination(.presented(.entrance(.delegate(.didCreateMission)))):
                 state.isMissionCreated = true
-                return .send(.setRootToHome)
+                return .send(.setRootToMain)
                 
             case .destination(.presented(.entrance(.delegate(.didLogout)))),
                  .destination(.presented(.entrance(.delegate(.didDeleteProfile)))):
                 state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 
-            case .destination(.presented(.home(.delegate(.didFinishMission)))),
-                 .destination(.presented(.home(.delegate(.didDeleteMission)))):
+            case .destination(.presented(.main(.delegate(.didEndMission)))):
                 state.isMissionCreated = false
                 return .send(.setRootToEntrance(isFirstEntrance: false))
                 
-            case .destination(.presented(.home(.delegate(.didLogout)))),
-                 .destination(.presented(.home(.delegate(.didDeleteProfile)))):
+            case .destination(.presented(.main(.delegate(.didEndLogin)))):
                 state.isMissionCreated = false
                 return .send(.setRootToLogin)
                 

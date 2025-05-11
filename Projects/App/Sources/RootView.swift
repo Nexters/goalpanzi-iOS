@@ -11,8 +11,6 @@ import ComposableArchitecture
 import FeatureLoginInterface
 import FeatureEntranceInterface
 import FeaturePieceCreationInterface
-import FeatureHomeInterface
-import FeatureSettingInterface
 import SharedDesignSystem
 
 struct RootView: View {
@@ -48,10 +46,10 @@ struct RootView: View {
             if let store = store.scope(state: \.destination?.entrance, action: \.destination.entrance) {
                 EntranceView(store: store)
             }
-            
-        case .home:
-            if let store = store.scope(state: \.destination?.home, action: \.destination.home) {
-                HomeView(store: store)
+
+        case .main:
+            if let store = store.scope(state: \.destination?.main, action: \.destination.main) {
+                MainView(store: store)
             }
             
         case .none:

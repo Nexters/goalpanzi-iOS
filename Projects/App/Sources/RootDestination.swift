@@ -18,5 +18,5 @@ enum RootDestination {
     case login(LoginFeature)
     case profileCreation(PieceCreationFeature)
     case entrance(EntranceFeature)
-    case home(HomeFeature)
+    case main(MainFeature)
 }

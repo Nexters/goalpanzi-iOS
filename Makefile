@@ -1,7 +1,7 @@
 generate:
 	make clean
 	tuist install
-	tuist generate
+	tuist generate --no-binary-cache
 
 clean:
 	killAll Xcode && rm -rf ~/Library/Saved\ Application\ State/com.apple.dt.Xcode.savedState

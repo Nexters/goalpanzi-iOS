@@ -12,7 +12,6 @@ import ComposableArchitecture
 import DomainCompetitionInterface
 import DomainBoardInterface
 import DomainPlayerInterface
-import FeatureSettingInterface
 
 public struct HomeView: View {
     
@@ -40,6 +39,7 @@ public struct HomeView: View {
                         .isHidden(store.competition?.board.isDisabled == true)
                 }
             }
+            .safeAreaPadding(.bottom)
             .task {
                 await store.send(.onAppear).finish()
             }
@@ -63,8 +63,6 @@ public struct HomeView: View {
             }
         } destination: { store in
             switch store.case {
-            case let .setting(store):
-                SettingView(store: store)
             case let .missionInfo(store):
                 MissionInfoView(store: store)
             case let .finish(store):

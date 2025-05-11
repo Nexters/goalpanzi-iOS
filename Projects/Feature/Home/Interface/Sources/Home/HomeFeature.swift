@@ -6,7 +6,6 @@ import DomainUserInterface
 import DomainBoardInterface
 import DomainPlayerInterface
 import DomainCompetitionInterface
-import FeatureSettingInterface
 import SharedDesignSystem
 import SharedThirdPartyLib
 import DataRemoteInterface
@@ -55,7 +54,6 @@ public struct HomeFeature {
     
     @Reducer
     public enum Path {
-        case setting(SettingFeature)
         case missionInfo(MissionInfoFeature)
         case finish(FinishFeature)
     }
@@ -64,7 +62,6 @@ public struct HomeFeature {
         case onAppear
         case didRefresh
         case didTapMissionInfoButton
-        case didTapSettingButton
         case didTapInvitationInfoButton
         case didTapInvitationInfoToolTip
         case didTapMissionInfoGuideToolTip
@@ -215,10 +212,6 @@ public struct HomeFeature {
                 state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, isMeHost: state.isMeHost, totalBlockCount: totalBlockCount, infos: mission.toInfos)))
                 return .none
                 
-            case .didTapSettingButton:
-                state.path.append(.setting(SettingFeature.State()))
-                return .none
-                
             case let .didTapPlayer(player):
                 guard let verification = state.competition?.findVerification(by: player.id), verification.isVerified else { return .none }
                 state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: verification.verifiedAt ?? Date.now, imageURL: verification.imageURL))
@@ -311,18 +304,8 @@ public struct HomeFeature {
                     return .none
                 }
                 
-            case .path(.element(id: _, action: .setting(.delegate(.didLogout)))):
-                return .send(.delegate(.didLogout))
-                
-            case .path(.element(id: _, action: .setting(.delegate(.didDeleteProfile)))):
-                return .send(.delegate(.didDeleteProfile))
-                
             case .path(.element(id: _, action: .finish(.delegate(.didTapConfirmButton)))):
                 return .send(.delegate(.didFinishMission))
-                
-            case .path(.element(id: _, action: .finish(.delegate(.didTapSettingButton)))):
-                state.path.append(.setting(SettingFeature.State()))
-                return .none
                 
             case .path(.element(id: _, action: .missionInfo(.delegate(.didDeleteMission)))):
                 return .send(.delegate(.didDeleteMission))
