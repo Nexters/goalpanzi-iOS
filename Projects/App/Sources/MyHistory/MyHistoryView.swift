@@ -54,7 +54,7 @@ extension MyHistoryView {
         @ViewBuilder
         var body: some View {
             switch store.viewState {
-            case .initial, .failure:
+            case .initial:
                 GeometryReader { geometry in
                     LoadingView()
                         .frame(width: geometry.size.width, height: geometry.size.height)
@@ -62,14 +62,15 @@ extension MyHistoryView {
                             await store.send(.onAppear).finish()
                         }
                 }
+            case .failure:
+                GeometryReader { geometry in
+                    FailureView()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                }
             case let .success(info):
                 VStack(spacing: 0) {
                     header(totalCount: info.totalCount)
-                    if info.isEmpty {
-                        empty()
-                    } else {
-                        content(histories: info.resultList, hasNext: info.hasNext)
-                    }
+                    content(histories: info.resultList, hasNext: info.hasNext)
                 }
             }
         }
@@ -95,38 +96,40 @@ extension MyHistoryView {
         }
         
         @ViewBuilder
-        func empty() -> some View {
-            GeometryReader { geometry in
-                VStack(spacing: 0) {
-                    VStack(spacing: 0) {
-                        Image(uiImage: SharedDesignSystemAsset.Images.emptyHistoryInfoToolTip.image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                        Image(uiImage:SharedDesignSystemAsset.Images.basicRabbit.image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .padding(.horizontal, 35)
-                    }
-                    .padding(.horizontal, 75)
-                }
-                .frame(width: geometry.size.width, height: geometry.size.height)
-            }
-        }
-        
-        @ViewBuilder
         func content(histories: [MissionHistoryInfo.History], hasNext: Bool) -> some View {
             GeometryReader { geometry in
                 ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(histories) { history in
-                            CardView(history: history, size: geometry.size)
-                        }
-                        FooterView(size: geometry.size)
-                            .isHidden(!hasNext, remove: true)
-                            .task {
-                                await store.send(.didReachEnd).finish()
+                    if histories.isEmpty {
+                        GeometryReader { geometry in
+                            VStack(spacing: 0) {
+                                VStack(spacing: 0) {
+                                    Image(uiImage: SharedDesignSystemAsset.Images.emptyHistoryInfoToolTip.image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                    Image(uiImage:SharedDesignSystemAsset.Images.basicRabbit.image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .padding(.horizontal, 35)
+                                }
+                                .padding(.horizontal, 75)
                             }
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                        }
+                    } else {
+                        LazyVStack(spacing: 0) {
+                            ForEach(histories) { history in
+                                CardView(history: history, size: geometry.size)
+                            }
+                            FooterView(size: geometry.size)
+                                .isHidden(!hasNext, remove: true)
+                                .task {
+                                    await store.send(.didReachEnd).finish()
+                                }
+                        }
                     }
+                }
+                .refreshable {
+                    await store.send(.didRefresh).finish()
                 }
             }
         }

@@ -33,33 +33,41 @@ struct MyHistoryFeature {
     enum Action {
         case onAppear
         case didReachEnd
-        case willFetchMyMissionHistoryInfo
-        case didFetchMyMissioinHistoryInfo(Result<MissionHistoryInfo, Error>)
+        case didRefresh
+        case didFetchMyMissionHistoryInfoAndAppend(Result<MissionHistoryInfo, Error>)
+        case didFetchMyMissionHistoryInfoAndReplace(Result<MissionHistoryInfo, Error>)
     }
     
     var body: some ReducerOf<Self> {
-        Reduce {
-            state,
-            action in
+        Reduce { state, action in
             switch action {
             case .onAppear:
                 state.viewState = .initial
                 state.currentPage = 0
-                return .send(.willFetchMyMissionHistoryInfo)
+                return .run { [page = state.currentPage, pageSize = state.currentPageSize] send in
+                    await send(.didFetchMyMissionHistoryInfoAndReplace(Result {
+                        try await missionHistoryService.getMissionsHistoriesMe(page, pageSize)
+                    }))
+                }
+                
+            case .didRefresh:
+                state.currentPage = 0
+                return .run { [page = state.currentPage, pageSize = state.currentPageSize] send in
+                    await send(.didFetchMyMissionHistoryInfoAndReplace(Result {
+                        try await missionHistoryService.getMissionsHistoriesMe(page, pageSize)
+                    }))
+                }
                 
             case .didReachEnd:
                 guard state.currentInfo.hasNext else { return .none }
                 state.currentPage += 1
-                return .send(.willFetchMyMissionHistoryInfo)
-                
-            case .willFetchMyMissionHistoryInfo:
                 return .run { [page = state.currentPage, pageSize = state.currentPageSize] send in
-                    await send(.didFetchMyMissioinHistoryInfo(Result {
+                    await send(.didFetchMyMissionHistoryInfoAndAppend(Result {
                         try await missionHistoryService.getMissionsHistoriesMe(page, pageSize)
                     }))
                 }
-
-            case let .didFetchMyMissioinHistoryInfo(.success(info)):
+                
+            case let .didFetchMyMissionHistoryInfoAndAppend(.success(info)):
                 state.currentInfo = .init(
                     totalCount: info.totalCount,
                     hasNext: info.hasNext,
@@ -68,7 +76,20 @@ struct MyHistoryFeature {
                 state.viewState = .success(state.currentInfo)
                 return .none
                 
-            case let .didFetchMyMissioinHistoryInfo(.failure(error)):
+            case let .didFetchMyMissionHistoryInfoAndReplace(.success(info)):
+                state.currentInfo = .init(
+                    totalCount: info.totalCount,
+                    hasNext: info.hasNext,
+                    resultList: info.resultList
+                )
+                state.viewState = .success(state.currentInfo)
+                return .none
+                
+            case let .didFetchMyMissionHistoryInfoAndAppend(.failure(error)):
+                state.viewState = .failure(error)
+                return .none
+                
+            case let .didFetchMyMissionHistoryInfoAndReplace(.failure(error)):
                 state.viewState = .failure(error)
                 return .none
             }
