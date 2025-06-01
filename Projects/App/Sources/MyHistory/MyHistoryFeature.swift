@@ -18,8 +18,9 @@ struct MyHistoryFeature {
     
     @ObservableState
     struct State {
-        var currentPage: Int = 0
-        var currentPageSize: Int = 30
+        let initialPage: Int = 0
+        let pageSize: Int = 30
+        var nextPage: Int = 0
         var currentInfo: MissionHistoryInfo = .empty
         var viewState: ViewState = .initial
     }
@@ -43,16 +44,14 @@ struct MyHistoryFeature {
             switch action {
             case .onAppear:
                 state.viewState = .initial
-                state.currentPage = 0
-                return .run { [page = state.currentPage, pageSize = state.currentPageSize] send in
+                return .run { [page = state.initialPage, pageSize = state.pageSize] send in
                     await send(.didFetchMyMissionHistoryInfoAndReplace(Result {
                         try await missionHistoryService.getMissionsHistoriesMe(page, pageSize)
                     }))
                 }
                 
             case .didRefresh:
-                state.currentPage = 0
-                return .run { [page = state.currentPage, pageSize = state.currentPageSize] send in
+                return .run { [page = state.initialPage, pageSize = state.pageSize] send in
                     await send(.didFetchMyMissionHistoryInfoAndReplace(Result {
                         try await missionHistoryService.getMissionsHistoriesMe(page, pageSize)
                     }))
@@ -60,8 +59,7 @@ struct MyHistoryFeature {
                 
             case .didReachEnd:
                 guard state.currentInfo.hasNext else { return .none }
-                state.currentPage += 1
-                return .run { [page = state.currentPage, pageSize = state.currentPageSize] send in
+                return .run { [page = state.nextPage, pageSize = state.pageSize] send in
                     await send(.didFetchMyMissionHistoryInfoAndAppend(Result {
                         try await missionHistoryService.getMissionsHistoriesMe(page, pageSize)
                     }))
@@ -73,6 +71,7 @@ struct MyHistoryFeature {
                     hasNext: info.hasNext,
                     resultList: state.currentInfo.resultList + info.resultList
                 )
+                state.nextPage += 1
                 state.viewState = .success(state.currentInfo)
                 return .none
                 
@@ -82,6 +81,7 @@ struct MyHistoryFeature {
                     hasNext: info.hasNext,
                     resultList: info.resultList
                 )
+                state.nextPage = state.initialPage + 1
                 state.viewState = .success(state.currentInfo)
                 return .none
                 
