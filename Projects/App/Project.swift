@@ -26,7 +26,10 @@ let targets: [Target] = [
             entitlements: "MissionMate.entitlements",
             dependencies: [
                 .feature
-            ]
+            ],
+            settings: .settings(base: [
+                "OTHER_LDFLAGS": ["-ObjC"]
+            ])
         )
     )
 ]
