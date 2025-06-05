@@ -25,6 +25,7 @@ struct MyHistoryView: View {
             HeaderView()
             ContentView(store: store)
         }
+        .background(Color.mmGray6)
     }
 }
 
@@ -40,10 +41,10 @@ extension MyHistoryView {
                     .font(.pretendard(kind: .heading_sm, type: .bold))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .background(Color.mmWhite)
             .padding(.horizontal, 24)
             .padding(.top, 7)
             .padding(.bottom, 16)
+            .background(Color.mmGray6)
         }
     }
     
@@ -93,6 +94,7 @@ extension MyHistoryView {
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 12)
+            .background(Color.mmGray6)
         }
         
         @ViewBuilder
@@ -112,7 +114,7 @@ extension MyHistoryView {
                         .padding(.horizontal, 75)
                         .padding(.top, (geometry.size.height - 350) / 2)
                     } else {
-                        LazyVStack(spacing: 0) {
+                        LazyVStack(spacing: 12) {
                             ForEach(histories) { history in
                                 CardView(history: history, size: geometry.size)
                             }

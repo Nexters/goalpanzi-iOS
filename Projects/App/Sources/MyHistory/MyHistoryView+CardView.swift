@@ -8,6 +8,7 @@
 import SwiftUI
 import Kingfisher
 import SharedUtil
+import SharedDesignSystem
 import SharedUtilInterface
 import DomainUserInterface
 import DomainHistoryInterface
@@ -89,16 +90,18 @@ extension MyHistoryView.CardView {
         @ViewBuilder
         var body: some View {
             VStack {
-                Text("인증한 사진이 없어요.")
-                    .foregroundStyle(Color.mmGray1)
-                    .font(.pretendard(kind: .body_md, type: .regular))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.bottom, 100)
+                ZStack {
+                    Image(uiImage: SharedDesignSystemAsset.Images.noCertificationBackground.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 172, height: 290)
+                }
+                .frame(width: size.width, height: size.contentHeight - 152)
+                .background(Color.mmGray4)
+                .padding(.bottom, 152)
             }
             .frame(width: size.width, height: size.contentHeight)
-            .background {
-                Color.mmGray5
-            }
+            .background(Color.mmWhite)
         }
     }
     

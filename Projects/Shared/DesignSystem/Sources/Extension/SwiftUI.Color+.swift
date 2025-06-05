@@ -18,6 +18,7 @@ extension Color {
     public static let mmGray3 = SharedDesignSystemAsset.Colors.gray3.swiftUIColor
     public static let mmGray4 = SharedDesignSystemAsset.Colors.gray4.swiftUIColor
     public static let mmGray5 = SharedDesignSystemAsset.Colors.gray5.swiftUIColor
+    public static let mmGray6 = SharedDesignSystemAsset.Colors.gray6.swiftUIColor
     public static let mmGray550 = SharedDesignSystemAsset.Colors.gray550.swiftUIColor
     public static let mmLightBlue = SharedDesignSystemAsset.Colors.lightBlue.swiftUIColor
     public static let mmLightBrown = SharedDesignSystemAsset.Colors.lightBrown.swiftUIColor

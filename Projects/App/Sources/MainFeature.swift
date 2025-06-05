@@ -28,10 +28,13 @@ struct MainFeature {
             switch focusedTab {
             case .inprogressMission(.home):
                 tabs = [.inprogressMission(.home), .myHistory, .setting]
+                
             case let .inprogressMission(.entrance(isFirstEntrance)):
                 tabs = [.inprogressMission(.entrance(isFirstEntrance: isFirstEntrance)), .myHistory, .setting]
+                
             case .myHistory:
                 tabs = [.inprogressMission(.home), .myHistory, .setting]
+                
             case .setting:
                 tabs = [.inprogressMission(.home), .myHistory, .setting]
             }
