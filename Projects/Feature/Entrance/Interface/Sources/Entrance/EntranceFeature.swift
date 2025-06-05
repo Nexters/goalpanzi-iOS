@@ -7,7 +7,6 @@
 
 import Foundation
 
-import FeatureSettingInterface
 import DomainUser
 import DomainUserInterface
 import DataRemote
@@ -29,8 +28,6 @@ public struct EntranceFeature: Reducer {
         
         // 🚨 초대코드 검증
         case missionInputInviationCode(MissionInvitationCodeFeature)
-        
-        case setting(SettingFeature)
     }
     
     @ObservableState
@@ -48,6 +45,10 @@ public struct EntranceFeature: Reducer {
             self._missionCreationData = Shared(MissionCreationData())
             self.isFirstEntrance = isFirstEntrance
         }
+        
+        public mutating func update(isFirstEntrance: Bool) {
+            self.isFirstEntrance = isFirstEntrance
+        }
     }
     
     public enum Action {
@@ -57,7 +58,6 @@ public struct EntranceFeature: Reducer {
 
         case createMissionButtonTapped
         case enterInvitationCodeButtonTapped
-        case didTapSettingButton
         
         case onAppear
         
@@ -66,8 +66,6 @@ public struct EntranceFeature: Reducer {
     
     public enum Delegate {
         case didCreateMission
-        case didLogout
-        case didDeleteProfile
     }
     
     @Dependency(UserClient.self) var userClient
@@ -102,9 +100,6 @@ public struct EntranceFeature: Reducer {
             case .enterInvitationCodeButtonTapped:
                 state.path.append(.missionInputInviationCode(MissionInvitationCodeFeature.State()))
                 return .none
-            case .didTapSettingButton:
-                state.path.append(.setting(SettingFeature.State()))
-                return .none
             case let .path(action):
                 switch action {
                 case .element(id: _, action: .missionContentSetting(.nextButtonTapped)):
@@ -120,12 +115,6 @@ public struct EntranceFeature: Reducer {
                     
                 case .element(id: _, action: .missionInputInviationCode(.startMission)):
                     return .send(.delegate(.didCreateMission))
-                    
-                case .element(id: _, action: .setting(.delegate(.didLogout))):
-                    return .send(.delegate(.didLogout))
-                    
-                case .element(id: _, action: .setting(.delegate(.didDeleteProfile))):
-                    return .send(.delegate(.didDeleteProfile))
                     
                 default:
                     return .none

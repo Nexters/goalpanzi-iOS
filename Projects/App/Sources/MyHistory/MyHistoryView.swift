@@ -100,21 +100,17 @@ extension MyHistoryView {
             GeometryReader { geometry in
                 ScrollView {
                     if histories.isEmpty {
-                        GeometryReader { geometry in
-                            VStack(spacing: 0) {
-                                VStack(spacing: 0) {
-                                    Image(uiImage: SharedDesignSystemAsset.Images.emptyHistoryInfoToolTip.image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                    Image(uiImage:SharedDesignSystemAsset.Images.basicRabbit.image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .padding(.horizontal, 35)
-                                }
-                                .padding(.horizontal, 75)
-                            }
-                            .frame(width: geometry.size.width, height: geometry.size.height)
+                        VStack(spacing: 0) {
+                            Image(uiImage: SharedDesignSystemAsset.Images.emptyHistoryInfoToolTip.image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            Image(uiImage:SharedDesignSystemAsset.Images.basicRabbit.image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding(.horizontal, 35)
                         }
+                        .padding(.horizontal, 75)
+                        .padding(.top, (geometry.size.height - 350) / 2)
                     } else {
                         LazyVStack(spacing: 0) {
                             ForEach(histories) { history in

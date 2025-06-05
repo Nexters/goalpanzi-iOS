@@ -8,7 +8,6 @@
 import Foundation
 import ComposableArchitecture
 import FeatureLoginInterface
-import FeatureEntranceInterface
 import FeaturePieceCreationInterface
 import DomainPlayerInterface
 import DataRemote
@@ -25,15 +24,12 @@ struct RootFeature {
     struct State {
         @Shared(.appStorage("isMissionCreated")) var isMissionCreated: Bool = false
         @Presents var destination: RootDestination.State? = nil
-        
-        init() {}
     }
     
     enum Action {
         case didLoad
         case setRootToLogin
-        case setRootToEntrance(isFirstEntrance: Bool)
-        case setRootToMain
+        case setRootToMain(tab: MainFeature.TabKind = .inprogressMission(.home))
         case setRootToProfileCreation
         case observeTokenRefreshingFailure
         case didFailTokenRefreshing
@@ -66,12 +62,12 @@ struct RootFeature {
                 state.destination = .login(LoginFeature.State())
                 return .none
                 
-            case .setRootToEntrance(let isFirstEntrance):
-                state.destination = .entrance(EntranceFeature.State(isFirstEntrance: isFirstEntrance))
-                return .none
-                
-            case .setRootToMain:
-                state.destination = .main(MainFeature.State())
+            case let .setRootToMain(tab):
+                var mainState = MainFeature.State(focusedTab: tab)
+                if case let .inprogressMission(.entrance(isFirstEntrance)) = tab {
+                    mainState.update(isFirstEntrance: isFirstEntrance)
+                }
+                state.destination = .main(mainState)
                 return .none
                 
             case .setRootToProfileCreation:
@@ -80,9 +76,9 @@ struct RootFeature {
                 
             case let .didFetchMissionInfo(.success(missionInfo)):
                 if missionInfo.missions.isEmpty, state.isMissionCreated == false {
-                    return .send(.setRootToEntrance(isFirstEntrance: false))
+                    return .send(.setRootToMain(tab: .inprogressMission(.entrance(isFirstEntrance: false))))
                 }
-                return .send(.setRootToMain)
+                return .send(.setRootToMain(tab: .inprogressMission(.home)))
                 
             case .observeTokenRefreshingFailure:
                 return .run { send in
@@ -107,29 +103,24 @@ struct RootFeature {
                 }
                 
             case .destination(.presented(.profileCreation(.delegate(.didCreateProfile)))):
-                return .send(.setRootToEntrance(isFirstEntrance: true))
+                return .send(.setRootToMain(tab: .inprogressMission(.entrance(isFirstEntrance: true))))
                 
             case .didFetchMissionInfo(.failure):
                 KeychainProvider.shared.delete(.accessToken)
                 KeychainProvider.shared.delete(.refreshToken)
                 return .none
                 
-            case .destination(.presented(.entrance(.delegate(.didCreateMission)))):
-                state.isMissionCreated = true
-                return .send(.setRootToMain)
-                
-            case .destination(.presented(.entrance(.delegate(.didLogout)))),
-                 .destination(.presented(.entrance(.delegate(.didDeleteProfile)))):
-                state.isMissionCreated = false
-                return .send(.setRootToLogin)
-                
             case .destination(.presented(.main(.delegate(.didEndMission)))):
                 state.isMissionCreated = false
-                return .send(.setRootToEntrance(isFirstEntrance: false))
+                return .send(.setRootToMain(tab: .inprogressMission(.entrance(isFirstEntrance: false))))
                 
             case .destination(.presented(.main(.delegate(.didEndLogin)))):
                 state.isMissionCreated = false
                 return .send(.setRootToLogin)
+                
+            case .destination(.presented(.main(.delegate(.didCreateMission)))):
+                state.isMissionCreated = true
+                return .send(.setRootToMain(tab: .inprogressMission(.home)))
                 
             case .destination:
                 return .none

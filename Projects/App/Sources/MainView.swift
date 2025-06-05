@@ -12,6 +12,7 @@ import SharedUtil
 import SharedDesignSystem
 import FeatureHomeInterface
 import FeatureSettingInterface
+import FeatureEntranceInterface
 
 struct MainView: View {
     
@@ -25,9 +26,14 @@ struct MainView: View {
     var body: some View {
         VStack(spacing: 0) {
             switch store.focusedTab {
-            case .home:
+            case .inprogressMission(.home):
                 if let store = store.scope(state: \.homeState, action: \.home) {
                     HomeView(store: store)
+                }
+                
+            case .inprogressMission(.entrance):
+                if let store = store.scope(state: \.entranceState, action: \.entrance) {
+                    EntranceView(store: store)
                 }
 
             case .myHistory:
@@ -43,7 +49,7 @@ struct MainView: View {
             }
             Tab(
                 focusedTab: store.focusedTab,
-                tabs: MainFeature.TabKind.allCases,
+                tabs: store.tabs,
                 didTapItem: { tab in
                     store.send(.didTapTab(tab))
                 }
@@ -118,7 +124,7 @@ extension MainFeature.TabKind: Identifiable {
     
     var id: String {
         switch self {
-        case .home: "home"
+        case .inprogressMission: "inprogressMission"
         case .myHistory: "myHistory"
         case .setting: "setting"
         }
@@ -132,18 +138,11 @@ extension MainFeature.TabKind: Equatable {
     }
 }
 
-extension MainFeature.TabKind: CaseIterable {
-    
-    static var allCases: [MainFeature.TabKind] {
-        [.home, .myHistory, .setting]
-    }
-}
-
 extension MainFeature.TabKind {
     
     var icon: Image {
         switch self {
-        case .home: SharedDesignSystemAsset.Images.flagIcon.swiftUIImage
+        case .inprogressMission: SharedDesignSystemAsset.Images.flagIcon.swiftUIImage
         case .myHistory: SharedDesignSystemAsset.Images.clockIcon.swiftUIImage
         case .setting: SharedDesignSystemAsset.Images.settingIcon.swiftUIImage
         }
@@ -151,7 +150,7 @@ extension MainFeature.TabKind {
     
     var title: String {
         switch self {
-        case .home: "진행미션"
+        case .inprogressMission: "진행미션"
         case .myHistory: "내기록"
         case .setting: "설정"
         }

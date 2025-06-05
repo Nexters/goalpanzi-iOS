@@ -44,7 +44,7 @@ extension MyHistoryView {
                     dateString: history.dateString
                 )
             }
-            .frame(width: size.width, height: size.height)
+            .frame(width: size.width, height: size.contentHeight)
         }
     }
 }
@@ -60,12 +60,12 @@ extension MyHistoryView.CardView {
         
         @ViewBuilder
         var body: some View {
-            TimelineView(.periodic(from: .now, by: 2.5)) { context in
+            TimelineView(.periodic(from: .now, by: 3.0)) { context in
                 KFImage(imageURL)
                     .resizable()
                     .placeholder({ Color.white })
                     .scaledToFill()
-                    .frame(width: size.width, height: size.height)
+                    .frame(width: size.width, height: size.contentHeight)
                     .clipped()
                     .transition(
                         .asymmetric(
@@ -74,7 +74,7 @@ extension MyHistoryView.CardView {
                         )
                     )
                     .id(currentIndex)
-                    .animation(.linear(duration: 0.5), value: currentIndex)
+                    .animation(.easeInOut(duration: 0.3), value: currentIndex)
                     .onChange(of: Int(context.date.timeIntervalSinceReferenceDate) % imageURLsTotalCount) { old, new in
                         currentIndex = new
                     }
@@ -95,7 +95,7 @@ extension MyHistoryView.CardView {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 100)
             }
-            .frame(width: size.width, height: size.height)
+            .frame(width: size.width, height: size.contentHeight)
             .background {
                 Color.mmGray5
             }
@@ -154,4 +154,9 @@ extension MyHistoryView.CardView {
             .background(.ultraThinMaterial, in: Rectangle())
         }
     }
+}
+
+private extension CGSize {
+    
+    var contentHeight: CGFloat { height * 0.9 }
 }

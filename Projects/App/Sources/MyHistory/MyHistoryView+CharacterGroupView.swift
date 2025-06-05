@@ -14,9 +14,7 @@ extension MyHistoryView {
         
         let characters: [DomainUserInterface.Character]
         var displayCharacters: [DomainUserInterface.Character] { Array(characters.prefix(3)) }
-        var additionalTextCounter: String? {
-            characters.count > 3 ? "+\(characters.count - 3)" : nil
-        }
+        var additionalTextCounter: String { "\(characters.count)명" }
         
         @ViewBuilder
         var body: some View {
@@ -34,11 +32,9 @@ extension MyHistoryView {
                             })
                     }
                 }
-                if let additionalTextCounter {
-                    Text(additionalTextCounter)
-                        .foregroundStyle(Color.mmGray1)
-                        .font(.pretendard(kind: .body_xl, type: .bold))
-                }
+                Text(additionalTextCounter)
+                    .foregroundStyle(Color.mmGray1)
+                    .font(.pretendard(kind: .body_xl, type: .bold))
             }
         }
     }

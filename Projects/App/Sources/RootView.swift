@@ -41,11 +41,6 @@ struct RootView: View {
             if let store = store.scope(state: \.destination?.profileCreation, action: \.destination.profileCreation) {
                 PieceCreationView(store: store)
             }
-            
-        case .entrance:
-            if let store = store.scope(state: \.destination?.entrance, action: \.destination.entrance) {
-                EntranceView(store: store)
-            }
 
         case .main:
             if let store = store.scope(state: \.destination?.main, action: \.destination.main) {
