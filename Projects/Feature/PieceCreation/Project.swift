@@ -47,7 +47,7 @@ let project = Project.makeModule(
                     infoPlist: .extendingDefault(
                         with: [
                             "BASE_URL": "http://223.130.130.31:8080/",
-                            "CFBundleShortVersionString": "1.2",
+                            "CFBundleShortVersionString": "1.3",
                             "CFBundleVersion": "1",
                             "ITSAppUsesNonExemptEncryption": false,
                             "CFBundleName": "MissionMate",
