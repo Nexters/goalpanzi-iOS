@@ -102,6 +102,18 @@ public extension Competition {
     }
 }
 
+public extension Competition.Status {
+    
+    var isCreated: Bool {
+        switch self {
+        case .created:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 public extension MissionStatus {
     
     func toCompetitionStatus(hasOtherPlayer: Bool) -> Competition.Status {

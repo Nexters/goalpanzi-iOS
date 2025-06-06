@@ -11,8 +11,6 @@ import ComposableArchitecture
 import FeatureLoginInterface
 import FeatureEntranceInterface
 import FeaturePieceCreationInterface
-import FeatureHomeInterface
-import FeatureSettingInterface
 import SharedDesignSystem
 
 struct RootView: View {
@@ -43,20 +41,24 @@ struct RootView: View {
             if let store = store.scope(state: \.destination?.profileCreation, action: \.destination.profileCreation) {
                 PieceCreationView(store: store)
             }
-            
-        case .entrance:
-            if let store = store.scope(state: \.destination?.entrance, action: \.destination.entrance) {
-                EntranceView(store: store)
-            }
-            
-        case .home:
-            if let store = store.scope(state: \.destination?.home, action: \.destination.home) {
-                HomeView(store: store)
+
+        case .main:
+            if let store = store.scope(state: \.destination?.main, action: \.destination.main) {
+                MainView(store: store)
             }
             
         case .none:
-            EmptyView()
-                .backgroundStyle(Color.mmOrange)
+            GeometryReader { proxy in
+                VStack(alignment: .center, spacing: 0) {
+                    SharedDesignSystemAsset.Images.missionmateLogo.swiftUIImage
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                }
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .background(Color.mmOrange)
+            }
+            .ignoresSafeArea(.all)
         }
     }
 }

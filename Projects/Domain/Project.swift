@@ -20,6 +20,7 @@ let targets: [Target] = [
                 .domain(implements: .Board),
                 .domain(implements: .Competition),
                 .domain(implements: .Mission),
+                .domain(implements: .History),
                 .core
             ]
         )

@@ -35,7 +35,6 @@ public struct FinishFeature {
     
     public enum Action {
         case didTapConfirmButton
-        case didTapSettingButton
         case delegate(Delegate)
         
         case didCompleteMission(Result<Void, Error>)
@@ -55,8 +54,6 @@ public struct FinishFeature {
                         try await missionMemberService.completeMission(missionId)
                     }))
                 }
-            case .didTapSettingButton:
-                return .send(.delegate(.didTapSettingButton))
             case .delegate:
                 return .none
             case .didCompleteMission(.success):

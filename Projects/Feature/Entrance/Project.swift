@@ -48,8 +48,9 @@ let project = Project.makeModule(
                 infoPlist: .extendingDefault(
                     with: [
                         "BASE_URL": "https://mission-mate.kro.kr/",
-                        "CFBundleShortVersionString": "1.0",
+                        "CFBundleShortVersionString": "1.2",
                         "CFBundleVersion": "1",
+                        "ITSAppUsesNonExemptEncryption": false,
                         "CFBundleName": "MissionMate",
                         "CFBundleIconName": "AppIcon",
                         "UILaunchStoryboardName": "LaunchScreen.storyboard",

@@ -27,22 +27,32 @@ struct HomeBottomView: View {
             .padding(.top, 16)
             .padding(.bottom, 6)
             
-            PhotoPickerView(selectedImages: $store.selectedImages.sending(\.didSelectImages), maxSelectedCount: 1) {
+            PhotoPickerView(
+                selectedImages: $store.selectedImages.sending(\.didSelectImages),
+                maxSelectedCount: 1
+            ) {
                 Text(store.ctaButtonState.title)
                     .font(.pretendard(kind: .body_lg, type: .bold))
                     .foregroundColor(SharedDesignSystemAsset.Colors.white.swiftUIColor)
                     .frame(height: 60)
                     .frame(maxWidth: .infinity)
                     .background(
-                        store.ctaButtonState.isEnabled
+                        store.ctaButtonState.status.isEnabled
                         ? SharedDesignSystemAsset.Colors.orange.swiftUIColor
                         : SharedDesignSystemAsset.Colors.disabled.swiftUIColor
                     )
                     .cornerRadius(30)
+                    .overlay {
+                        VStack(alignment: .center, spacing: 0) {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .isHidden(!store.ctaButtonState.status.isLoading, remove: true)
+                        }
+                    }
             }
             .padding(.horizontal, HomeView.Constant.horizontalPadding)
             .padding(.bottom, 36)
-            .disabled(!store.ctaButtonState.isEnabled)
+            .disabled(store.ctaButtonState.status.isDisabled)
         }
         .background(.ultraThinMaterial)
         .cornerRadius(20, corners: [.topLeft, .topRight])

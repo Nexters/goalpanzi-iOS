@@ -39,7 +39,9 @@ public struct NetworkProvider: NetworkProviderType {
                     }
                 }
             }
-
+            if let responseData = response.data, let jsonString = String(data: responseData, encoding: .utf8) {
+                print(jsonString)
+            }
             let value = try await dataTask.value
             return .success(value)
         } catch {

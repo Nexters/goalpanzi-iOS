@@ -26,7 +26,7 @@ import PackageDescription
 let package = Package(
     name: "PackageName",
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.11.2"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.11.2"),
         .package(url: "https://github.com/onevcat/Kingfisher", from: "7.12.0"),
         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.9.1"),
         .package(url: "https://github.com/airbnb/lottie-ios", from: "4.5.0"),

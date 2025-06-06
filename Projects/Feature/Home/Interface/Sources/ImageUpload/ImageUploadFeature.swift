@@ -25,6 +25,7 @@ public struct ImageUploadFeature {
         public let updatedDate: Date
         public let selectedImage: UIImage
         public var isLoading: Bool = false
+        public var isButtonDisabled: Bool = false
         
         public var formatedDate: String {
             DateFormatter.yearMonthDayFormatter.string(from: updatedDate)
@@ -46,7 +47,8 @@ public struct ImageUploadFeature {
     }
     
     public enum Delegate {
-        case didFinishImageUpload
+        case didStartImageUpload
+        case didFinishImageUpload(Result<Void, Error>)
     }
     
     public var body: some ReducerOf<Self> {
@@ -54,18 +56,22 @@ public struct ImageUploadFeature {
             switch action {
             case .didTapUploadButton:
                 state.isLoading = true
-                return .run { [
-                    missionId = state.missionId, 
-                    selectedImage = state.selectedImage
-                ] send in
-                    await send(.didFinishImageUpload(
-                        Result {
-                            if let data = selectedImage.jpegData(compressionQuality: 0.5) {
-                                return try await verificationService.postVerificationsMe(missionId, data)
+                state.isButtonDisabled = true
+                return .concatenate(
+                    .send(.delegate(.didStartImageUpload)),
+                    .run { [
+                        missionId = state.missionId,
+                        selectedImage = state.selectedImage
+                    ] send in
+                        await send(.didFinishImageUpload(
+                            Result {
+                                if let data = selectedImage.jpegData(compressionQuality: 0.5) {
+                                    return try await verificationService.postVerificationsMe(missionId, data)
+                                }
                             }
-                        }
-                    ))
-                }
+                        ))
+                    }
+                )
             case .didTapCloseButton:
                 return .run { _ in
                     await self.dismiss()
@@ -73,14 +79,15 @@ public struct ImageUploadFeature {
             case .didFinishImageUpload(.success):
                 state.isLoading = false
                 return .concatenate(
-                    .send(.delegate(.didFinishImageUpload)),
+                    .send(.delegate(.didFinishImageUpload(.success(())))),
                     .run { _ in
                         await self.dismiss()
                     }
                 )
             case .didFinishImageUpload(.failure):
                 state.isLoading = false
-                return .none
+                state.isButtonDisabled = false
+                return .send(.delegate(.didFinishImageUpload(.failure(NSError()))))
             case .delegate:
                 return .none
             }

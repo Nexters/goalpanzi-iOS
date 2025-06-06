@@ -6,7 +6,6 @@ import DomainUserInterface
 import DomainBoardInterface
 import DomainPlayerInterface
 import DomainCompetitionInterface
-import FeatureSettingInterface
 import SharedDesignSystem
 import SharedThirdPartyLib
 import DataRemoteInterface
@@ -55,7 +54,6 @@ public struct HomeFeature {
     
     @Reducer
     public enum Path {
-        case setting(SettingFeature)
         case missionInfo(MissionInfoFeature)
         case finish(FinishFeature)
     }
@@ -64,7 +62,6 @@ public struct HomeFeature {
         case onAppear
         case didRefresh
         case didTapMissionInfoButton
-        case didTapSettingButton
         case didTapInvitationInfoButton
         case didTapInvitationInfoToolTip
         case didTapMissionInfoGuideToolTip
@@ -215,10 +212,6 @@ public struct HomeFeature {
                 state.path.append(.missionInfo(MissionInfoFeature.State(missionId: missionId, isMeHost: state.isMeHost, totalBlockCount: totalBlockCount, infos: mission.toInfos)))
                 return .none
                 
-            case .didTapSettingButton:
-                state.path.append(.setting(SettingFeature.State()))
-                return .none
-                
             case let .didTapPlayer(player):
                 guard let verification = state.competition?.findVerification(by: player.id), verification.isVerified else { return .none }
                 state.destination = .imageDetail(ImageDetailFeature.State(player: player, verifiedAt: verification.verifiedAt ?? Date.now, imageURL: verification.imageURL))
@@ -278,10 +271,24 @@ public struct HomeFeature {
                 switch action {
                 case .dismiss:
                     return .none
-                case .presented(.imageUpload(.delegate(.didFinishImageUpload))):
+                    
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload(.success)))):
                     guard let myPiece = state.competition?.myPiece else { return .none }
                     state.movingPiece = myPiece
                     state.competition?.board.remove(piece: myPiece)
+                    return .none
+                    
+                case .presented(.imageUpload(.delegate(.didFinishImageUpload(.failure)))):
+                    guard let mission = state.mission else { return .none }
+                    state.ctaButtonState = makeCTAButtonState(isMeCertificated: state.competition?.isMeVerified == true, mission: mission)
+                    return .none
+                    
+                case .presented(.imageUpload(.delegate(.didStartImageUpload))):
+                    state.ctaButtonState = CTAButtonState(
+                        info: state.ctaButtonState.info,
+                        title: "",
+                        status: .loading
+                    )
                     return .none
                     
                 case .presented(.verificationResult(.delegate(.didTapCloseButton))):
@@ -297,18 +304,8 @@ public struct HomeFeature {
                     return .none
                 }
                 
-            case .path(.element(id: _, action: .setting(.delegate(.didLogout)))):
-                return .send(.delegate(.didLogout))
-                
-            case .path(.element(id: _, action: .setting(.delegate(.didDeleteProfile)))):
-                return .send(.delegate(.didDeleteProfile))
-                
             case .path(.element(id: _, action: .finish(.delegate(.didTapConfirmButton)))):
                 return .send(.delegate(.didFinishMission))
-                
-            case .path(.element(id: _, action: .finish(.delegate(.didTapSettingButton)))):
-                state.path.append(.setting(SettingFeature.State()))
-                return .none
                 
             case .path(.element(id: _, action: .missionInfo(.delegate(.didDeleteMission)))):
                 return .send(.delegate(.didDeleteMission))
@@ -369,10 +366,18 @@ private extension HomeFeature {
 public extension HomeFeature {
     
     struct CTAButtonState {
-        static let `default`: Self = .init(isEnabled: false, info: "", title: "")
-        let isEnabled: Bool
+        enum Status {
+            case enabled
+            case disabled
+            case loading
+            var isEnabled: Bool { self == .enabled }
+            var isDisabled: Bool { self == .disabled }
+            var isLoading: Bool { self == .loading }
+        }
+        static let `default`: Self = .init(info: "", title: "", status: .enabled)
         let info: String
         let title: String
+        let status: Status
     }
     
     func makeCTAButtonState(isMeCertificated: Bool, mission: Mission) -> CTAButtonState {
@@ -380,17 +385,17 @@ public extension HomeFeature {
         switch isMeCertificated {
         case true:
             return .init(
-                isEnabled: false,
                 info: info,
-                title: "오늘 미션 인증 완료!"
+                title: "오늘 미션 인증 완료!",
+                status: .disabled
             )
         case false:
             return .init(
-                isEnabled: mission.checkIsMissionTime,
                 info: info,
                 title: mission.checkIsMissionDay 
                     ? (mission.checkIsMissionTime ? "오늘 미션 인증하기" : "오늘 미션 인증 시간 마감") 
-                    : "오늘은 미션일이 아니에요"
+                    : "오늘은 미션일이 아니에요",
+                status: mission.checkIsMissionTime ? .enabled : .disabled
             )
         }
     }

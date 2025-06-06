@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-import FeatureSettingInterface
 import DomainUserInterface
 import SharedDesignSystem
 
@@ -29,20 +28,11 @@ public struct EntranceView: View {
                     .edgesIgnoringSafeArea(.top)
                 
                 VStack(spacing: 0) {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            store.send(.didTapSettingButton)
-                        }) {
-                            Image(uiImage: SharedDesignSystemAsset.Images.setting.image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 21, height: 21)
-                        }
-                        .padding(.trailing, 20)
-                    }
-                    .padding(.top, 7)
-                    .padding(.bottom, 13)
+                    Spacer()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 21)
+                        .padding(.top, 7)
+                        .padding(.bottom, 13)
                     
                     Text("미션 완수를 위해\n경쟁할 준비가 되었나요?")
                         .foregroundStyle(Color.mmGray1)
@@ -117,8 +107,6 @@ public struct EntranceView: View {
                 MissionDurationSettingView(store: store)
             case let .missionInputInviationCode(store):
                 MissionInvitationCodeView(store: store)
-            case let .setting(store):
-                SettingView(store: store)
             }
         }
         .overlay {

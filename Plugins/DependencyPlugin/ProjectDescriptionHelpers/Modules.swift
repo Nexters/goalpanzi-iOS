@@ -35,6 +35,8 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Domain: String, CaseIterable {
+        case History
+        case DomainHistory
         case Mission
         case Competition
         case Board
