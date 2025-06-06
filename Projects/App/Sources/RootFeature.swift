@@ -10,22 +10,26 @@ import ComposableArchitecture
 import FeatureLoginInterface
 import FeaturePieceCreationInterface
 import DomainPlayerInterface
+import DomainUserInterface
 import DataRemote
 import DataRemoteInterface
 import CoreKeychainInterface
 import SharedUtilInterface
+import FirebaseMessaging
 
 @Reducer
 struct RootFeature {
 
     @Dependency(MissionMemberService.self) var missionMemberService
-    
+    @Dependency(UserService.self) var userService
+    @Dependency(UserClient.self) var userClient
+
     @ObservableState
     struct State {
         @Shared(.appStorage("isMissionCreated")) var isMissionCreated: Bool = false
         @Presents var destination: RootDestination.State? = nil
     }
-    
+
     enum Action {
         case didLoad
         case setRootToLogin
@@ -34,13 +38,14 @@ struct RootFeature {
         case observeTokenRefreshingFailure
         case didFailTokenRefreshing
         case didFetchMissionInfo(Result<MyMissionInfo, Error>)
+        case didRegisterDeviceToken(Result<Void, Error>)
         case destination(PresentationAction<RootDestination.Action>)
     }
-    
+
     enum CancelID {
         case notification
     }
-    
+
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -51,13 +56,14 @@ struct RootFeature {
                             await send(.setRootToLogin)
                             return
                         }
-                        await send(.didFetchMissionInfo(Result {
-                            try await missionMemberService.getMissionMembersMe()
+
+                        await send(.didRegisterDeviceToken(Result {
+                            try await userClient.registerDeviceToken(userService)
                         }))
                     },
                     .send(.observeTokenRefreshingFailure)
                 )
-                
+
             case .setRootToLogin:
                 state.destination = .login(LoginFeature.State())
                 return .none
@@ -69,17 +75,29 @@ struct RootFeature {
                 }
                 state.destination = .main(mainState)
                 return .none
-                
+
             case .setRootToProfileCreation:
                 state.destination = .profileCreation(PieceCreationFeature.State())
                 return .none
-                
+
             case let .didFetchMissionInfo(.success(missionInfo)):
                 if missionInfo.missions.isEmpty, state.isMissionCreated == false {
                     return .send(.setRootToMain(tab: .inprogressMission(.entrance(isFirstEntrance: false))))
                 }
                 return .send(.setRootToMain(tab: .inprogressMission(.home)))
-                
+
+            case .didRegisterDeviceToken(.success):
+                print("✅ 완성했스요~!")
+                return .run { send in
+                    await send(.didFetchMissionInfo(Result {
+                        try await missionMemberService.getMissionMembersMe()
+                    }))
+                }
+
+            case .didRegisterDeviceToken(.failure):
+                state.destination = .login(LoginFeature.State())
+                return .none
+
             case .observeTokenRefreshingFailure:
                 return .run { send in
                     for await _ in NotificationCenter.default.notifications(named: .didFailTokenRefreshing) {
@@ -87,11 +105,11 @@ struct RootFeature {
                     }
                 }
                 .cancellable(id: CancelID.notification)
-                
+
             case .didFailTokenRefreshing:
                 state.isMissionCreated = false
                 return .send(.setRootToLogin)
-                
+
             case let .destination(.presented(.login(.delegate(.didFinishLogin(shouldCreateProfile))))):
                 if shouldCreateProfile {
                     return .send(.setRootToProfileCreation)
@@ -101,15 +119,15 @@ struct RootFeature {
                         try await missionMemberService.getMissionMembersMe()
                     }))
                 }
-                
+
             case .destination(.presented(.profileCreation(.delegate(.didCreateProfile)))):
                 return .send(.setRootToMain(tab: .inprogressMission(.entrance(isFirstEntrance: true))))
-                
+
             case .didFetchMissionInfo(.failure):
                 KeychainProvider.shared.delete(.accessToken)
                 KeychainProvider.shared.delete(.refreshToken)
                 return .none
-                
+    
             case .destination(.presented(.main(.delegate(.didEndMission)))):
                 state.isMissionCreated = false
                 return .send(.setRootToMain(tab: .inprogressMission(.entrance(isFirstEntrance: false))))
@@ -121,7 +139,7 @@ struct RootFeature {
             case .destination(.presented(.main(.delegate(.didCreateMission)))):
                 state.isMissionCreated = true
                 return .send(.setRootToMain(tab: .inprogressMission(.home)))
-                
+
             case .destination:
                 return .none
             }

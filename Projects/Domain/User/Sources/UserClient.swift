@@ -23,6 +23,9 @@ extension UserClient: DependencyKey {
             },
             checkProfile: { userService in
                 return try await userService.checkProfile()
+            },
+            registerDeviceToken: { userService in
+                return try await userService.registerDeviceToken()
             }
         )
     }()

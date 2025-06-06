@@ -24,7 +24,7 @@ extension MissionMemberService: DependencyKey {
                     path: "api/mission-members/me",
                     httpMethod: .get
                 )
-                
+
                 let response = await NetworkProvider.shared.sendRequest(endPoint, interceptor: authIntercepter)
                 
                 switch response {

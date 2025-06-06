@@ -21,12 +21,16 @@ let targets: [Target] = [
                     ],
                     "UIUserInterfaceStyle": "Light",
                     "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
-                    "ITSAppUsesNonExemptEncryption": false
+                    "FirebaseAppDelegateProxyEnabled": false,
+                    "ITSAppUsesNonExemptEncryption": false,
                 ]),
             entitlements: "MissionMate.entitlements",
             dependencies: [
                 .feature
-            ]
+            ],
+            settings: .settings(base: [
+                "OTHER_LDFLAGS": ["-ObjC"]
+            ])
         )
     )
 ]
