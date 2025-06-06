@@ -48,8 +48,17 @@ struct RootView: View {
             }
             
         case .none:
-            EmptyView()
-                .backgroundStyle(Color.mmOrange)
+            GeometryReader { proxy in
+                VStack(alignment: .center, spacing: 0) {
+                    SharedDesignSystemAsset.Images.missionmateLogo.swiftUIImage
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                }
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .background(Color.mmOrange)
+            }
+            .ignoresSafeArea(.all)
         }
     }
 }
